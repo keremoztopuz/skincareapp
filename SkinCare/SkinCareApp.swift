@@ -11,6 +11,7 @@ import CoreData
 @main
 struct SkinCareApp: App {
     let persistenceController = PersistenceController.shared
+    // test commit. do not care.
 
     var body: some Scene {
         WindowGroup {
