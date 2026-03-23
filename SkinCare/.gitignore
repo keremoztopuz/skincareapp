@@ -1,0 +1,134 @@
+# macOS system files
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+.Spotlight-V100
+.Trashes
+
+# Xcode
+## User settings
+xcuserdata/
+*.xccheckout
+*.xcscmblueprint
+## Derived data & build products
+DerivedData/
+build/
+Build/
+
+## Xcode caches
+*.xcuserstate
+*.moved-aside
+*.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
+
+## Swift and SwiftPM
+.swiftpm/
+.package.resolved
+.build/
+
+# Swift Package Manager Artifacts (Xcode 13+)
+Artifacts/
+
+# Carthage
+Carthage/Build/
+Carthage/Checkouts/
+.carthage-project
+
+# CocoaPods
+Pods/
+
+# Accio dependency manager
+Dependencies/
+.accio/
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/
+fastlane/test_output/
+fastlane/readme.md
+
+# Bundler
+.bundle/
+
+# SPM/Xcode Playgrounds
+timeline.xctimeline
+playground.xcworkspace
+*.playgroundbook
+*.playground
+
+# SwiftLint / SwiftFormat caches
+.swiftlint.yml.lock
+.swiftformat
+.swiftformat.lock
+
+# Coverage
+*.xccovreport
+*.xccovarchive
+*.profdata
+coverage/
+
+# Archives & Logs
+*.xcarchive
+*.ipa
+*.dSYM
+*.dSYM.zip
+*.log
+
+# Simulator
+Library/Developer/CoreSimulator/Devices/
+
+# Firebase / GoogleService (keep templates, ignore real files)
+GoogleService-Info.plist
+GoogleService-Info*.plist
+GoogleService-Info.json
+
+# Environment / secrets
+.env
+.env.*
+*.secret
+secrets/
+
+# AppCenter/Crashlytics
+appcenter-config.json
+crashlytics-build.properties
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# Localization intermediates
+*.stringsdict
+*.strings.old
+
+# Metal shader cache
+*.metallib
+
+# Package manager lock files (optional — uncomment to ignore)
+# Package.resolved
+
+# SPM generated xcodeproj (older setups)
+*.xcodeproj/project.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
+
+# Xcode 14+ previews
+*.preview-thumbnails
+*.preview-thumbnails/**
+
+# VisionOS/Reality Composer Pro
+*.rcproject
+*.usdz
+
+# XCFramework build artifacts
+*.xcframework
+
+# SwiftData / CoreData generated caches
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+
+# End of file
+
