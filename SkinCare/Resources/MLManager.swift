@@ -10,7 +10,7 @@ import Vision
 import UIKit
 
 class MLManager {
-    
+// MARK: Model Loading
     private var model : VNCoreMLModel!
     
     init() {
@@ -22,7 +22,7 @@ class MLManager {
             print("model not loaded")
         }
     }
-    
+// MARK: Model Implementation
     func detect(image: UIImage, completion: @escaping (SkinCondition?, Double) -> Void ) {
         guard let model = model, let ciImage = CIImage(image: image) else { return }
         
