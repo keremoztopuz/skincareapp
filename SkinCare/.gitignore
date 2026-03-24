@@ -130,5 +130,11 @@ crashlytics-build.properties
 *.sqlite-shm
 *.sqlite-wal
 
+# MLModel
+*.mlpackage/
+*.mlmodel
+
 # End of file
+
+
 
