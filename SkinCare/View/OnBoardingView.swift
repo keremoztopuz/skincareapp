@@ -17,6 +17,7 @@ struct OnBoardingPage {
 // MARK: - Single Slide View
 struct OnBoardingPageView: View {
     let page: OnBoardingPage
+    @State private var isPulsing = false
 
     var body: some View {
         GeometryReader { geo in
@@ -31,6 +32,11 @@ struct OnBoardingPageView: View {
                     Circle()
                         .fill(Color(red: 1.0, green: 0.87, blue: 0.87))
                         .frame(width: outerSize, height: outerSize)
+                        .scaleEffect(isPulsing ? 1.12 : 1.0)
+                        .animation(
+                            .easeInOut(duration: 1.4).repeatForever(autoreverses: true),
+                            value: isPulsing
+                        )
                     Circle()
                         .fill(Color(red: 0.47, green: 0.11, blue: 0.17))
                         .frame(width: innerSize, height: innerSize)
@@ -57,6 +63,7 @@ struct OnBoardingPageView: View {
             }
             .frame(width: geo.size.width)
         }
+        .onAppear { isPulsing = true }
     }
 }
 
@@ -161,7 +168,7 @@ struct OnBoardingView: View {
                 .padding(.bottom, 40)
             }
 
-            // Skip button (hidden on last page)
+            // skip button 
             if vm.currentPage < pages.count - 1 {
                 Button("Skip") {
                     vm.completeOnBoarding()
