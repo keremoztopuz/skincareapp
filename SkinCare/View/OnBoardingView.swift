@@ -41,7 +41,12 @@ struct OnBoardingPage {
 // MARK: - Single Slide View
 struct OnBoardingPageView: View {
     let page: OnBoardingPage
+    let index: Int
+    let currentPage: Int
     @State private var isPulsing = false
+    @State private var iconScale: CGFloat = 0
+    @State private var titleScale: CGFloat = 0
+    @State private var descScale: CGFloat = 0
 
     var body: some View {
         GeometryReader { geo in
@@ -96,6 +101,7 @@ struct OnBoardingPageView: View {
                             .foregroundColor(.white)
                     }
                 }
+                .scaleEffect(iconScale)
 
                 // title
                 Text(page.title)
@@ -103,6 +109,7 @@ struct OnBoardingPageView: View {
                     .foregroundColor(Color(red: 0.1, green: 0.1, blue: 0.2))
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 30)
+                    .scaleEffect(titleScale)
 
                 // description
                 Text(page.description)
@@ -110,12 +117,34 @@ struct OnBoardingPageView: View {
                     .foregroundColor(.gray)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 40)
+                    .scaleEffect(descScale)
 
                 Spacer()
             }
             .frame(width: geo.size.width)
         }
-        .onAppear { isPulsing = true }
+        .onAppear { trigger() }
+        .onChange(of: currentPage) { _, newPage in
+            if newPage == index { trigger() }
+        }
+    }
+
+    private func trigger() {
+        isPulsing = true
+        iconScale = 0
+        titleScale = 0
+        descScale = 0
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+            withAnimation(.spring(response: 0.4, dampingFraction: 0.6)) {
+                iconScale = 1.0
+            }
+            withAnimation(.spring(response: 0.4, dampingFraction: 0.6).delay(0.08)) {
+                titleScale = 1.0
+            }
+            withAnimation(.spring(response: 0.4, dampingFraction: 0.6).delay(0.14)) {
+                descScale = 1.0
+            }
+        }
     }
 }
 
@@ -166,7 +195,7 @@ struct OnBoardingView: View {
                 // slide pages
                 TabView(selection: $vm.currentPage) {
                     ForEach(0..<pages.count, id: \.self) { index in
-                        OnBoardingPageView(page: pages[index])
+                        OnBoardingPageView(page: pages[index], index: index, currentPage: vm.currentPage)
                             .tag(index)
                     }
                 }
