@@ -134,6 +134,10 @@ crashlytics-build.properties
 *.mlpackage/
 *.mlmodel
 
+# Lottie
+*.json
+*.lottie
+
 # End of file
 
 

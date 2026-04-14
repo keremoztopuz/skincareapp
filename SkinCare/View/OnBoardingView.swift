@@ -6,9 +6,11 @@
 //
 
 import SwiftUI
+import Lottie
 
 // MARK: - Data Model
 struct OnBoardingPage {
+    let lottieAnimation: String? // nil → use SF Symbol icon
     let icon: String
     let title: String
     let description: String
@@ -40,9 +42,23 @@ struct OnBoardingPageView: View {
                     Circle()
                         .fill(Color(red: 0.47, green: 0.11, blue: 0.17))
                         .frame(width: innerSize, height: innerSize)
-                    Image(systemName: page.icon)
-                        .font(.system(size: outerSize * 0.30))
-                        .foregroundColor(.white)
+
+                    if let animName = page.lottieAnimation {
+                        LottieView(animation: .named(animName))
+                            .playing(loopMode: .loop)
+                            .configure { animationView in
+                                let white = ColorValueProvider(UIColor.white.lottieColorValue)
+                                animationView.setValueProvider(white, keypath: AnimationKeypath(keypath: "**.Color"))
+                            }
+                            .frame(width: innerSize * 0.78, height: innerSize * 0.78)
+                            .offset(x: 5)
+                            .allowsHitTesting(false)
+                            .accessibilityHidden(true)
+                    } else {
+                        Image(systemName: page.icon)
+                            .font(.system(size: outerSize * 0.28))
+                            .foregroundColor(.white)
+                    }
                 }
 
                 // title
@@ -74,21 +90,25 @@ struct OnBoardingView: View {
 
     let pages: [OnBoardingPage] = [
         OnBoardingPage(
+            lottieAnimation: "AI Star loader UI",
             icon: "sparkle",
             title: "Welcome to SkinCare AI",
             description: "Your personal dermatological assistant powered by advanced AI technology."
         ),
         OnBoardingPage(
+            lottieAnimation: nil,
             icon: "camera",
             title: "AI-Powered Skin Analysis",
             description: "Analyze your skin in seconds with your camera. Get instant insights."
         ),
         OnBoardingPage(
+            lottieAnimation: nil,
             icon: "lock.shield",
             title: "Data Stays On Device",
             description: "Your face data never leaves your device. We prioritize your privacy."
         ),
         OnBoardingPage(
+            lottieAnimation: nil,
             icon: "chart.line.uptrend.xyaxis",
             title: "Track Your Progress",
             description: "Save every analysis and see how you improve over time."
