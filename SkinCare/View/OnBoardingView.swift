@@ -11,9 +11,31 @@ import Lottie
 // MARK: - Data Model
 struct OnBoardingPage {
     let lottieAnimation: String? // nil → use SF Symbol icon
+    let lottieScale: CGFloat
+    let lottieOffset: CGPoint
+    let lottieSpeed: CGFloat
+    let lottieRepeatDelay: TimeInterval
     let icon: String
     let title: String
     let description: String
+
+    init(lottieAnimation: String? = nil,
+         lottieScale: CGFloat = 1.0,
+         lottieOffset: CGPoint = .zero,
+         lottieSpeed: CGFloat = 1.0,
+         lottieRepeatDelay: TimeInterval = 0,
+         icon: String,
+         title: String,
+         description: String) {
+        self.lottieAnimation = lottieAnimation
+        self.lottieScale = lottieScale
+        self.lottieOffset = lottieOffset
+        self.lottieSpeed = lottieSpeed
+        self.lottieRepeatDelay = lottieRepeatDelay
+        self.icon = icon
+        self.title = title
+        self.description = description
+    }
 }
 
 // MARK: - Single Slide View
@@ -45,13 +67,27 @@ struct OnBoardingPageView: View {
 
                     if let animName = page.lottieAnimation {
                         LottieView(animation: .named(animName))
-                            .playing(loopMode: .loop)
+                            .playing(loopMode: page.lottieRepeatDelay > 0 ? .playOnce : .loop)
                             .configure { animationView in
                                 let white = ColorValueProvider(UIColor.white.lottieColorValue)
                                 animationView.setValueProvider(white, keypath: AnimationKeypath(keypath: "**.Color"))
+                                animationView.animationSpeed = page.lottieSpeed
+                                if page.lottieRepeatDelay > 0 {
+                                    let delay = page.lottieRepeatDelay
+                                    func playLoop() {
+                                        animationView.play { completed in
+                                            guard completed else { return }
+                                            DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+                                                playLoop()
+                                            }
+                                        }
+                                    }
+                                    playLoop()
+                                }
                             }
                             .frame(width: innerSize * 0.78, height: innerSize * 0.78)
-                            .offset(x: 5)
+                            .scaleEffect(page.lottieScale)
+                            .offset(x: page.lottieOffset.x, y: page.lottieOffset.y)
                             .allowsHitTesting(false)
                             .accessibilityHidden(true)
                     } else {
@@ -91,24 +127,30 @@ struct OnBoardingView: View {
     let pages: [OnBoardingPage] = [
         OnBoardingPage(
             lottieAnimation: "AI Star loader UI",
+            lottieOffset: CGPoint(x: 5, y: 0),
             icon: "sparkle",
             title: "Welcome to SkinCare AI",
             description: "Your personal dermatological assistant powered by advanced AI technology."
         ),
         OnBoardingPage(
-            lottieAnimation: nil,
+            lottieAnimation: "Take Photo",
+            lottieScale: 1.5,
+            lottieOffset: CGPoint(x: -1, y: 0),
             icon: "camera",
             title: "AI-Powered Skin Analysis",
             description: "Analyze your skin in seconds with your camera. Get instant insights."
         ),
         OnBoardingPage(
-            lottieAnimation: nil,
+            lottieAnimation: "FaceID",
+            lottieScale: 0.7,
             icon: "lock.shield",
             title: "Data Stays On Device",
             description: "Your face data never leaves your device. We prioritize your privacy."
         ),
         OnBoardingPage(
-            lottieAnimation: nil,
+            lottieAnimation: "line graph",
+            lottieSpeed: 5.0,
+            lottieRepeatDelay: 1.0,
             icon: "chart.line.uptrend.xyaxis",
             title: "Track Your Progress",
             description: "Save every analysis and see how you improve over time."
@@ -194,7 +236,7 @@ struct OnBoardingView: View {
                     vm.completeOnBoarding()
                     hasCompleted = true
                 }
-                .foregroundColor(.gray)
+                .foregroundColor(.black)
                 .padding(.trailing, 24)
                 .padding(.top, 16)
             }
