@@ -138,9 +138,6 @@ crashlytics-build.properties
 *.json
 *.lottie
 
-# Xcode user data
-*.xcuserstate
-
 # End of file
 
 
