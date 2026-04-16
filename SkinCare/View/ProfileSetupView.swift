@@ -40,54 +40,8 @@ enum SkinType: String, CaseIterable {
         }
     }
 }
-// MARK: - Profile Setup View
-struct ProfileSetupView: View {
-    @State private var currentPage: Int = 0
-    @State private var name: String = ""
-    @State private var gender: Gender? = nil
-    @State private var age: Int = 25
-    @State private var height: Int = 170
-    @State private var weight: Int = 70
-    @State private var skinType: SkinType? = nil
-    @AppStorage("hasCompletedProfile") private var hasCompletedProfile = false
-    
-    var body: some View {
-        ZStack {
-            Color(red: 1.0, green: 0.97, blue: 0.97).ignoresSafeArea()
-            VStack {
-                
-            }
-        }
-    }
-}
-// MARK: - Name Page View
-struct NamePageView: View {
-    @Binding var name: String
-    var body: some View {
-        VStack(spacing: 32) {
-            Text("What's your name?")
-                .font(.system(size: 28, weight: .bold))
-                .foregroundColor(.primary)
-            Text("We'll use this to personaliza your experince")
-                .font(.system(size: 16, weight: .regular))
-                .foregroundColor(.gray)
-            TextField("Your name", text: $name)
-                .multilineTextAlignment(.center)
-                .padding(.vertical, 16)
-                .padding(.horizontal, 24)
-                .background(Color.white)
-                .cornerRadius(16)
-                .padding(.horizontal, 40)
-            Spacer()
-            Spacer()
-                
-        }
-    }
-}
-
-
 #Preview {
-    NamePageView(name: .constant(""))
+    ProfileSetupView()
 }
 
 
