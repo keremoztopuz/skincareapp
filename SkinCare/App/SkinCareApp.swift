@@ -15,6 +15,12 @@ struct SkinCareApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .onAppear() {
+                    UserDefaults.standard.set(false, forKey:
+                      "hasCompletedOnBoarding")
+                    UserDefaults.standard.set(false, forKey:
+                      "hasCompletedProfile")
+                }
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
         }
     }
