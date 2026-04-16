@@ -1,9 +1,16 @@
 import SwiftUI
 
 struct ContentView: View {
+    @AppStorage("hasCompletedOnBoarding") private var
+      hasCompletedOnBoarding = false
+    @AppStorage("hasCompletedProfile") private var
+      hasCompletedProfile = false
     var body: some View {
-        Text("Hello, world!")
-            .padding()
+        if !hasCompletedOnBoarding {
+            OnBoardingView()
+        } else if !hasCompletedProfile {
+            ProfileSetupView()
+        }
     }
 }
 
