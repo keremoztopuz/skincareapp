@@ -4,6 +4,7 @@
 //
 //  Created by Kerem Öztopuz on 29.03.2026.
 //
+// THIS FILE IS FOR ONBOARDING PAGES. TO INTRODUCE THE APP FOR USER.
 
 import SwiftUI
 import Lottie
