@@ -1,5 +1,9 @@
 import SwiftUI
 
+// MARK: CONTENT VIEW OPTIMIZATION
+
+// FOR NOW, JUST RESETS THE PAGE ON EVERY BUILD.
+
 struct ContentView: View {
     @AppStorage("hasCompletedOnBoarding") private var
       hasCompletedOnBoarding = false
