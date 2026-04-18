@@ -154,39 +154,6 @@ struct OnBoardingView: View {
     @StateObject private var vm = OnBoardingViewModel()
     @AppStorage("hasCompletedOnBoarding") private var hasCompleted = false
 
-    let pages: [OnBoardingPage] = [
-        OnBoardingPage(
-            lottieAnimation: "AI Star loader UI",
-            lottieOffset: CGPoint(x: 5, y: 0),
-            icon: "sparkle",
-            title: "Welcome to SkinCare AI",
-            description: "Your personal dermatological assistant powered by advanced AI technology."
-        ),
-        OnBoardingPage(
-            lottieAnimation: "Take Photo",
-            lottieScale: 1.5,
-            lottieOffset: CGPoint(x: -1, y: 0),
-            icon: "camera",
-            title: "AI-Powered Skin Analysis",
-            description: "Analyze your skin in seconds with your camera. Get instant insights."
-        ),
-        OnBoardingPage(
-            lottieAnimation: "FaceID",
-            lottieScale: 0.7,
-            icon: "lock.shield",
-            title: "Data Stays On Device",
-            description: "Your face data never leaves your device. We prioritize your privacy."
-        ),
-        OnBoardingPage(
-            lottieAnimation: "line graph",
-            lottieSpeed: 5.0,
-            lottieRepeatDelay: 1.0,
-            icon: "chart.line.uptrend.xyaxis",
-            title: "Track Your Progress",
-            description: "Save every analysis and see how you improve over time."
-        )
-    ]
-
     var body: some View {
         ZStack(alignment: .topTrailing) {
             // background
@@ -195,8 +162,8 @@ struct OnBoardingView: View {
             VStack(spacing: 0) {
                 // slide pages
                 TabView(selection: $vm.currentPage) {
-                    ForEach(0..<pages.count, id: \.self) { index in
-                        OnBoardingPageView(page: pages[index], index: index, currentPage: vm.currentPage)
+                    ForEach(0..<vm.pages.count, id: \.self) { index in
+                        OnBoardingPageView(page: vm.pages[index], index: index, currentPage: vm.currentPage)
                             .tag(index)
                     }
                 }
@@ -205,7 +172,7 @@ struct OnBoardingView: View {
 
                 // page dots
                 HStack(spacing: 8) {
-                    ForEach(0..<pages.count, id: \.self) { index in
+                    ForEach(0..<vm.pages.count, id: \.self) { index in
                         Capsule()
                             .fill(vm.currentPage == index
                                   ? Color(red: 0.47, green: 0.11, blue: 0.17)
@@ -237,7 +204,7 @@ struct OnBoardingView: View {
 
                     // next 
                     Button(action: {
-                        if vm.currentPage < pages.count - 1 {
+                        if vm.currentPage < vm.pages.count - 1 {
                             vm.currentPage += 1
                         } else {
                             vm.completeOnBoarding()
@@ -245,7 +212,7 @@ struct OnBoardingView: View {
                         }
                     }) {
                         HStack {
-                            Text(vm.currentPage == pages.count - 1 ? "Get Started" : "Next")
+                            Text(vm.currentPage == vm.pages.count - 1 ? "Get Started" : "Next")
                             Image(systemName: "chevron.right")
                         }
                         .frame(maxWidth: .infinity)
@@ -261,7 +228,7 @@ struct OnBoardingView: View {
             }
 
             // skip button 
-            if vm.currentPage < pages.count - 1 {
+            if vm.currentPage < vm.pages.count - 1 {
                 Button("Skip") {
                     vm.completeOnBoarding()
                     hasCompleted = true
