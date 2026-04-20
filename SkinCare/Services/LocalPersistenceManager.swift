@@ -9,6 +9,9 @@ import Foundation
 import CoreData
 
 class LocalPersistenceManager {
+    static let shared = LocalPersistenceManager()
+    private init() {
+    }
     private let context = PersistenceController.shared.container.viewContext
     // User Profile
     func saveUserProfile(name: String, skinType: String, ageRange: String, knownIssues: String) {
