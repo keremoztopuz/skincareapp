@@ -30,6 +30,8 @@ class ContentViewModel: ObservableObject {
   forKey: "hasCompletedProfile")
           }
       }
+    
+    private var observer: Any?
 
       var currentState: AppState {
           if !hasCompletedOnBoarding {
@@ -42,13 +44,31 @@ class ContentViewModel: ObservableObject {
       }
 
       init() {
-          self.hasCompletedOnBoarding =
-  UserDefaults.standard.bool(forKey:
-  "hasCompletedOnBoarding")
-          self.hasCompletedProfile =
-  UserDefaults.standard.bool(forKey:
-  "hasCompletedProfile")
+          self.hasCompletedOnBoarding = UserDefaults.standard.bool(forKey: "hasCompletedOnBoarding")
+          self.hasCompletedProfile = UserDefaults.standard.bool(forKey: "hasCompletedProfile")
+          
+          self.observer = NotificationCenter.default.addObserver(
+                forName: UserDefaults.didChangeNotification,
+                object: nil,
+                queue: .main
+            ) { [weak self] _ in
+                let newOnBoarding = UserDefaults.standard.bool(forKey: "hasCompletedOnBoarding")
+                let newProfile = UserDefaults.standard.bool(forKey: "hasCompletedProfile")
+
+                if self?.hasCompletedOnBoarding != newOnBoarding {
+                    self?.hasCompletedOnBoarding = newOnBoarding
+                }
+                if self?.hasCompletedProfile != newProfile {
+                    self?.hasCompletedProfile = newProfile
+                }
+            }
       }
+    
+    deinit {
+        if let observer = observer {
+            NotificationCenter.default.removeObserver(observer)
+        }
+    }
   }
 
 
