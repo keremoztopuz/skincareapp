@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import CoreData
 internal import Combine
 
 // gender modification
@@ -68,8 +69,15 @@ class ProfileSetupViewModel: ObservableObject {
           }
       }
 
-      func completeProfile() {
+    func completeProfile() {
+          let manager = LocalPersistenceManager()
+          manager.saveUserProfile(
+              name: name,
+              skinType: skinType?.rawValue ?? "Normal",
+              ageRange: String(age),
+              knownIssues: ""
+          )
           UserDefaults.standard.set(true, forKey:
-  "hasCompletedProfile")
+      "hasCompletedProfile")
       }
   }
