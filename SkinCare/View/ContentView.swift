@@ -5,16 +5,16 @@ import SwiftUI
 // FOR NOW, JUST RESETS THE PAGE ON EVERY BUILD.
 
 struct ContentView: View {
-    @AppStorage("hasCompletedOnBoarding") private var hasCompletedOnBoarding = false
-    @AppStorage("hasCompletedProfile") private var hasCompletedProfile = false
-
+    @StateObject private var vm = ContentViewModel()
+    
     var body: some View {
-        if !hasCompletedOnBoarding {
+        switch vm.currentState {
+        case .onboarding:
             OnBoardingView()
-        } else if !hasCompletedProfile {
+        case .profileSetup:
             ProfileSetupView()
-        } else {
-            Text("Main App")
+        case .mainApp:
+            Text("main app")
         }
     }
 }
