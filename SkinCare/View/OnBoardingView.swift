@@ -9,36 +9,6 @@
 import SwiftUI
 import Lottie
 
-// MARK: - Data Model
-struct OnBoardingPage {
-    let lottieAnimation: String? // nil → use SF Symbol icon
-    let lottieScale: CGFloat
-    let lottieOffset: CGPoint
-    let lottieSpeed: CGFloat
-    let lottieRepeatDelay: TimeInterval
-    let icon: String
-    let title: String
-    let description: String
-
-    init(lottieAnimation: String? = nil,
-         lottieScale: CGFloat = 1.0,
-         lottieOffset: CGPoint = .zero,
-         lottieSpeed: CGFloat = 1.0,
-         lottieRepeatDelay: TimeInterval = 0,
-         icon: String,
-         title: String,
-         description: String) {
-        self.lottieAnimation = lottieAnimation
-        self.lottieScale = lottieScale
-        self.lottieOffset = lottieOffset
-        self.lottieSpeed = lottieSpeed
-        self.lottieRepeatDelay = lottieRepeatDelay
-        self.icon = icon
-        self.title = title
-        self.description = description
-    }
-}
-
 // MARK: - Single Slide View
 struct OnBoardingPageView: View {
     let page: OnBoardingPage
@@ -152,7 +122,6 @@ struct OnBoardingPageView: View {
 // MARK: - Main Onboarding View
 struct OnBoardingView: View {
     @StateObject private var vm = OnBoardingViewModel()
-    @AppStorage("hasCompletedOnBoarding") private var hasCompleted = false
 
     var body: some View {
         ZStack(alignment: .topTrailing) {
@@ -208,7 +177,6 @@ struct OnBoardingView: View {
                             vm.currentPage += 1
                         } else {
                             vm.completeOnBoarding()
-                            hasCompleted = true
                         }
                     }) {
                         HStack {
@@ -231,7 +199,6 @@ struct OnBoardingView: View {
             if vm.currentPage < vm.pages.count - 1 {
                 Button("Skip") {
                     vm.completeOnBoarding()
-                    hasCompleted = true
                 }
                 .foregroundColor(.black)
                 .padding(.trailing, 24)
