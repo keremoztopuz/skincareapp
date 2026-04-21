@@ -13,7 +13,9 @@ enum AppState {
     case splash
     case onboarding
     case profileSetup
+    case loading
     case mainApp
+    
 }
 
 class ContentViewModel: ObservableObject {
@@ -33,6 +35,7 @@ class ContentViewModel: ObservableObject {
       }
     
     @Published var showSplash = true
+    @Published var showLoading = false
     private var observer: Any?
 
       var currentState: AppState {
@@ -42,6 +45,8 @@ class ContentViewModel: ObservableObject {
               return .onboarding
           } else if !hasCompletedProfile {
               return .profileSetup
+          } else if showLoading {
+              return .loading
           } else {
               return .mainApp
           }
@@ -50,9 +55,9 @@ class ContentViewModel: ObservableObject {
       init() {
           self.hasCompletedOnBoarding = UserDefaults.standard.bool(forKey: "hasCompletedOnBoarding")
           self.hasCompletedProfile = UserDefaults.standard.bool(forKey: "hasCompletedProfile")
-
-          // 2 saniye sonra splash'ı kapat
-          DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { [weak self] in
+        
+          // splash 4.5 saniye görünsün
+          DispatchQueue.main.asyncAfter(deadline: .now() + 4.5) { [weak self] in
               self?.showSplash = false
           }
 
@@ -69,6 +74,13 @@ class ContentViewModel: ObservableObject {
                 }
                 if self?.hasCompletedProfile != newProfile {
                     self?.hasCompletedProfile = newProfile
+                }
+                if newProfile && !(self?.showLoading ?? false) {
+                    self?.showLoading = true
+                    // Core Data kayıt süresi + minimum 3.5 saniye
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 3.5) {
+                        self?.showLoading = false
+                    }
                 }
             }
       }

@@ -16,6 +16,8 @@ struct SplashView: View {
         "Don't forget to moisturize in your night routine.",
         "Vitamin C serum helps even out your skin tone."
     ]
+    
+    var loadingMessage: String? = nil
 
     @State private var currentTip: String = ""
     @State private var logoScale: CGFloat = 0
@@ -74,7 +76,13 @@ struct SplashView: View {
                         .padding(.bottom, 20)
 
                     Spacer()
-
+                    if let message = loadingMessage {
+                        Text(message)
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundColor(.gray)
+                            .padding(.bottom, 32)
+                            .scaleEffect(titleScale)
+                    }
                     // Tip
                     Text(currentTip)
                         .font(.system(size: 14))

@@ -14,11 +14,12 @@ class LocalPersistenceManager {
     }
     private let context = PersistenceController.shared.container.viewContext
     // User Profile
-    func saveUserProfile(name: String, skinType: String, ageRange: String, knownIssues: String) {
+    func saveUserProfile(name: String, skinType: String, ageRange: String, gender: String, knownIssues: String) {
         let profile = UserProfile(context: context)
         profile.name = name
         profile.skinType = skinType
         profile.ageRange = ageRange
+        profile.gender = gender
         profile.knownIssues = knownIssues
         profile.createdAt = Date()
 

@@ -17,7 +17,9 @@ class ProfileSetupViewModel: ObservableObject {
       @Published var gender: Gender? = nil
       @Published var skinType: SkinType? = nil
       @Published var showNameWarning = false
-   
+      @Published var showGenderWarning = false
+      @Published var showSkinTypeWarning = false
+
       func handleContinue() {
           if currentPage == 0 {
               if name.trimmingCharacters(in:
@@ -27,10 +29,22 @@ class ProfileSetupViewModel: ObservableObject {
                   showNameWarning = false
                   currentPage = 1
               }
-          } else if currentPage < 3 {
-              currentPage += 1
+          } else if currentPage == 1 {
+              currentPage = 2
+          } else if currentPage == 2 {
+              if gender == nil {
+                  showGenderWarning = true
+              } else {
+                  showGenderWarning = false
+                  currentPage = 3
+              }
           } else {
-              completeProfile()
+              if skinType == nil {
+                  showSkinTypeWarning = true
+              } else {
+                  showSkinTypeWarning = false
+                  completeProfile()
+              }
           }
       }
 
@@ -40,6 +54,7 @@ class ProfileSetupViewModel: ObservableObject {
               name: name,
               skinType: skinType?.rawValue ?? "Normal",
               ageRange: String(age),
+              gender: gender?.rawValue ?? "Prefer not to say",
               knownIssues: ""
           )
           UserDefaults.standard.set(true, forKey:

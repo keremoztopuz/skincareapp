@@ -14,9 +14,11 @@ struct ContentView: View {
         case .profileSetup:
             ProfileSetupView()
         case .mainApp:
-            Text("main app")
+            MainTabView()
         case .splash:
             SplashView()
+        case .loading:
+            SplashView(loadingMessage: "Saving your data on your device...")
         }
     }
 }

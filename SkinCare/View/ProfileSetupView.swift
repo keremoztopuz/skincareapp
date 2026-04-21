@@ -60,7 +60,7 @@ struct ProfileSetupView: View {
                                     Text("Please enter your name.")
                                         .font(.system(size: 14))
                                         .foregroundColor(Color(red:
-                                                                0.47, green: 0.11, blue: 0.17))
+                                        0.47, green: 0.11, blue: 0.17))
                                         .frame(maxWidth: .infinity,
                                                alignment: .leading)
                                 }
@@ -73,9 +73,9 @@ struct ProfileSetupView: View {
                     } else if vm.currentPage == 1 {
                         AgePageView(age: $vm.age)
                     } else if vm.currentPage == 2 {
-                        GenderPageView(gender: $vm.gender)
+                        GenderPageView(gender: $vm.gender, showWarning: vm.showGenderWarning)
                     } else if vm.currentPage == 3 {
-                        SkinTypePageView(skinType: $vm.skinType)
+                        SkinTypePageView(skinType: $vm.skinType, showWarning: vm.showSkinTypeWarning)
                     }
                 }
                 
@@ -131,16 +131,17 @@ struct ProfileSetupView: View {
     // MARK: gender page
     struct GenderPageView: View {
         @Binding var gender: Gender?
+        var showWarning: Bool
         var body: some View {
             VStack(alignment: .leading, spacing: 12) {
                 Text("What's your gender?")
                     .font(.system(size: 28, weight: .bold))
                     .foregroundColor(Color(red: 0.1, green: 0.1, blue: 0.2))
-                
+
                 Text("Helps us tailor your recommendations")
                     .font(.system(size: 16))
                     .foregroundColor(.gray)
-                
+
                 VStack(spacing: 12) {
                     ForEach(Gender.allCases, id: \.self)
                     { option in
@@ -157,6 +158,17 @@ struct ProfileSetupView: View {
                     }
                 }
                 .padding(.top, 16)
+
+                ZStack {
+                    if showWarning {
+                        Text("Please select your gender.")
+                            .font(.system(size: 14))
+                            .foregroundColor(Color(red: 0.47, green: 0.11, blue: 0.17))
+                            .frame(maxWidth: .infinity, alignment: .center)
+                    }
+                }
+                .frame(height: 20)
+                .padding(.top, 8)
             }
             .padding(.horizontal, 28)
         }
@@ -164,6 +176,7 @@ struct ProfileSetupView: View {
     // MARK: skintype page
     struct SkinTypePageView: View {
         @Binding var skinType: SkinType?
+        var showWarning: Bool
         var body: some View {
             let selectedColor = Color(red: 0.47, green: 0.11, blue: 0.17)
             let darkColor = Color(red: 0.1, green: 0.1, blue: 0.2)
@@ -171,11 +184,11 @@ struct ProfileSetupView: View {
                 Text("What's your skin type?")
                     .font(.system(size: 28, weight: .bold))
                     .foregroundColor(Color(red: 0.1, green: 0.1, blue: 0.2))
-                
-                Text("We'll customize your anaylsis")
+
+                Text("We'll customize your analysis")
                     .font(.system(size: 16))
                     .foregroundColor(.gray)
-                
+
                 VStack(spacing: 12) {
                     ForEach(SkinType.allCases, id: \.self)
                     { option in
@@ -198,6 +211,17 @@ struct ProfileSetupView: View {
                     }
                 }
                 .padding(.top, 16)
+
+                ZStack {
+                    if showWarning {
+                        Text("Please select your skin type.")
+                            .font(.system(size: 14))
+                            .foregroundColor(Color(red: 0.47, green: 0.11, blue: 0.17))
+                            .frame(maxWidth: .infinity, alignment: .center)
+                    }
+                }
+                .frame(height: 20)
+                .padding(.top, 8)
             }
             .padding(.horizontal, 28)
         }
