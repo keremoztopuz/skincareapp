@@ -15,6 +15,8 @@ struct ContentView: View {
             ProfileSetupView()
         case .mainApp:
             Text("main app")
+        case .splash:
+            SplashView()
         }
     }
 }

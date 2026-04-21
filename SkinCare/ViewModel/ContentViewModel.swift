@@ -10,6 +10,7 @@ import SwiftUI
 internal import Combine
 
 enum AppState {
+    case splash
     case onboarding
     case profileSetup
     case mainApp
@@ -31,10 +32,13 @@ class ContentViewModel: ObservableObject {
           }
       }
     
+    @Published var showSplash = true
     private var observer: Any?
 
       var currentState: AppState {
-          if !hasCompletedOnBoarding {
+          if showSplash {
+              return .splash
+          } else if !hasCompletedOnBoarding {
               return .onboarding
           } else if !hasCompletedProfile {
               return .profileSetup
@@ -46,7 +50,12 @@ class ContentViewModel: ObservableObject {
       init() {
           self.hasCompletedOnBoarding = UserDefaults.standard.bool(forKey: "hasCompletedOnBoarding")
           self.hasCompletedProfile = UserDefaults.standard.bool(forKey: "hasCompletedProfile")
-          
+
+          // 2 saniye sonra splash'ı kapat
+          DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { [weak self] in
+              self?.showSplash = false
+          }
+
           self.observer = NotificationCenter.default.addObserver(
                 forName: UserDefaults.didChangeNotification,
                 object: nil,

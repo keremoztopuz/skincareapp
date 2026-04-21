@@ -10,6 +10,8 @@ import SwiftUI
 
 struct MainTabView: View {
     var body: some View {
+        let tintColor = Color(red:0.47, green: 0.11, blue: 0.17)
+        
         TabView{
             HomeView()
                 .tabItem {
@@ -32,7 +34,7 @@ struct MainTabView: View {
                     Label("More", systemImage: "ellipsis")
                 }
         }
-        .tint(Color(red: 0.47, green: 0.11, blue: 0.17))
+        .tint(Color(tintColor))
     }
 }
 
