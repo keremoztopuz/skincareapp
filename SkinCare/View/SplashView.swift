@@ -53,8 +53,11 @@ struct SplashView: View {
                             .frame(width: innerSize, height: innerSize)
 
                         // Icon
-                        Image(systemName: "leaf.fill")
-                            .font(.system(size: innerSize * 0.4))
+                        Image("AppLogo")
+                            .renderingMode(.template)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 200, height: 200)
                             .foregroundColor(.white)
                     }
                     .scaleEffect(logoScale)
