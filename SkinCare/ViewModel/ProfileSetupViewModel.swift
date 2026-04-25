@@ -16,37 +16,25 @@ class ProfileSetupViewModel: ObservableObject {
       @Published var age = 25
       @Published var gender: Gender? = nil
       @Published var skinType: SkinType? = nil
-      @Published var showNameWarning = false
-      @Published var showGenderWarning = false
-      @Published var showSkinTypeWarning = false
+      @Published var didFinish = false
 
-      func handleContinue() {
-          if currentPage == 0 {
-              if name.trimmingCharacters(in:
-                    .whitespaces).isEmpty {
-                  showNameWarning = true
-              } else {
-                  showNameWarning = false
-                  currentPage = 1
-              }
-          } else if currentPage == 1 {
-              currentPage = 2
-          } else if currentPage == 2 {
-              if gender == nil {
-                  showGenderWarning = true
-              } else {
-                  showGenderWarning = false
-                  currentPage = 3
-              }
-          } else {
-              if skinType == nil {
-                  showSkinTypeWarning = true
-              } else {
-                  showSkinTypeWarning = false
-                  completeProfile()
-              }
-          }
-      }
+    var isCurrentPageValid: Bool {
+        switch currentPage {
+        case 0: return !name.trimmingCharacters(in: .whitespaces).isEmpty
+        case 1: return true
+        case 2: return gender != nil
+        case 3: return skinType != nil
+        default: return false
+        }
+    }
+
+    func handleContinue() {
+        if currentPage < 3 {
+            currentPage += 1
+        } else {
+            completeProfile()
+        }
+    }
 
     func completeProfile() {
         let manager = LocalPersistenceManager.shared
@@ -57,7 +45,6 @@ class ProfileSetupViewModel: ObservableObject {
               gender: gender?.rawValue ?? "Prefer not to say",
               knownIssues: ""
           )
-          UserDefaults.standard.set(true, forKey:
-      "hasCompletedProfile")
+          didFinish = true
       }
   }

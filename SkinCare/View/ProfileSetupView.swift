@@ -13,6 +13,7 @@ import SwiftUI
 // MARK: user profile setup
 struct ProfileSetupView: View {
     @StateObject private var vm = ProfileSetupViewModel()
+    @EnvironmentObject var appVM: ContentViewModel
     
     var body: some View {
         ZStack {
@@ -89,14 +90,20 @@ struct ProfileSetupView: View {
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 18)
-                        .background(Color(red: 0.47, green: 0.11,
-                                          blue: 0.17))
-                        .cornerRadius(16)
+                        .background(vm.isCurrentPageValid
+                              ? Color(red: 0.47, green: 0.11, blue: 0.17)
+                              : Color.gray.opacity(0.4))
                 }
+                .disabled(!vm.isCurrentPageValid)
                 .padding(.horizontal, 28)
                 .padding(.bottom, 48)
             }
-            
+
+        }
+        .onChange(of: vm.didFinish) { _, finished in
+            if finished {
+                appVM.completeProfile()
+            }
         }
     }
     // MARK: age selection page
@@ -229,5 +236,6 @@ struct ProfileSetupView: View {
 }
 #Preview {
     ProfileSetupView()
+        .environmentObject(ContentViewModel())
 }
     
