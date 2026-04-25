@@ -11,17 +11,17 @@ import CoreData
 @main
 struct SkinCareApp: App {
     let persistenceController = PersistenceController.shared
-
+    @StateObject private var appVM = ContentViewModel()
+    
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .onAppear() {
-                    UserDefaults.standard.set(false, forKey:
-                      "hasCompletedOnBoarding")
-                    UserDefaults.standard.set(false, forKey:
-                      "hasCompletedProfile")
+                .onAppear {
+                    appVM.hasCompletedOnBoarding = false
+                    appVM.hasCompletedProfile = false
                 }
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
+                .environmentObject(appVM)
         }
     }
 }
