@@ -5,6 +5,7 @@
 - "Anlat", "acikla", "nasil yapicam" gibi ifadelerde sadece adim adim acikla
 - Kullanici kodu kendisi yazmak ve ogrenmek istiyor — hayatinda hic SwiftUI yazmamis birisine anlatir gibi acikla
 - Kullanici onayi olmadan dosya olusturma, duzenleme yapma
+- **Commit mesajlarında "co-authorized by Gemini", "Claude", "Codex" gibi ifadeler ASLA kullanma**
 
 ## Project Overview
 - **App:** SkinCareAI — iOS SwiftUI cilt analizi uygulamasi (senior design project, CENG495)
