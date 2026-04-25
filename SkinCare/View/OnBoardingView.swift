@@ -122,6 +122,7 @@ struct OnBoardingPageView: View {
 // MARK: - Main Onboarding View
 struct OnBoardingView: View {
     @StateObject private var vm = OnBoardingViewModel()
+    @EnvironmentObject var appVM: ContentViewModel
 
     var body: some View {
         ZStack(alignment: .topTrailing) {
@@ -176,7 +177,7 @@ struct OnBoardingView: View {
                         if vm.currentPage < vm.pages.count - 1 {
                             vm.currentPage += 1
                         } else {
-                            vm.completeOnBoarding()
+                            appVM.completeOnBoarding()
                         }
                     }) {
                         HStack {
@@ -198,7 +199,7 @@ struct OnBoardingView: View {
             // skip button 
             if vm.currentPage < vm.pages.count - 1 {
                 Button("Skip") {
-                    vm.completeOnBoarding()
+                    appVM.completeOnBoarding()
                 }
                 .foregroundColor(.black)
                 .padding(.trailing, 24)
@@ -210,4 +211,5 @@ struct OnBoardingView: View {
 
 #Preview {
     OnBoardingView()
+        .environmentObject(ContentViewModel())
 }

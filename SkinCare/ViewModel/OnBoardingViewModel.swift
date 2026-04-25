@@ -38,7 +38,4 @@ class OnBoardingViewModel: ObservableObject {
          )
      ]
 
-    func completeOnBoarding() {
-        UserDefaults.standard.set(true, forKey: "hasCompletedOnBoarding")
-    }
 }
