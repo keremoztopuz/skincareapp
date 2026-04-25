@@ -93,6 +93,7 @@ struct ProfileSetupView: View {
                         .background(vm.isCurrentPageValid
                               ? Color(red: 0.47, green: 0.11, blue: 0.17)
                               : Color.gray.opacity(0.4))
+                        .cornerRadius(12)
                 }
                 .disabled(!vm.isCurrentPageValid)
                 .padding(.horizontal, 28)
