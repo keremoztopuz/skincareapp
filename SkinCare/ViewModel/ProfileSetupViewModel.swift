@@ -11,12 +11,28 @@ import CoreData
 internal import Combine
 
 class ProfileSetupViewModel: ObservableObject {
-      @Published var currentPage = 0
-      @Published var name = ""
-      @Published var age = 25
-      @Published var gender: Gender? = nil
-      @Published var skinType: SkinType? = nil
-      @Published var didFinish = false
+    @Published var currentPage = 0
+    @Published var name = "" {
+        didSet {
+            if !name.isEmpty { showNameWarning = false }
+        }
+    }
+    @Published var age = 25
+    @Published var gender: Gender? = nil {
+        didSet {
+            if gender != nil { showGenderWarning = false }
+        }
+    }
+    @Published var skinType: SkinType? = nil {
+        didSet {
+            if skinType != nil { showSkinTypeWarning = false }
+        }
+    }
+    @Published var didFinish = false
+    
+    @Published var showNameWarning = false
+    @Published var showGenderWarning = false
+    @Published var showSkinTypeWarning = false
 
     var isCurrentPageValid: Bool {
         switch currentPage {
