@@ -5,7 +5,7 @@ import SwiftUI
 // FOR NOW, JUST RESETS THE PAGE ON EVERY BUILD.
 
 struct ContentView: View {
-    @StateObject private var vm = ContentViewModel()
+    @EnvironmentObject var vm: ContentViewModel
     
     var body: some View {
         switch vm.currentState {
@@ -25,4 +25,5 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
+        .environmentObject(ContentViewModel())
 }
