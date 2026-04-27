@@ -6,6 +6,7 @@
 - Kullanici kodu kendisi yazmak ve ogrenmek istiyor — hayatinda hic SwiftUI yazmamis birisine anlatir gibi acikla
 - Kullanici onayi olmadan dosya olusturma, duzenleme yapma
 - **Commit mesajlarında "co-authorized by Gemini", "Claude", "Codex" gibi ifadeler ASLA kullanma**
+- **Mimari Karar:** Projede `ObservableObject` ve `@Published` kullanılacaktır. Kod yapısını modernize etmek yerine stabiliteye odaklanılacaktır.
 
 ## Project Overview
 - **App:** SkinCareAI — iOS SwiftUI cilt analizi uygulamasi (senior design project, CENG495)
@@ -14,15 +15,16 @@
 - **Pattern:** MVVM
 
 ## App Flow
-Splash (2sn) → OnBoarding (4 pages) → Profile Setup (Name→Age→Gender→SkinType) → Subscription → Main App (Tab Bar)
+Splash (4.5s) → OnBoarding (4 pages) → Profile Setup → Loading (3.5s) → Subscription → Loading (3.5s) → Main App
 
 ## AppState (ContentViewModel)
 ```
-.splash → .onboarding → .profileSetup → .mainApp
+.splash → .onboarding → .profileSetup → .subscription → .loading → .mainApp
 ```
-- `showSplash = true` → 2sn sonra false olur
-- `@AppStorage("hasCompletedOnBoarding")` ve `@AppStorage("hasCompletedProfile")` ile yonetiliyor
-- Kullanici OnBoarding ve ProfileSetup'i bir kez gorur
+- `showSplash = true` → 4.5s sonra false olur
+- `@Published var hasCompletedOnBoarding`, `hasCompletedProfile`, `hasCompletedSubscription` ve `isPremium` bayrakları ile yönetiliyor.
+- Tüm bayraklar `UserDefaults` (didSet) ile kalıcı hale getirilmiştir.
+- Kullanıcı OnBoarding, Profile ve Subscription adımlarını bir kez görür.
 
 ## Color Palette
 - **Primary (buttons, accents):** rgb(0.47, 0.11, 0.17) = #781A2B (dark burgundy/maroon)
@@ -38,52 +40,16 @@ Splash (2sn) → OnBoarding (4 pages) → Profile Setup (Name→Age→Gender→S
 - Dis daire (pembe) pulsing: `.easeInOut(duration: 1.4).repeatForever(autoreverses: true)` ile 1.0-1.12 arasi nefes efekti
 - Ic ice daireler (pembe dis + bordo ic + beyaz ikon) signature tasarim elementi
 
-## File Structure
-```
-SkinCare/
-├── App/
-│   └── SkinCareApp.swift
-├── Model/
-│   ├── Articles.swift
-│   ├── Gender.swift
-│   ├── OnBoardingPage.swift
-│   ├── SkinCondition.swift
-│   ├── SkinType.swift
-│   └── UserProgress.swift
-├── View/
-│   ├── AnalysisView.swift
-│   ├── CameraView.swift
-│   ├── ContentView.swift         ← AppState switch (splash/onboarding/profileSetup/mainApp)
-│   ├── HomeView.swift
-│   ├── MainTabView.swift          ← 5 tab bar
-│   ├── MoreView.swift
-│   ├── OnBoardingView.swift       ← DONE (4 pages, Lottie + spring animations)
-│   ├── ProfileSetupView.swift
-│   ├── ProfileView.swift
-│   ├── RecentsView.swift
-│   ├── ResultView.swift
-│   ├── SearchView.swift
-│   └── SplashView.swift           ← DONE (logo circles, pop-up + pulsing animations, tips)
-├── ViewModel/
-│   ├── ContentViewModel.swift     ← AppState, splash timer, UserDefaults observer
-│   ├── HomeViewModel.swift
-│   ├── OnBoardingViewModel.swift
-│   ├── ProfileSetupViewModel.swift
-│   └── SkinAnalysisViewModel.swift
-├── Services/
-│   ├── LocalPersistenceManager.swift  ← singleton, Core Data
-│   ├── Persistence.swift
-│   └── ScoringEngine.swift
-└── Resources/
-    └── MLManager.swift
-```
+## Persistence (Core Data)
+- **LocalPersistenceManager:** Singleton, UserProfile ve AnalysisRecord tabloları.
+- **Profil Fetch Kuralı:** Birden fazla profil kaydı oluşma ihtimaline karşı her zaman `createdAt` tarihine göre azalan sıralama yapılıp en yeni kayıt çekilir (`fetchLimit = 1`).
 
 ## Tab Bar Screens (5 tabs)
-- **Home:** Greeting, Skin Analysis CTA, 2x2 stats grid, Recommendations
-- **Search:** Search bar + Dermatological Products with rating badges
-- **Camera:** Scan Your Face — camera preview + capture button
-- **Recents:** Recent Analyses list, score + trend, progress bars
-- **More:** Subscription plans (Free/$0, Premium/$9.99, Professional/$19.99) + rating
+- **Home:** Saat bazlı selamlama (Good Morning/Afternoon/Evening/Night), 2x2 istatistik kartları, Öneriler.
+- **Search:** Search bar + Dermatological Products with rating badges.
+- **Camera:** Scan Your Face — camera preview + capture button.
+- **Recents:** Recent Analyses list, score + trend, progress bars.
+- **More:** Subscription status + Settings.
 
 ## Analysis Architecture (dual-engine, fully on-device)
 ### CoreML — skin_disease.mlpackage
@@ -95,22 +61,11 @@ SkinCare/
 - Under-eye bag detection → landmark crop + color/contour analysis
 
 ### Subscription-based feature gating
-| Feature | Free | Premium/Pro |
-|---|---|---|
-| Acne detection | YES | YES |
-| Eczema detection | YES | YES |
-| Psoriasis detection | NO | YES |
-| Wrinkle analysis | NO | YES |
-| Under-eye bags | NO | YES |
+- `isPremium` bayrağına göre özellikler kısıtlanır (Psoriasis, Wrinkle, Eyebag analizleri Premium'a özeldir).
 
 ## Data & Privacy
-- **Core Data:** all user data (profile, analysis history) — NEVER leaves device
-- **Supabase (PostgreSQL):** articles, product recommendations, nutrition tips (fetch only)
-- **Privacy-by-design:** ALL biometric/face data stays on device, no images leave the device EVER
-- **Offline-first:** CoreML, Vision, scoring, history, profile all work without internet
-- **Online required only for:** Supabase content → show "Internet baglantisi gerekli" when offline
-
-## Key Differentiators (vs competitors like Skan)
-- Tamamen offline analiz — internet olmadan da calisir
-- Fotograflar cihazda kalir — gercek privacy-by-design
-- Dual-engine (CoreML + Vision) — on-device
+- **Core Data:** all user data (profile, analysis history) — NEVER leaves device.
+- **Supabase (PostgreSQL):** articles, product recommendations, nutrition tips (fetch only).
+- **Privacy-by-design:** ALL biometric/face data stays on device, no images leave the device EVER.
+- **Offline-first:** CoreML, Vision, scoring, history, profile all work without internet.
+- **Online required only for:** Supabase content → show "Internet baglantisi gerekli" when offline.
