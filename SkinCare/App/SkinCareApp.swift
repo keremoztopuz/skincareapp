@@ -16,10 +16,7 @@ struct SkinCareApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .onAppear {
-                    appVM.hasCompletedOnBoarding = false
-                    appVM.hasCompletedProfile = false
-                }
+                
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
                 .environmentObject(appVM)
         }
