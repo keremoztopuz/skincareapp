@@ -19,7 +19,16 @@ class HomeViewModel: ObservableObject {
     
     func fetchNames() {
         let profile = LocalPersistenceManager.shared.fetchUserProfile()
-        self.userName = profile?.name ?? ""
-        
-    }
-}
+        if let profile = profile {
+            self.userName = profile.name ?? ""
+            print("--- CORE DATA DEBUG ---")
+            print("User Name: \(profile.name ?? "No Name")")
+            print("Skin Type: \(profile.skinType ?? "No Type")")
+            print("Gender: \(profile.gender ?? "No Gender")")
+            print("-----------------------")
+        } else {
+            print("--- CORE DATA DEBUG ---")
+            print("No User Profile found in Core Data.")
+            print("-----------------------")
+        }
+    }}

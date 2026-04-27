@@ -7,10 +7,13 @@
 
 import Foundation
 import SwiftUI
+internal import Combine
 
 struct HomeView: View {
+    @StateObject private var vm = HomeViewModel()
+    
     var body: some View {
-        Text("Home")
+        Text(vm.userName)
             
     }
 }

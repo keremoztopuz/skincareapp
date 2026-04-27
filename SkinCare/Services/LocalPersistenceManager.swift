@@ -62,6 +62,7 @@ class LocalPersistenceManager {
     // Fetching User Profile
     func fetchUserProfile() -> UserProfile? {
         let request: NSFetchRequest<UserProfile> = UserProfile.fetchRequest()
+        request.sortDescriptors = [NSSortDescriptor(key: "createdAt", ascending: false)]
         request.fetchLimit = 1
         return try? context.fetch(request).first
     }
