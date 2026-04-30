@@ -14,9 +14,13 @@ class HomeViewModel: ObservableObject {
     @Published var userName: String = ""
     @Published var articles: [Articles] = []
     @Published var news: [News] = []
+    @Published var products: [Product] = []
     
     init() {
         fetchNames()
+        fetchArticles()
+        fetchNews()
+        fetchProducts()
     }
     
     func fetchNames() {
@@ -49,6 +53,18 @@ class HomeViewModel: ObservableObject {
             News(id: UUID(), title: "Health Benefits of Honey", content: "Discover the health benefits of honey...", createdAt: Calendar.current.date(byAdding: .day, value: -5, to: Date())!),
             News(id: UUID(), title: "Top 3 Travel Skincare Essentials", content: "Must-have items for your next trip...", createdAt: Calendar.current.date(byAdding: .day, value: -2, to: Date())!),
             News(id: UUID(), title: "How to Choose the Right Skincare Brand", content: "Tips for finding the perfect skincare brand...", createdAt: Calendar.current.date(byAdding: .day, value: -4, to: Date())!)
+        ]
+    }
+    
+    func fetchProducts() {
+        self.products = [
+                  Product(id: UUID(), name: "CeraVe Cleanser", category: "Face Cleanser", imageName: "product1"),
+                  Product(id: UUID(), name: "La Roche-Posay SPF", category: "Sunscreen", imageName: "product2"),
+                  Product(id: UUID(), name: "The Ordinary Niacinamide", category: "Serum", imageName:
+          "product3"),
+                  Product(id: UUID(), name: "Neutrogena Moisturizer", category: "Moisturizer", imageName:
+          "product4"),
+                  Product(id: UUID(), name: "Bioderma Micellar Water", category: "Cleanser", imageName: "product5")
         ]
     }
 }

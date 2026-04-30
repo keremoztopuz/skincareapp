@@ -78,10 +78,12 @@ struct HomeView: View {
                                         }
                                         .frame(width: 90, height: 90)
                                         .padding(.leading, 10)
+                                        .padding(.top, -12)
                                     
                                     Text("Skin analysis")
                                         .foregroundColor(mainColor)
                                         .font(.system(size: 16, weight: .semibold))
+                                        .padding(.top, 15)
                                 }
                             }
                             .shadow(color: Color.black.opacity(0.1), radius: 8, x: 0, y: 8)
@@ -159,11 +161,11 @@ struct HomeView: View {
                     
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 16) {
-                            ForEach(0..<5) { index in
+                            ForEach(vm.products) { product in
                                 Button(action: {
-                                    print("Product \(index) clicked")
+                                    print("\(product.name) clicked")
                                 }) {
-                                    ProductCard()
+                                    ProductCard(product: product)
                                 }
                                 .buttonStyle(PlainButtonStyle())
                             }
@@ -173,17 +175,17 @@ struct HomeView: View {
                 }
                 
                 VStack(alignment: .leading, spacing: 16) {
-                    Text("News and Articles")
+                    Text("News")
                         .font(.system(size: 24, weight: .bold))
                         .padding(.horizontal, 20)
                     
                     ScrollView(.horizontal, showsIndicators: false){
                         HStack(spacing: 16) {
-                            ForEach(0..<5) { index in
+                            ForEach(vm.news) { news in
                                 Button(action: {
-                                    print("News \(index) clicked")
+                                    print("\(news.title) clicked")
                                 }) {
-                                    NewsCard()
+                                    NewsCard(news: news)
                                 }
                                 .buttonStyle(PlainButtonStyle())
                             }
@@ -216,7 +218,7 @@ struct MetricCard: View {
         }
         .padding(.leading, 20)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .frame(height: 120)
+        .frame(height: 100)
         .background(Color.white)
         .cornerRadius(15)
         .shadow(color: Color.black.opacity(0.1), radius: 8, x: 0, y: 8)
@@ -224,6 +226,8 @@ struct MetricCard: View {
 }
 
 struct ProductCard: View {
+    let product: Product
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             RoundedRectangle(cornerRadius: 15)
@@ -231,28 +235,39 @@ struct ProductCard: View {
                 .frame(width: 140, height: 140)
             
             VStack(alignment: .leading, spacing: 2) {
-                Text("Product Name")
+                Text(product.name)
                     .font(.system(size: 16, weight: .semibold))
-                Text("Face Cleanser")
+                    .lineLimit(2)
+                Text(product.category)
                     .font(.system(size: 14))
                     .foregroundColor(.gray)
+                    .lineLimit(2)
             }
+            .frame(height: 50, alignment: .top)
         }
         .frame(width: 140)
     }
 }
 
 struct NewsCard: View {
+    let news: News
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             RoundedRectangle(cornerRadius: 15)
                 .fill(Color.gray.opacity(0.2))
-                .frame(width: 140, height: 140)
+                .frame(width: 300, height: 300)
             VStack(alignment: .leading, spacing: 2){
-                Text("News")
+                Text(news.title)
                     .font(.system(size: 16, weight: .semibold))
+                    .lineLimit(2)
+                Text(news.content)
+                    .font(.system(size: 14))
+                    .foregroundColor(.gray)
+                    .lineLimit(2)
             }
         }
+        .frame(maxWidth: .infinity)
     }
 }
 #Preview {
