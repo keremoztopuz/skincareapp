@@ -127,18 +127,19 @@ struct SubscriptionView : View {
                                         .padding(.leading, 12)
                                     
                                     Text("$9.99 per month")
-                                        .font(.system(size: 16, weight: .regular))
+                                        .font(.system(size: 16, weight: .bold))
                                         .padding(.top, 4)
                                         .frame(maxWidth: .infinity, alignment: .leading)
                                         .padding(.leading, 12)
                                     
                                     VStack(spacing: 8) {
-                                        featureRow(text: "Unlimited analysis")
-                                        featureRow(text: "Full skin insights (Acne, Eczema, Psoriasis, Wrinkles, Eyebags)")
-                                        featureRow(text: "Unlimited product recommendation")
-                                        featureRow(text: "Complete history & progress tracking")
+                                        featureRow(text: "Unlimited analysis", weight: .bold)
+                                        featureRow(text: "Full skin insights (Acne, Eczema, Psoriasis, Wrinkles, Eyebags)", weight: .bold)
+                                        featureRow(text: "Unlimited product recommendation", weight: .bold)
+                                        featureRow(text: "Complete history & progress tracking", weight: .bold)
                                     }
                                     .padding(.top, 12)
+                                    
                                 }
                                 Spacer()
                             }
@@ -191,14 +192,14 @@ struct SubscriptionView : View {
         }
     }
     // checkmarked text function
-    func featureRow(text: String) -> some View {
+    func featureRow(text: String, weight: Font.Weight = .regular) -> some View {
         HStack(spacing: 8) {
             Image(systemName: "checkmark")
                 .foregroundColor(Color(red:0.47, green: 0.11, blue: 0.17))
                 .font(.system(size: 16))
             
             Text(text)
-                .font(.system(size: 14, weight: .regular))
+                .font(.system(size: 14, weight: weight))
             
             Spacer()
         }

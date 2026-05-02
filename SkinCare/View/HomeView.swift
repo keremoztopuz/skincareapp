@@ -173,7 +173,7 @@ struct HomeView: View {
                         .padding(.horizontal, 20)
                     }
                 }
-                
+                // news horizontal list
                 VStack(alignment: .leading, spacing: 16) {
                     Text("News")
                         .font(.system(size: 24, weight: .bold))
@@ -191,7 +191,9 @@ struct HomeView: View {
                             }
                         }
                         .padding(.horizontal, 20)
+                        .scrollTargetLayout()
                     }
+                    .scrollTargetBehavior(.viewAligned)
                 }
                 
                 // bottom spacing
