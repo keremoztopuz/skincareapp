@@ -13,7 +13,6 @@ struct CameraView: View {
             mainColor.ignoresSafeArea()
             
             VStack(alignment: .leading, spacing: 12) {
-                // Header
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Face Analysis")
                         .font(.system(size: 34, weight: .bold))
@@ -27,16 +26,13 @@ struct CameraView: View {
                 
                 Spacer()
                 
-                // Analysis Frame
                 ZStack {
-                    // Camera Card
                     CameraPreview(session: vm.session)
                         .frame(width: 340, height: 420)
                         .cornerRadius(30)
                         .clipped()
                         .background(Color.gray.opacity(0.1))
                     
-                    // Perfect Corner Marks (5 units offset from the main card)
                     RoundedRectangle(cornerRadius: 35)
                         .stroke(secondaryColor, lineWidth: 4)
                         .frame(width: 350, height: 430)
@@ -58,12 +54,10 @@ struct CameraView: View {
                             }
                         )
                     
-                    // Dashed Oval
                     Ellipse()
                         .stroke(secondaryColor, style: StrokeStyle(lineWidth: 2, dash: [6]))
                         .frame(width: 220, height: 300)
                     
-                    // Center Icon
                     Image(systemName: "camera.fill")
                         .font(.system(size: 50))
                         .foregroundColor(secondaryColor.opacity(0.2))
@@ -72,7 +66,6 @@ struct CameraView: View {
                 
                 Spacer()
                 
-                // Analysis Button
                 Button(action: {
                     print("Analysis started")
                 }) {
@@ -95,6 +88,7 @@ struct CameraView: View {
             .padding(.horizontal, 24)
         }
         .onAppear { vm.checkPermission() }
+        .preferredColorScheme(.light)
     }
 }
 
@@ -102,18 +96,15 @@ struct CameraPreview: UIViewRepresentable {
     let session: AVCaptureSession
     
     func makeUIView(context: Context) -> UIView {
-        let view = UIView()
+        let view = UIView(frame: CGRect(x: 0, y: 0, width: 340, height: 420))
         let previewLayer = AVCaptureVideoPreviewLayer(session: session)
+        previewLayer.frame = view.frame
         previewLayer.videoGravity = .resizeAspectFill
         view.layer.addSublayer(previewLayer)
         return view
     }
     
-    func updateUIView(_ uiView: UIView, context: Context) {
-        if let layer = uiView.layer.sublayers?.first as? AVCaptureVideoPreviewLayer {
-            layer.frame = CGRect(x: 0, y: 0, width: 340, height: 420)
-        }
-    }
+    func updateUIView(_ uiView: UIView, context: Context) {}
 }
 
 #Preview {
