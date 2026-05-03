@@ -1,9 +1,13 @@
 import SwiftUI
+import AVFoundation
 
 struct CameraView: View {
+    @StateObject private var vm = CameraViewModel()
+    
     var body: some View {
         let mainColor = Color(red: 1.0, green: 0.97, blue: 0.97)
         let secondaryColor = Color(red: 0.47, green: 0.11, blue: 0.17)
+        let primaryText = Color(red: 0.1, green: 0.1, blue: 0.2)
         
         ZStack {
             mainColor.ignoresSafeArea()
@@ -13,7 +17,7 @@ struct CameraView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Face Analysis")
                         .font(.system(size: 34, weight: .bold))
-                        .foregroundColor(Color(red: 0.1, green: 0.1, blue: 0.2))
+                        .foregroundColor(primaryText)
                             
                     Text("Position your face within the oval frame")
                         .font(.system(size: 16, weight: .regular))
@@ -25,29 +29,34 @@ struct CameraView: View {
                 
                 // Analysis Frame
                 ZStack {
-                    // Background Card
-                    RoundedRectangle(cornerRadius: 30)
-                        .fill(Color.gray.opacity(0.1))
+                    // Camera Card
+                    CameraPreview(session: vm.session)
                         .frame(width: 340, height: 420)
+                        .cornerRadius(30)
+                        .clipped()
+                        .background(Color.gray.opacity(0.1))
                     
-                    // Corner Marks
-                    Group {
-                        // Top Left
-                        cornerMark(color: secondaryColor)
-                            .offset(x: -170, y: -210)
-                        // Top Right
-                        cornerMark(color: secondaryColor)
-                            .rotationEffect(.degrees(90))
-                            .offset(x: 170, y: -210)
-                        // Bottom Left
-                        cornerMark(color: secondaryColor)
-                            .rotationEffect(.degrees(-90))
-                            .offset(x: -170, y: 210)
-                        // Bottom Right
-                        cornerMark(color: secondaryColor)
-                            .rotationEffect(.degrees(180))
-                            .offset(x: 170, y: 210)
-                    }
+                    // Perfect Corner Marks (5 units offset from the main card)
+                    RoundedRectangle(cornerRadius: 35)
+                        .stroke(secondaryColor, lineWidth: 4)
+                        .frame(width: 350, height: 430)
+                        .mask(
+                            ZStack {
+                                VStack {
+                                    HStack {
+                                        Rectangle().frame(width: 60, height: 60)
+                                        Spacer()
+                                        Rectangle().frame(width: 60, height: 60)
+                                    }
+                                    Spacer()
+                                    HStack {
+                                        Rectangle().frame(width: 60, height: 60)
+                                        Spacer()
+                                        Rectangle().frame(width: 60, height: 60)
+                                    }
+                                }
+                            }
+                        )
                     
                     // Dashed Oval
                     Ellipse()
@@ -85,19 +94,24 @@ struct CameraView: View {
             }
             .padding(.horizontal, 24)
         }
+        .onAppear { vm.checkPermission() }
+    }
+}
+
+struct CameraPreview: UIViewRepresentable {
+    let session: AVCaptureSession
+    
+    func makeUIView(context: Context) -> UIView {
+        let view = UIView()
+        let previewLayer = AVCaptureVideoPreviewLayer(session: session)
+        previewLayer.videoGravity = .resizeAspectFill
+        view.layer.addSublayer(previewLayer)
+        return view
     }
     
-    // Helper for Corner Marks
-    func cornerMark(color: Color) -> some View {
-        ZStack(alignment: .topLeading) {
-            Rectangle()
-                .fill(color)
-                .frame(width: 40, height: 4)
-                .cornerRadius(2)
-            Rectangle()
-                .fill(color)
-                .frame(width: 4, height: 40)
-                .cornerRadius(2)
+    func updateUIView(_ uiView: UIView, context: Context) {
+        if let layer = uiView.layer.sublayers?.first as? AVCaptureVideoPreviewLayer {
+            layer.frame = CGRect(x: 0, y: 0, width: 340, height: 420)
         }
     }
 }
