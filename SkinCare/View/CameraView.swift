@@ -31,7 +31,7 @@ struct CameraView: View {
                         .frame(width: 340, height: 420)
                         .cornerRadius(30)
                         .clipped()
-                        .background(Color.gray.opacity(0.1))
+                        .background(Color.gray.opacity(0.05))
                     
                     RoundedRectangle(cornerRadius: 35)
                         .stroke(secondaryColor, lineWidth: 4)
@@ -87,7 +87,9 @@ struct CameraView: View {
             }
             .padding(.horizontal, 24)
         }
-        .onAppear { vm.checkPermission() }
+        .onAppear { 
+            vm.checkPermission() 
+        }
         .preferredColorScheme(.light)
     }
 }
@@ -96,15 +98,24 @@ struct CameraPreview: UIViewRepresentable {
     let session: AVCaptureSession
     
     func makeUIView(context: Context) -> UIView {
-        let view = UIView(frame: CGRect(x: 0, y: 0, width: 340, height: 420))
-        let previewLayer = AVCaptureVideoPreviewLayer(session: session)
-        previewLayer.frame = view.frame
-        previewLayer.videoGravity = .resizeAspectFill
-        view.layer.addSublayer(previewLayer)
+        let view = VideoPreviewView()
+        view.backgroundColor = .lightGray
+        view.videoPreviewLayer.session = session
+        view.videoPreviewLayer.videoGravity = .resizeAspectFill
         return view
     }
     
     func updateUIView(_ uiView: UIView, context: Context) {}
+    
+    class VideoPreviewView: UIView {
+        override class var layerClass: AnyClass {
+            return AVCaptureVideoPreviewLayer.self
+        }
+        
+        var videoPreviewLayer: AVCaptureVideoPreviewLayer {
+            return layer as! AVCaptureVideoPreviewLayer
+        }
+    }
 }
 
 #Preview {
