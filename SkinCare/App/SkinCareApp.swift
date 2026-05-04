@@ -16,7 +16,7 @@ struct SkinCareApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
-                
+                .preferredColorScheme(.light)
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
                 .environmentObject(appVM)
         }
