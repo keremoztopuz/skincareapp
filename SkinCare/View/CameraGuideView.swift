@@ -140,11 +140,11 @@ struct CameraGuideView: View {
                         }
                         .frame(height: 166)
                         VStack(alignment: .leading, spacing: 17) {
-                            BulletRow(text: "Don't move during the scan", icon: "checkmark.circle.fill", color: secondaryColor)
-                            BulletRow(text: "Don't wear heavy makeup", icon: "checkmark.circle.fill", color: secondaryColor)
-                            BulletRow(text: "Avoid shadows on your face", icon: "checkmark.circle.fill", color: secondaryColor)
-                            BulletRow(text: "Don't tilt your head", icon: "checkmark.circle.fill", color: secondaryColor)
-                            BulletRow(text: "Don't use filters or effects", icon: "checkmark.circle.fill", color: secondaryColor)
+                            BulletRow(text: "Don't move during the scan", icon: "xmark.circle.fill", color: secondaryColor)
+                            BulletRow(text: "Don't wear heavy makeup", icon: "xmark.circle.fill", color: secondaryColor)
+                            BulletRow(text: "Avoid shadows on your face", icon: "xmark.circle.fill", color: secondaryColor)
+                            BulletRow(text: "Don't tilt your head", icon: "xmark.circle.fill", color: secondaryColor)
+                            BulletRow(text: "Don't use filters or effects", icon: "xmark.circle.fill", color: secondaryColor)
                         }
                         .padding(.top, 8)
                     }
