@@ -3,6 +3,7 @@ import AVFoundation
 
 struct CameraView: View {
     @StateObject private var vm = CameraViewModel()
+    @AppStorage("hasSeenCameraGuide") private var hasSeenCameraGuide = false
     
     var body: some View {
         let mainColor = Color(red: 1.0, green: 0.97, blue: 0.97)
@@ -87,10 +88,13 @@ struct CameraView: View {
             }
             .padding(.horizontal, 24)
         }
-        .onAppear { 
-            vm.checkPermission() 
+        .onAppear {
+            vm.checkPermission()
         }
         .preferredColorScheme(.light)
+        .fullScreenCover(isPresented: .constant(true)) {
+            CameraGuideView()
+        }
     }
 }
 
