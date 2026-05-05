@@ -6,6 +6,7 @@
 - Kullanici kodu kendisi yazmak ve ogrenmek istiyor — hayatinda hic SwiftUI yazmamis birisine anlatir gibi acikla
 - Kullanici onayi olmadan dosya olusturma, duzenleme yapma
 - **Her islem oncesi dosyanin guncel halini oku** — aciklama veya degisiklik yapmadan once mutlaka dosyaya girip son durumu kontrol et
+- **Git Workflow:** Her dosya değişikliği için ayrı ayrı commit ve mesaj kullanılacaktır (toplu commit yapılmayacak).
 - **Commit mesajlarında "co-authorized by Gemini", "Claude", "Codex" gibi ifadeler ASLA kullanma**
 - **Mimari Karar:** Projede `ObservableObject` ve `@Published` kullanılacaktır. Kod yapısını modernize etmek yerine stabiliteye odaklanılacaktır.
 
