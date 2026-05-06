@@ -31,7 +31,7 @@ struct MainTabView: View {
                 }
             MoreView()
                 .tabItem {
-                    Label("More", systemImage: "ellipsis")
+                    Label("Profile", systemImage: "person")
                 }
         }
         .tint(Color(tintColor))
