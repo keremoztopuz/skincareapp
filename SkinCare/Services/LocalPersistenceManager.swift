@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import CoreData
+internal import CoreData
 
 class LocalPersistenceManager {
     static let shared = LocalPersistenceManager()

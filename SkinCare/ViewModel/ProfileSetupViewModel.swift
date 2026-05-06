@@ -7,7 +7,7 @@
 
 import Foundation
 import SwiftUI
-import CoreData
+internal import CoreData
 internal import Combine
 
 class ProfileSetupViewModel: ObservableObject {
