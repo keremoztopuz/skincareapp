@@ -11,6 +11,7 @@ import SwiftUI
 struct CameraGuideView: View {
     @AppStorage("hasSeenCameraGuide") private var hasSeenCameraGuide = false
     @State private var isPulsing = false
+    @Environment(\.dismiss) var dismiss
 
     var body: some View {
         let mainColor = Color(red: 1.0, green: 0.97, blue: 0.97)
@@ -158,6 +159,7 @@ struct CameraGuideView: View {
             
             Button(action: {
                 hasSeenCameraGuide = true
+                dismiss()
             }) {
                 Text("Next")
                     .font(.system(size: 18, weight: .bold))
