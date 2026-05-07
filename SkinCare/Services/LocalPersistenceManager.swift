@@ -30,7 +30,7 @@ class LocalPersistenceManager {
         }
     }
     // Analysis Records
-    func saveAnalysisRecord(condition: String, confidence: Double, date: Date, drynessScore: Double, inflammationScore: Double, oilinessScore: Double, overallScore: Double, userFeedback: Bool) {
+    func saveAnalysisRecord(condition: String, confidence: Double, date: Date, drynessScore: Double, inflammationScore: Double, oilinessScore: Double, overallScore: Double, userFeedback: Bool, acneScore: Double, eczemaScore: Double, psoriasisScore: Double, imageData: Data?) {
         let record = AnalysisRecord(context: context)
         record.condition = condition
         record.confidence = confidence
