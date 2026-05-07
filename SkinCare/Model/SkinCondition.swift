@@ -12,8 +12,9 @@ enum SkinCondition: String, Codable, CaseIterable, Identifiable{
     case acne
     case eczema
     case psoriasis
-    case ben_Lezyon
-    case healthy
+    case wrinkles
+    case eyebags
+    
     
     var id : String { self.rawValue }
     
@@ -26,10 +27,10 @@ enum SkinCondition: String, Codable, CaseIterable, Identifiable{
             return "Cilt bariyerini güçlendiren seramidli kremler kullanın. Sıcak sudan ve parfümlü ürünlerden kaçının."
         case .psoriasis:
             return "Yoğun nemlendiriciler ve pullanma karşıtı içerikler kullanın. Mutlaka uzman bir dermatoloğa danışın."
-        case .ben_Lezyon:
-            return "Mevcut benlerinizdeki asimetri, renk değişimi veya büyüme durumunu gözlemleyin. Şüpheli durumlarda doktora başvurun."
-        case .healthy:
-            return "Cildiniz sağlıklı görünüyor! Mevcut bariyeri korumak için güneş kremini ihmal etmeyin."
+        case .wrinkles:
+            return "Retinol ve peptid içerikli ürünler kullanın. Cildinizi güneşten koruyun ve bol su tüketin."
+        case .eyebags:
+            return "Soğuk kompres uygulayın ve kafein içeren göz altı kremleri tercih edin. Uyku düzeninize dikkat edin."
         }
     }
 }
