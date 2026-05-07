@@ -20,7 +20,8 @@ class RecentsViewModel: ObservableObject {
     }
     
     func fetchRecords() {
-        records = LocalPersistenceManager.shared.fetchAnalysisRecords()
+        let unsorted = LocalPersistenceManager.shared.fetchAnalysisRecords()
+        records = mergeSort(unsorted)
 
         // TEST: preview için mock data — sonra sil
         if records.isEmpty {
@@ -43,6 +44,49 @@ class RecentsViewModel: ObservableObject {
 
             records = [r1, r2]
         }
+    }
+    
+    func mergeSort(_ array: [AnalysisRecord]) -> [AnalysisRecord] {
+        // if array has 1 or 0 index its already sorted
+        if array.count <= 1 {
+            return array
+        }
+        // split half
+        let mid = array.count / 2
+        let left = Array(array[0..<mid])
+        let right = Array(array[mid..<array.count])
+        // order recursively
+        let sortedLeft = mergeSort(left)
+        let sortedRight = mergeSort(right)
+        
+        return merge(sortedLeft, sortedRight)
+    }
+    
+    func merge(_ left: [AnalysisRecord], _ right: [AnalysisRecord]) -> [AnalysisRecord] {
+        var result: [AnalysisRecord] = []
+        var i = 0 // left array pointer
+        var j = 0 // right array pointer
+        
+        // take the lowest from two array
+        while i < left.count && j < right.count {
+            if left[i].overallScore >= right[j].overallScore {
+                result.append(left[i])
+                i += 1
+            } else {
+                result.append(right[j])
+                j += 1
+            }
+        }
+        // add lasts
+        while i < left.count {
+            result.append(left[i])
+            i += 1
+        }
+        while j < right.count {
+            result.append(right[j])
+            j += 1
+        }
+        return result
     }
     
 }
