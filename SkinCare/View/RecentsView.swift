@@ -27,7 +27,7 @@ struct RecentsView: View {
                                     .padding(.horizontal, 20)
                                 
                                 ForEach(vm.records, id: \.self) { record in
-                                    NavigationLink(destination: Text("Result View for \(record.condition ?? "")")) {
+                                    NavigationLink(destination: ResultView(record: record, isFromRecents: true)) {
                                         AnalysisCard(record: record)
                                     }
                                     .buttonStyle(PlainButtonStyle())
@@ -49,14 +49,14 @@ struct AnalysisCard: View {
     
     var body: some View {
         HStack(spacing: 16) {
-            // MARK: - Image Section (Small and centered on the left)
+            // MARK: - Image Section
             ZStack {
                 if let imageData = record.imageData, let uiImage = UIImage(data: imageData) {
                     Image(uiImage: uiImage)
                         .resizable()
                         .scaledToFill()
                 } else {
-                    Image("guidegood1") // Placeholder
+                    Image("guidegood1") // placeholder for image
                         .resizable()
                         .scaledToFill()
                 }
@@ -66,7 +66,7 @@ struct AnalysisCard: View {
             .clipped()
             .padding(.leading, 12)
             
-            // MARK: - Info Section
+            // MARK: - Info Section : The most detected disease
             VStack(alignment: .leading, spacing: 8) {
                 HStack {
                     Text(record.date ?? Date(), style: .date)
@@ -108,7 +108,7 @@ struct AnalysisCard: View {
         .padding(.horizontal, 20)
     }
 }
-
+// MARK: Score Bar: This view is for user skin results score bars
 struct ScoreBar: View {
     let label: String
     let value: Double
@@ -141,7 +141,7 @@ struct ScoreBar: View {
         }
     }
 }
-
+// MARK: Filter Menu : This view is for filtering the timeline of the recent scans
 struct FilterMenu: View {
     @Binding var selectedFilter: String
     
@@ -169,7 +169,7 @@ struct FilterMenu: View {
         }
     }
 }
-
+// MARK: Empty State View : This view is for new user whose not yet make any scans.
 struct EmptyStateView: View {
     let secondaryColor = Color(red: 0.47, green: 0.11, blue: 0.17)
     
