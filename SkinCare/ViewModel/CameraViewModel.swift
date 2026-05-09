@@ -2,9 +2,11 @@ import AVFoundation
 import SwiftUI
 internal import Combine
 
-class CameraViewModel: NSObject, ObservableObject {
+class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate {
     @Published var session = AVCaptureSession()
     @Published var isPermissionGranted = false
+    private var photoOutput = AVCapturePhotoOutput()
+    @Published var capturedImage: UIImage? = nil
     
     func checkPermission() {
         switch AVCaptureDevice.authorizationStatus(for: .video) {
@@ -39,12 +41,30 @@ class CameraViewModel: NSObject, ObservableObject {
             if session.canAddInput(input) {
                 session.addInput(input)
             }
+            if session.canAddOutput(photoOutput) {
+                session.addOutput(photoOutput)
+            }
+            
             session.commitConfiguration()
             DispatchQueue.global(qos: .background).async {
                 self.session.startRunning()
             }
         } catch {
             print("camera setup error: \(error.localizedDescription)")
+        }
+    }
+    
+    func capturePhoto() {
+        let settings = AVCapturePhotoSettings()
+        photoOutput.capturePhoto(with: settings, delegate: self)
+    }
+    
+    func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
+        // camera capture
+        guard let data = photo.fileDataRepresentation(),
+              let image = UIImage(data: data) else { return }
+        DispatchQueue.main.async {
+            self.capturedImage = image
         }
     }
 }
