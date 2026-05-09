@@ -5,6 +5,7 @@ struct CameraView: View {
     @StateObject private var vm = CameraViewModel()
     @AppStorage("hasSeenCameraGuide") private var hasSeenCameraGuide = false
     @State private var showGuide = false
+    @State private var showResult = false
     
     var body: some View {
         let mainColor = Color(red: 1.0, green: 0.97, blue: 0.97)
@@ -19,7 +20,7 @@ struct CameraView: View {
                     Text("Face Analysis")
                         .font(.system(size: 34, weight: .bold))
                         .foregroundColor(primaryText)
-                            
+                    
                     Text("Position your face within the oval frame")
                         .font(.system(size: 16, weight: .regular))
                         .foregroundColor(.gray)
@@ -69,7 +70,7 @@ struct CameraView: View {
                 Spacer()
                 
                 Button(action: {
-                    print("Analysis started")
+                    vm.capturePhoto()
                 }) {
                     HStack(spacing: 12) {
                         Image(systemName: "viewfinder")
@@ -99,29 +100,35 @@ struct CameraView: View {
         .fullScreenCover(isPresented: $showGuide) {
             CameraGuideView()
         }
-    }
-}
-
-struct CameraPreview: UIViewRepresentable {
-    let session: AVCaptureSession
-    
-    func makeUIView(context: Context) -> UIView {
-        let view = VideoPreviewView()
-        view.backgroundColor = .lightGray
-        view.videoPreviewLayer.session = session
-        view.videoPreviewLayer.videoGravity = .resizeAspectFill
-        return view
+        .onChange(of: vm.capturedImage) {
+            if vm.capturedImage != nil { showResult = true}
+        }
+        .fullScreenCover(isPresented: $showResult) {
+            ResultView(record: nil, isFromRecents: false)
+        }
     }
     
-    func updateUIView(_ uiView: UIView, context: Context) {}
-    
-    class VideoPreviewView: UIView {
-        override class var layerClass: AnyClass {
-            return AVCaptureVideoPreviewLayer.self
+    struct CameraPreview: UIViewRepresentable {
+        let session: AVCaptureSession
+        
+        func makeUIView(context: Context) -> UIView {
+            let view = VideoPreviewView()
+            view.backgroundColor = .lightGray
+            view.videoPreviewLayer.session = session
+            view.videoPreviewLayer.videoGravity = .resizeAspectFill
+            return view
         }
         
-        var videoPreviewLayer: AVCaptureVideoPreviewLayer {
-            return layer as! AVCaptureVideoPreviewLayer
+        func updateUIView(_ uiView: UIView, context: Context) {}
+        
+        class VideoPreviewView: UIView {
+            override class var layerClass: AnyClass {
+                return AVCaptureVideoPreviewLayer.self
+            }
+            
+            var videoPreviewLayer: AVCaptureVideoPreviewLayer {
+                return layer as! AVCaptureVideoPreviewLayer
+            }
         }
     }
 }
