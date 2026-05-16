@@ -13,13 +13,15 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
     
     // ML Model Scores
     @Published var currentAcneScore: Double = 0
-    @Published var currentEczemaScore: Double = 0
+    @Published var currentRednessScore: Double = 0
     @Published var currentPsoriasisScore: Double = 0
     
     @Published var wrinkleScore: Double = 0
     @Published var eyebagScore: Double = 0
     @Published var analysisRecord: AnalysisRecord? = nil
     @Published var isAnalyzing: Bool = false
+    
+    private let engine = ScoringEngine()
     
     func checkPermission() {
         switch AVCaptureDevice.authorizationStatus(for: .video) {
@@ -41,7 +43,6 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
     }
     
     func setupSession() {
-        // camera setup logic
         session.beginConfiguration()
         
         guard let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front) else
@@ -58,6 +59,15 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
                 session.addOutput(photoOutput)
             }
             
+            if device.isFocusModeSupported(.continuousAutoFocus) {
+                try device.lockForConfiguration()
+                device.focusMode = .continuousAutoFocus
+                if device.isSubjectAreaChangeMonitoringEnabled {
+                    device.isSubjectAreaChangeMonitoringEnabled = true
+                }
+                device.unlockForConfiguration()
+            }
+            
             session.commitConfiguration()
             DispatchQueue.global(qos: .background).async {
                 self.session.startRunning()
@@ -68,32 +78,67 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
     }
     
     func capturePhoto() {
+        // 1. Clear previous data and signal START immediately to trigger UI animation
+        DispatchQueue.main.async {
+            self.capturedImage = nil
+            self.analysisRecord = nil
+            self.isAnalyzing = true 
+        }
         let settings = AVCapturePhotoSettings()
         photoOutput.capturePhoto(with: settings, delegate: self)
     }
     
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
         guard let data = photo.fileDataRepresentation(),
-              let originalImage = UIImage(data: data) else { return }
-        
-        DispatchQueue.main.async {
-            self.isAnalyzing = true
+              let originalImage = UIImage(data: data) else { 
+            DispatchQueue.main.async { self.isAnalyzing = false }
+            return 
         }
 
-        detectFaceAndCrop(originalImage) { croppedImage in
-            let imageToAnalyze = croppedImage ?? originalImage
+        // Show the captured frame immediately in the "freeze" state with correct orientation
+        DispatchQueue.main.async {
+            self.capturedImage = originalImage.fixedOrientation()
+        }
+
+        // 2. Process on background queue and FORCE a 3-second delay for the animation
+        Task {
+            let startTime = Date()
             
-            DispatchQueue.main.async {
-                self.capturedImage = imageToAnalyze
+            // Correct orientation for analysis
+            guard let normalizedImage = originalImage.fixedOrientation() else {
+                await MainActor.run { self.isAnalyzing = false }
+                return
             }
             
+            let croppedImage = await withCheckedContinuation { continuation in
+                detectFaceAndCrop(normalizedImage) { cropped in
+                    continuation.resume(returning: cropped)
+                }
+            }
+            
+            let imageToAnalyze = croppedImage ?? normalizedImage
+            
+            // Perform analysis
             let group = DispatchGroup()
             group.enter()
             self.analyzeWithCoreML(imageToAnalyze, group: group)
             group.enter()
             self.analyzeWithVision(imageToAnalyze, group: group)
-
-            group.notify(queue: .main) {
+            
+            await withCheckedContinuation { continuation in
+                group.notify(queue: .global()) {
+                    continuation.resume()
+                }
+            }
+            
+            // Wait to ensure the 3s scanning animation completes
+            let elapsed = Date().timeIntervalSince(startTime)
+            if elapsed < 3.0 {
+                try? await Task.sleep(nanoseconds: UInt64((3.0 - elapsed) * 1_000_000_000))
+            }
+            
+            await MainActor.run {
+                self.capturedImage = imageToAnalyze
                 self.buildRecord()
             }
         }
@@ -114,9 +159,8 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
             
             let width = CGFloat(cgImage.width)
             let height = CGFloat(cgImage.height)
-            
-            // Vision coordinates are normalized (0-1) and origin is bottom-left
             let box = face.boundingBox
+            
             let rect = CGRect(
                 x: box.origin.x * width,
                 y: (1 - box.origin.y - box.height) * height,
@@ -124,12 +168,12 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
                 height: box.height * height
             )
             
-            // Add padding (20%) to capture more skin area around the face
-            let padding = rect.width * 0.2
+            let padding = rect.width * 0.4
             let paddedRect = rect.insetBy(dx: -padding, dy: -padding)
             
             if let faceImage = cgImage.cropping(to: paddedRect) {
-                completion(UIImage(cgImage: faceImage, scale: image.scale, orientation: image.imageOrientation))
+                // Return upright image (already normalized)
+                completion(UIImage(cgImage: faceImage))
             } else {
                 completion(nil)
             }
@@ -143,7 +187,6 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
         let inputSize = 384
         let mean: [Float] = [0.5942, 0.4433, 0.3871]
         let std: [Float]  = [0.2427, 0.2027, 0.1930]
-        // class order from training: Acne=0, Eczema=1, Psoriasis=2, Ben_Lezyon=3, Healthy=4 (ben_lezyon and healthy are cancelled)
 
         guard let resized = image.resizedForML(to: inputSize),
               let cgImage = resized.cgImage else {
@@ -178,31 +221,38 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
 
         let model: skin_disease
         do { model = try skin_disease(configuration: MLModelConfiguration()) }
-        catch { NSLog("ML model yüklenemedi: %@", error.localizedDescription); group.leave(); return }
+        catch { 
+            NSLog("ML model could not be loaded: %@", error.localizedDescription)
+            group.leave()
+            return 
+        }
 
         let output: skin_diseaseOutput
         do { output = try model.prediction(image: tensor) }
-        catch { NSLog("ML prediction hata: %@", error.localizedDescription); group.leave(); return }
+        catch { 
+            NSLog("ML prediction error: %@", error.localizedDescription)
+            group.leave()
+            return 
+        }
 
         let out = output.var_763
         func sigmoid(_ x: Double) -> Double { 1.0 / (1.0 + exp(-x)) * 100 }
         let acneLogit      = Double(truncating: out[[0, 0] as [NSNumber]])
-        let eczemaLogit    = Double(truncating: out[[0, 1] as [NSNumber]])
+        let rednessLogit    = Double(truncating: out[[0, 1] as [NSNumber]])
         let psoriasisLogit = Double(truncating: out[[0, 2] as [NSNumber]])
-        NSLog("ML logits → acne:%.3f eczema:%.3f psoriasis:%.3f", acneLogit, eczemaLogit, psoriasisLogit)
 
         let acne      = sigmoid(acneLogit)
-        let eczema    = sigmoid(eczemaLogit)
+        let redness    = sigmoid(rednessLogit)
         let psoriasis = sigmoid(psoriasisLogit)
 
-        let condition = ["Acne": acne, "Eczema": eczema, "Psoriasis": psoriasis]
-            .max(by: { $0.value < $1.value })?.key ?? "Healthy"
+        let condition = ["Acne": acne, "Redness": redness, "Psoriasis": psoriasis]
+        let top = condition.max(by: { $0.value < $1.value })
 
         DispatchQueue.main.async {
-            self.currentAcneScore    = acne
-            self.currentEczemaScore  = eczema
+            self.currentAcneScore      = acne
+            self.currentRednessScore  = redness
             self.currentPsoriasisScore = psoriasis
-            self.detectedCondition   = condition
+            self.detectedCondition = (top?.value ?? 0) > 40 ? top?.key : "Healthy"
             group.leave()
         }
     }
@@ -214,15 +264,20 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
         }
         
         let request = VNDetectFaceLandmarksRequest { request, error in
+            defer { group.leave() }
             guard let results = request.results as? [VNFaceObservation],
                   let face = results.first else { return }
-                self.calculateWrinkleScore(ciImage: ciImage, face: face)
-                self.calculateEyebagScore(ciImage: ciImage, face: face)
+            self.calculateWrinkleScore(ciImage: ciImage, face: face)
+            self.calculateEyebagScore(ciImage: ciImage, face: face)
         }
         
         let handler = VNImageRequestHandler(ciImage: ciImage)
-        try? handler.perform([request])
-        group.leave()
+        do {
+            try handler.perform([request])
+        } catch {
+            NSLog("Vision request error: %@", error.localizedDescription)
+            group.leave()
+        }
     }
 
     func calculateWrinkleScore(ciImage: CIImage, face: VNFaceObservation) {
@@ -247,7 +302,6 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
     
     func calculateEyebagScore(ciImage: CIImage, face: VNFaceObservation) {
         let imageSize = ciImage.extent
-        // Vision koordinatı bottom-left origin. Göz altı = yüz bounding box'ın alt yarısının üst kısmı (~%55-70)
         let eyeY = (face.boundingBox.minY + face.boundingBox.height * 0.55) * imageSize.height
         let eyeAreaRect = CGRect(
             x: face.boundingBox.minX * imageSize.width,
@@ -268,13 +322,13 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
     func buildRecord() {
         let profile = LocalPersistenceManager.shared.fetchUserProfile()
         let skinType = profile?.skinType?.lowercased() ?? "normal"
-        
-        let engine = ScoringEngine()
-        let skinScores = engine.calculateScore(acne: currentAcneScore / 100, eczema: currentEczemaScore / 100, psoriasis: currentPsoriasisScore / 100, benLezyon: 0.0, healthy: 0.0, skinType: skinType)
+        let skinScores = engine.calculateScore(acne: currentAcneScore / 100, redness: currentRednessScore / 100, psoriasis: currentPsoriasisScore / 100, benLezyon: 0.0, healthy: 0.0, skinType: skinType)
+
+        let imageData = capturedImage?.jpegData(compressionQuality: 0.8)
         
         let record = LocalPersistenceManager.shared.saveAnalysisRecord(
             condition: detectedCondition ?? "Healthy",
-            confidence: 1.0,
+            confidence: 0,
             wrinkleScore: wrinkleScore,
             eyebagScore: eyebagScore,
             date: Date(),
@@ -284,13 +338,27 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
             overallScore: skinScores.overallScore,
             userFeedback: false,
             acneScore: currentAcneScore,
-            eczemaScore: currentEczemaScore,
+            eczemaScore: currentRednessScore,
             psoriasisScore: currentPsoriasisScore,
-            imageData: capturedImage?.jpegData(compressionQuality: 0.8)
+            imageData: imageData
         )
+
         SubscriptionManager.shared.recordScan()
         self.isAnalyzing = false
         self.analysisRecord = record
+    }
+    
+    func resetScanner() {
+        DispatchQueue.main.async {
+            self.capturedImage = nil
+            self.analysisRecord = nil
+            self.isAnalyzing = false
+        }
+        if !session.isRunning {
+            DispatchQueue.global(qos: .background).async {
+                self.session.startRunning()
+            }
+        }
     }
 }
 
@@ -301,6 +369,15 @@ extension UIImage {
         defer { UIGraphicsEndImageContext() }
         draw(in: CGRect(origin: .zero, size: s))
         return UIGraphicsGetImageFromCurrentImageContext()
+    }
+    
+    func fixedOrientation() -> UIImage? {
+        if self.imageOrientation == .up { return self }
+        UIGraphicsBeginImageContextWithOptions(self.size, false, self.scale)
+        self.draw(in: CGRect(origin: .zero, size: self.size))
+        let normalizedImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return normalizedImage
     }
 }
 
@@ -321,4 +398,3 @@ extension CGImage {
         return count > 0 ? (total / Double(count)) / 255.0 : 0
     }
 }
-
