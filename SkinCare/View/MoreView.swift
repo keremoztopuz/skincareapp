@@ -2,34 +2,36 @@ import SwiftUI
 
 struct MoreView: View {
     @StateObject private var vm = MoreViewModel()
+    @State private var showEditProfile = false
+    @State private var showUpgrade = false
+
     var body: some View {
-        let mainColor = Color(red: 1.0, green: 0.97, blue:
-          0.97)
-        let secondaryColor = Color(red: 0.47, green: 0.11,
-          blue: 0.17)
+        let mainColor = Color(red: 1.0, green: 0.97, blue: 0.97)
+        let secondaryColor = Color(red: 0.47, green: 0.11, blue: 0.17)
+        let primaryText = Color(red: 0.1, green: 0.1, blue: 0.2)
         let outerColor = Color(red: 1.0, green: 0.87, blue: 0.87)
         
         ZStack {
             mainColor.ignoresSafeArea()
             
             ScrollView(.vertical, showsIndicators: false) {
-                VStack(alignment: .leading, spacing: 20) {
+                VStack(alignment: .leading, spacing: 32) {
                     HStack {
                         VStack(alignment: .leading, spacing: 4) {
-                            
                             Text("Profile")
-                                .font(.system(size: 28, weight: .bold))
+                                .font(.system(size: 34, weight: .bold))
+                                .foregroundColor(primaryText)
                             
                             Text("Manage your information")
-                                .font(.system(size: 15))
+                                .font(.system(size: 16, weight: .regular))
                                 .foregroundColor(.gray)
                         }
                         Spacer()
-                        Button(action: {}) {
+                        Button(action: { showEditProfile = true }) {
                             Image(systemName: "pencil")
-                                .font(.system(size: 18))
+                                .font(.system(size: 18, weight: .bold))
                                 .foregroundColor(.white)
-                                .frame(width: 40, height: 40)
+                                .frame(width: 44, height: 44)
                                 .background(secondaryColor)
                                 .cornerRadius(12)
                         }
@@ -42,103 +44,212 @@ struct MoreView: View {
                         ZStack {
                             Circle()
                                 .fill(outerColor)
-                                .frame(width: 120, height: 120)
+                                .frame(width: 130, height: 130)
+                                .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 5)
                             
                             Circle()
                                 .fill(secondaryColor)
-                                .frame(width: 80, height: 80)
+                                .frame(width: 90, height: 90)
+                                .shadow(color: secondaryColor.opacity(0.3), radius: 10, x: 0, y: 5)
                             
-                            Image(systemName: "person")
-                                .font(.system(size: 32))
+                            Image(systemName: "person.fill")
+                                .font(.system(size: 36))
                                 .foregroundColor(.white)
                         }
                         Spacer()
                     }
                     
-                    Text("Personal Information")
-                        .font(.system(size: 20, weight: .bold))
-                        .padding(.horizontal, 20)
+                    VStack(alignment: .leading, spacing: 16) {
+                        Text("Personal Information")
+                            .font(.system(size: 18, weight: .bold))
+                            .foregroundColor(primaryText)
+                            .padding(.horizontal, 20)
+                        
+                        VStack(spacing: 12) {
+                            Button { showEditProfile = true } label: { InfoCard(label: "Full Name", value: vm.userName) }
+                                .buttonStyle(.plain)
+                            Button { showEditProfile = true } label: { InfoCard(label: "Age", value: vm.userAge) }
+                                .buttonStyle(.plain)
+                            Button { showEditProfile = true } label: { InfoCard(label: "Gender", value: vm.userGender) }
+                                .buttonStyle(.plain)
+                            Button { showEditProfile = true } label: { InfoCard(label: "Skin Type", value: vm.userSkinType) }
+                                .buttonStyle(.plain)
+                        }
+                    }
                     
-                    InfoCard(label: "Name", value: vm.userName)
-                    InfoCard(label: "Age", value: vm.userAge)
-                    InfoCard(label: "Gender", value: vm.userGender)
-                    InfoCard(label: "Skintype", value: vm.userSkinType)
-                    
-                    VStack(alignment: .leading, spacing: 14) {
-                        HStack {
-                            Image(systemName: "crown.fill")
-                                .font(.system(size: 22))
-                                .foregroundColor(secondaryColor)
-                                .frame(width: 44, height: 44)
-                                .background(outerColor)
-                                .cornerRadius(12)
+                    VStack(alignment: .leading, spacing: 20) {
+                        HStack(spacing: 16) {
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 12)
+                                    .fill(mainColor)
+                                    .frame(width: 48, height: 48)
+                                
+                                Image(systemName: "crown.fill")
+                                    .font(.system(size: 22))
+                                    .foregroundColor(secondaryColor)
+                            }
 
                             VStack(alignment: .leading, spacing: 2) {
                                 Text("Go Premium")
-                                    .font(.system(size: 18, weight: .bold))
+                                    .font(.system(size: 20, weight: .bold))
                                     .foregroundColor(.white)
-                                Text("Unlock all features")
+                                Text("Unlock all advanced features")
                                     .font(.system(size: 14))
                                     .foregroundColor(.white.opacity(0.8))
                             }
                         }
 
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("• Unlimited skin analyses")
-                            Text("• Advanced AI insights")
-                            Text("• Personalized recommendations")
-                            Text("• Full history & progress tracking")
+                        VStack(alignment: .leading, spacing: 10) {
+                            PremiumFeatureRow(text: "Unlimited skin analyses")
+                            PremiumFeatureRow(text: "Advanced AI insights")
+                            PremiumFeatureRow(text: "Personalized recommendations")
+                            PremiumFeatureRow(text: "Full history & progress tracking")
                         }
-                        .font(.system(size: 14, weight: .semibold))
-                        .foregroundColor(.white.opacity(0.9))
 
-                        Button(action: {}) {
+                        Button(action: { showUpgrade = true }) {
                             Text("Upgrade Now")
-                                .font(.system(size: 16, weight: .semibold))
+                                .font(.system(size: 16, weight: .bold))
                                 .foregroundColor(secondaryColor)
                                 .frame(maxWidth: .infinity)
-                                .padding(.vertical, 14)
-                                .background(mainColor)
-                                .cornerRadius(12)
+                                .padding(.vertical, 18)
+                                .background(Color.white)
+                                .cornerRadius(16)
+                                .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 3)
                         }
+                        .padding(.top, 10)
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(20)
+                    .padding(24)
                     .background(secondaryColor)
-                    .cornerRadius(16)
+                    .cornerRadius(25)
                     .padding(.horizontal, 20)
+                    .shadow(color: secondaryColor.opacity(0.3), radius: 15, x: 0, y: 8)
 
                     Color.clear.frame(height: 20)
-                                        
                 }
             }
+        }
+        .sheet(isPresented: $showEditProfile, onDismiss: { vm.loadProfile() }) {
+            ProfileEditSheet()
+        }
+        .sheet(isPresented: $showUpgrade) {
+            UpgradeSheetView()
+        }
+    }
+}
+
+struct ProfileEditSheet: View {
+    @Environment(\.dismiss) var dismiss
+    @State private var name: String = ""
+    @State private var age: String = ""
+    @State private var gender: String = ""
+    @State private var skinType: String = ""
+
+    let secondaryColor = Color(red: 0.47, green: 0.11, blue: 0.17)
+    let primaryText    = Color(red: 0.1,  green: 0.1,  blue: 0.2)
+    let mainColor      = Color(red: 1.0,  green: 0.97, blue: 0.97)
+
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                mainColor.ignoresSafeArea()
+                ScrollView {
+                    VStack(spacing: 16) {
+                        editField(label: "Full Name",  text: $name)
+                        editField(label: "Age Range",  text: $age)
+                        editField(label: "Gender",     text: $gender)
+                        editField(label: "Skin Type",  text: $skinType)
+                    }
+                    .padding(20)
+                }
+            }
+            .navigationTitle("Edit Profile")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                        .foregroundColor(secondaryColor)
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        LocalPersistenceManager.shared.saveUserProfile(
+                            name: name, skinType: skinType,
+                            ageRange: age, gender: gender, knownIssues: ""
+                        )
+                        dismiss()
+                    }
+                    .foregroundColor(secondaryColor)
+                    .fontWeight(.bold)
+                }
+            }
+        }
+        .onAppear {
+            let profile = LocalPersistenceManager.shared.fetchUserProfile()
+            name     = profile?.name      ?? ""
+            age      = profile?.ageRange  ?? ""
+            gender   = profile?.gender    ?? ""
+            skinType = profile?.skinType  ?? ""
+        }
+    }
+
+    @ViewBuilder
+    private func editField(label: String, text: Binding<String>) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(label)
+                .font(.system(size: 13, weight: .medium))
+                .foregroundColor(.gray)
+            TextField(label, text: text)
+                .font(.system(size: 16))
+                .padding(.horizontal, 16)
+                .padding(.vertical, 14)
+                .background(Color.white)
+                .cornerRadius(12)
+                .shadow(color: Color.black.opacity(0.04), radius: 5, x: 0, y: 2)
+        }
+    }
+}
+
+struct PremiumFeatureRow: View {
+    let text: String
+    var body: some View {
+        HStack(spacing: 10) {
+            Image(systemName: "checkmark.circle.fill")
+                .font(.system(size: 14))
+                .foregroundColor(.white.opacity(0.9))
+            Text(text)
+                .font(.system(size: 14, weight: .medium))
+                .foregroundColor(.white.opacity(0.9))
         }
     }
 }
 
 struct InfoCard: View {
-      let label: String
-      let value: String
+    let label: String
+    let value: String
+    let primaryText = Color(red: 0.1, green: 0.1, blue: 0.2)
 
-      var body: some View {
-          VStack(alignment: .leading, spacing: 6) {
-              Text(label)
-                  .font(.system(size: 14))
-                  .foregroundColor(.gray)
-              Text(value)
-                  .font(.system(size: 18, weight: .semibold))
-                  .foregroundColor(Color(red: 0.1, green: 0.1,
-   blue: 0.2))
-          }
-          .frame(maxWidth: .infinity, alignment: .leading)
-          .padding(16)
-          .background(Color.white)
-          .cornerRadius(12)
-          .shadow(color: Color.black.opacity(0.04), radius: 4,
-   x: 0, y: 2)
-          .padding(.horizontal, 20)
-      }
-  }
+    var body: some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(label)
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundColor(.gray)
+                Text(value)
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundColor(primaryText)
+            }
+            Spacer()
+            Image(systemName: "chevron.right")
+                .font(.system(size: 14, weight: .bold))
+                .foregroundColor(.gray.opacity(0.5))
+        }
+        .padding(.horizontal, 20)
+        .padding(.vertical, 16)
+        .background(Color.white)
+        .cornerRadius(16)
+        .shadow(color: Color.black.opacity(0.04), radius: 10, x: 0, y: 5)
+        .padding(.horizontal, 20)
+    }
+}
 
 #Preview {
     MoreView()
