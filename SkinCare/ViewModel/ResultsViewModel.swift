@@ -13,43 +13,44 @@ class ResultsViewModel: ObservableObject {
     @Published var record: AnalysisRecord?
     @Published var recommendation: [String] = []
     @Published var recommendProduct: [Product] = []
+    @Published var isLoading: Bool = false
     
     init(record: AnalysisRecord?) {
         self.record = record
-        generateRecommendations()
+        Task {
+            await generateRecommendations()
+        }
     }
     
     //MARK: Personalized recommendations algorithm
     
-    func generateRecommendations() {
-        // algorithm will be there
-        
+    @MainActor
+    func generateRecommendations() async {
         guard let condition = record?.condition else {
             recommendation = ["Keep your skin hydrated and protected."]
-            recommendProduct = [
-                Product(id: UUID(), name: "CeraVe Cleanser", category: "Face Cleanser", imageName: "product1"),
-                Product(id: UUID(), name: "The Ordinary Niacinamide", category: "Serum", imageName: "product3")
-            ]
+            // Default products if no condition
             return
         }
         
-        // simple match up for now
+        isLoading = true
+        
+        // simple text recommendation logic (could also be in Supabase)
         switch condition {
         case "Acne":
             recommendation = ["Use salicylic acid cleanser."]
-            recommendProduct = [
-                Product(id: UUID(), name: "CeraVe Cleanser", category: "Face Cleanser", imageName: "product1"),
-                Product(id: UUID(), name: "The Ordinary Niacinamide", category: "Serum", imageName: "product3")
-            ]
-        case "Eczema":
-            recommendation = ["Use ceramide-rich creams.", "Avoid hot showers."]
-            recommendProduct = [
-                Product(id: UUID(), name: "Bioderma Atoderm", category: "Moisturizer", imageName: "product5"),
-                Product(id: UUID(), name: "La Roche-Posay SPF", category: "Sunscreen", imageName: "product2")
-            ]
+        case "Redness":
+            recommendation = ["Use soothing products with Centella.", "Avoid extreme temperatures."]
         default:
             recommendation = ["Consult a dermatologist for a tailored routine."]
-            recommendProduct = []
         }
+        
+        do {
+            self.recommendProduct = try await SupabaseService.shared.fetchRecommendedProducts(for: condition)
+        } catch {
+            print("Failed to fetch recommended products: \(error.localizedDescription)")
+            // Fallback or empty state
+        }
+        
+        isLoading = false
     }
 }
