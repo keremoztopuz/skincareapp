@@ -18,6 +18,7 @@ struct CameraGuideView: View {
         let secondaryColor = Color(red: 0.47, green: 0.11, blue: 0.17)
         let outerColor = Color(red: 1.0, green: 0.87, blue: 0.87)
         VStack(spacing: 0) {
+            Spacer()
             VStack(spacing: 12) {
                 ZStack {
                     Circle()
