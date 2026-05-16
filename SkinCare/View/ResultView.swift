@@ -18,6 +18,12 @@ struct ResultView: View {
     
     let record: AnalysisRecord?
     let isFromRecents: Bool
+    @State private var showRecommendations = false
+    @State private var selectedProduct: Product? = nil
+    @State private var showProductDetail = false
+    @State private var showUpgrade = false
+
+    private var isPremium: Bool { SubscriptionManager.shared.isPremium }
     
     init(record: AnalysisRecord?, isFromRecents: Bool) {
         self.record = record
@@ -31,25 +37,23 @@ struct ResultView: View {
             
             ScrollView(.vertical, showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 32) {
-                    
-                    // MARK: - Navigation Header (Only from Recents)
-                    if isFromRecents {
-                        HStack {
-                            Button(action: { dismiss() }) {
-                                Image(systemName: "arrow.left")
-                                    .font(.system(size: 16, weight: .bold))
-                                    .foregroundColor(.white)
-                                    .padding(12)
-                                    .background(secondaryColor)
-                                    .clipShape(Circle())
-                                    .shadow(color: secondaryColor.opacity(0.3), radius: 5, x: 0, y: 3)
-                            }
-                            Spacer()
+
+                    // MARK: - Back Button
+                    HStack {
+                        Button(action: { dismiss() }) {
+                            Image(systemName: "arrow.left")
+                                .font(.system(size: 16, weight: .bold))
+                                .foregroundColor(.white)
+                                .padding(12)
+                                .background(secondaryColor)
+                                .clipShape(Circle())
+                                .shadow(color: secondaryColor.opacity(0.3), radius: 5, x: 0, y: 3)
                         }
-                        .padding(.horizontal, 20)
-                        .padding(.top, 10)
+                        Spacer()
                     }
-                    
+                    .padding(.horizontal, 20)
+                    .padding(.top, 10)
+
                     // MARK: - Scanned Image Section
                     VStack(alignment: .leading, spacing: 14) {
                         Text("Scanned Image")
@@ -94,18 +98,24 @@ struct ResultView: View {
                         
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: 16) {
-                                ResultBar(title: "Acne", score: record?.acneScore ?? 0, icon: "face.dashed", color: secondaryColor)
-                                ResultBar(title: "Eczema", score: record?.eczemaScore ?? 0, icon: "drop.fill", color: secondaryColor)
-                                ResultBar(title: "Wrinkles", score: record?.wrinkleScore ?? 0, icon: "sun.max.fill", color: secondaryColor)
-                                ResultBar(title: "Eyebags", score: record?.eyebagScore ?? 0, icon: "flame.fill", color: secondaryColor)
-                                ResultBar(title: "Psoriasis", score: record?.psoriasisScore ?? 0, icon: "face.smiling", color: secondaryColor)
+                                ResultBar(title: "Acne",     score: record?.acneScore    ?? 0, icon: "face.dashed",  color: secondaryColor)
+                                ResultBar(title: "Eczema",   score: record?.eczemaScore  ?? 0, icon: "drop.fill",    color: secondaryColor)
+                                if isPremium {
+                                    ResultBar(title: "Wrinkles",  score: record?.wrinkleScore   ?? 0, icon: "sun.max.fill",  color: secondaryColor)
+                                    ResultBar(title: "Eyebags",   score: record?.eyebagScore    ?? 0, icon: "flame.fill",    color: secondaryColor)
+                                    ResultBar(title: "Psoriasis", score: record?.psoriasisScore ?? 0, icon: "face.smiling",  color: secondaryColor)
+                                } else {
+                                    Button { showUpgrade = true } label: { lockedBar(title: "Wrinkles") }.buttonStyle(.plain)
+                                    Button { showUpgrade = true } label: { lockedBar(title: "Eyebags") }.buttonStyle(.plain)
+                                    Button { showUpgrade = true } label: { lockedBar(title: "Psoriasis") }.buttonStyle(.plain)
+                                }
                             }
                             .padding(.horizontal, 20)
                         }
                     }
                     
-                    // MARK: - Recommended Products (Only for Recents)
-                    if isFromRecents {
+                    // MARK: - Recommended Products
+                    if isFromRecents || showRecommendations {
                         VStack(alignment: .leading, spacing: 16) {
                             Text("Recommended Products")
                                 .font(.system(size: 18, weight: .bold))
@@ -114,8 +124,14 @@ struct ResultView: View {
                             
                             ScrollView(.horizontal, showsIndicators: false) {
                                 HStack(spacing: 16) {
-                                    ForEach(vm.recommendProduct) { product in
-                                        ProductCard(product: product)
+                                    ForEach(isPremium ? vm.recommendProduct : Array(vm.recommendProduct.prefix(2))) { product in
+                                        Button {
+                                            selectedProduct = product
+                                            showProductDetail = true
+                                        } label: {
+                                            ProductCard(product: product)
+                                        }
+                                        .buttonStyle(.plain)
                                     }
                                 }
                                 .padding(.horizontal, 20)
@@ -124,9 +140,9 @@ struct ResultView: View {
                     }
                     
                     // MARK: - Action Button (Only for Fresh Analysis)
-                    if !isFromRecents {
+                    if !isFromRecents && !showRecommendations {
                         Button(action: {
-                            print("Redirect to recommendations")
+                            withAnimation { showRecommendations = true }
                         }) {
                             HStack(spacing: 12) {
                                 Image(systemName: "sparkles")
@@ -152,6 +168,51 @@ struct ResultView: View {
             }
         }
         .navigationBarBackButtonHidden(true)
+        .sheet(isPresented: $showUpgrade) { UpgradeSheetView() }
+        .sheet(isPresented: $showProductDetail) {
+            if let product = selectedProduct {
+                NavigationStack {
+                    DetailView(type: .product(product))
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func lockedBar(title: String) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color.gray.opacity(0.15))
+                    .frame(width: 44, height: 44)
+                Image(systemName: "lock.fill")
+                    .font(.system(size: 18))
+                    .foregroundColor(.gray.opacity(0.5))
+            }
+            Text(title)
+                .font(.system(size: 16, weight: .bold))
+                .foregroundColor(.gray.opacity(0.5))
+            HStack(alignment: .firstTextBaseline, spacing: 2) {
+                Text("—")
+                    .font(.system(size: 28, weight: .bold))
+                    .foregroundColor(.gray.opacity(0.4))
+                Text("Pro")
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundColor(secondaryColor)
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 2)
+                    .background(Color(red: 1.0, green: 0.87, blue: 0.87))
+                    .cornerRadius(6)
+            }
+            RoundedRectangle(cornerRadius: 3)
+                .fill(Color.gray.opacity(0.12))
+                .frame(height: 6)
+        }
+        .padding(20)
+        .frame(width: 170)
+        .background(Color.white)
+        .cornerRadius(25)
+        .shadow(color: Color.black.opacity(0.04), radius: 10, x: 0, y: 5)
     }
 }
 
@@ -211,5 +272,5 @@ struct ResultBar: View {
 }
 
 #Preview {
-    ResultView(record: nil, isFromRecents: false)
+    ResultView(record: nil, isFromRecents: true)
 }
