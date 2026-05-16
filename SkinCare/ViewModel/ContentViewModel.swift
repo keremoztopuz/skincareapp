@@ -65,11 +65,7 @@ class ContentViewModel: ObservableObject {
         self.hasCompletedOnBoarding = UserDefaults.standard.bool(forKey: "hasCompletedOnBoarding")
         self.hasCompletedProfile = UserDefaults.standard.bool(forKey: "hasCompletedProfile")
         self.hasCompletedSubscription = UserDefaults.standard.bool(forKey: "hasCompletedSubscription")
-        self.isPremium = UserDefaults.standard.bool(forKey: "isPremium")
-        
-        self.hasCompletedOnBoarding = false
-        self.hasCompletedProfile = false
-        self.hasCompletedSubscription = false
+        self.isPremium = SubscriptionManager.shared.isPremium
         
         // splash shows 4.5 sec
         DispatchQueue.main.asyncAfter(deadline: .now() + 4.5) { [weak self] in
@@ -90,6 +86,7 @@ class ContentViewModel: ObservableObject {
     }
     
     func completePurchaseStep(isPremium: Bool) {
+        SubscriptionManager.shared.isPremium = isPremium
         self.isPremium = isPremium
         self.showLoading = true
         DispatchQueue.main.asyncAfter(deadline: .now() + 3.5) { [weak self] in
