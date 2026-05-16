@@ -16,7 +16,7 @@ import Vision
     let acneScore = 0.8
     // calculate function
     let result = engine.calculateScore(acne: acneScore,
-                                       eczema: 0.1,
+                                       redness: 0.1,
                                        psoriasis: 0.0,
                                        benLezyon: 0.0,
                                        healthy: 0.1,
@@ -35,7 +35,6 @@ import Vision
     UIGraphicsBeginImageContext(size)
     UIColor.red.setFill()
     UIRectFill(CGRect(origin: .zero, size: size))
-    
     let dummyImage = UIGraphicsGetImageFromCurrentImageContext()
     UIGraphicsEndImageContext()
     
@@ -47,7 +46,7 @@ import Vision
 @Test func testVisionFaceDetectionWithRealImage() throws {
     guard let image = UIImage(named: "guidegood1"),
           let cgImage = image.cgImage else {
-        XCTFail("guidegood1 görseli yüklenemedi")
+        XCTFail("guidegood1 image could not be loaded")
         return
     }
 
@@ -57,7 +56,7 @@ import Vision
     try handler.perform([request])
 
     let results = request.results ?? []
-    XCTAssertFalse(results.isEmpty, "guidegood1 görselinde en az bir yüz tespit edilmeli")
+    XCTAssertFalse(results.isEmpty, "At least one face should be detected in guidegood1 image")
 
     let face = results.first!
     XCTAssertGreaterThan(face.boundingBox.width, 0)
