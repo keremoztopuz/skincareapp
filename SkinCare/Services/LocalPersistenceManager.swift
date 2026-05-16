@@ -15,13 +15,22 @@ class LocalPersistenceManager {
     private let context = PersistenceController.shared.container.viewContext
     // User Profile
     func saveUserProfile(name: String, skinType: String, ageRange: String, gender: String, knownIssues: String) {
-        let profile = UserProfile(context: context)
+        let request: NSFetchRequest<UserProfile> = UserProfile.fetchRequest()
+        request.fetchLimit = 1
+        
+        let profile: UserProfile
+        if let existingProfile = try? context.fetch(request).first {
+            profile = existingProfile
+        } else {
+            profile = UserProfile(context: context)
+            profile.createdAt = Date()
+        }
+        
         profile.name = name
         profile.skinType = skinType
         profile.ageRange = ageRange
         profile.gender = gender
         profile.knownIssues = knownIssues
-        profile.createdAt = Date()
 
         do {
             try context.save()
