@@ -17,7 +17,7 @@ struct SkinScore {
 
 class ScoringEngine {
     
-    func calculateScore(acne: Double, eczema: Double, psoriasis: Double, benLezyon: Double, healthy: Double, skinType: String) -> SkinScore {
+    func calculateScore(acne: Double, redness: Double, psoriasis: Double, benLezyon: Double, healthy: Double, skinType: String) -> SkinScore {
         let oilinessBase: Double
         // oiliness
         switch skinType{
@@ -38,7 +38,7 @@ class ScoringEngine {
             default: drynessBase = 35.0 // normal
         }
 
-        let drynessScore = min(drynessBase + eczema * 35.0 + psoriasis * 25.0, 100.0)
+        let drynessScore = min(drynessBase + redness * 35.0 + psoriasis * 25.0, 100.0)
 
         // inflammation
         let inflammationBase: Double
@@ -50,12 +50,12 @@ class ScoringEngine {
             default: inflammationBase = 35.0 // normal
         }
 
-        let inflammationScore = min(inflammationBase + acne * 45.0 + eczema * 35.0 + psoriasis * 20.0, 100.0)
+        let inflammationScore = min(inflammationBase + acne * 45.0 + redness * 35.0 + psoriasis * 20.0, 100.0)
 
         // overall
         let overallScore = max(0.0, min(healthy * 60.0 + 40.0 - inflammationScore * 0.35 - drynessScore * 0.10 - oilinessScore * 0.10, 100.0))
 
-        let scores = ["acne": acne, "eczema": eczema, "psoriasis": psoriasis, "ben_Lezyon": benLezyon]
+        let scores = ["acne": acne, "redness": redness, "psoriasis": psoriasis, "ben_Lezyon": benLezyon]
         let top = scores.max(by: { $0.value < $1.value })
         let dominantCondition = (top?.value ?? 0) > 0.25 ? (top?.key ?? "") : ""
 
