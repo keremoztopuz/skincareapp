@@ -10,7 +10,7 @@ import Foundation
 // MARK: Skin Classes
 enum SkinCondition: String, Codable, CaseIterable, Identifiable{
     case acne
-    case eczema
+    case redness
     case psoriasis
     case wrinkles
     case eyebags
@@ -22,15 +22,15 @@ enum SkinCondition: String, Codable, CaseIterable, Identifiable{
     var recommendation: String {
         switch self {
         case .acne:
-            return "Salisilik asit içeren temizleyiciler kullanın. Gözenekleri tıkamayan (non-comedogenic) nemlendiriciler tercih edin."
-        case .eczema:
-            return "Cilt bariyerini güçlendiren seramidli kremler kullanın. Sıcak sudan ve parfümlü ürünlerden kaçının."
+            return "Use cleansers containing salicylic acid. Prefer non-comedogenic moisturizers."
+        case .redness:
+            return "Use soothing products containing Centella or Niacinamide. Avoid harsh scrubs and extreme temperatures."
         case .psoriasis:
-            return "Yoğun nemlendiriciler ve pullanma karşıtı içerikler kullanın. Mutlaka uzman bir dermatoloğa danışın."
+            return "Use intensive moisturizers and anti-scaling ingredients. Definitely consult a specialist dermatologist."
         case .wrinkles:
-            return "Retinol ve peptid içerikli ürünler kullanın. Cildinizi güneşten koruyun ve bol su tüketin."
+            return "Use products containing retinol and peptides. Protect your skin from the sun and drink plenty of water."
         case .eyebags:
-            return "Soğuk kompres uygulayın ve kafein içeren göz altı kremleri tercih edin. Uyku düzeninize dikkat edin."
+            return "Apply cold compresses and prefer under-eye creams containing caffeine. Pay attention to your sleep pattern."
         }
     }
 }
