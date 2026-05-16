@@ -89,6 +89,7 @@ GoogleService-Info.json
 .env.*
 *.secret
 secrets/
+SupabaseConfig.swift
 
 # AppCenter/Crashlytics
 appcenter-config.json
