@@ -54,7 +54,7 @@ struct RecentsView: View {
                             .padding(.top, 20)
 
                             if isCompareMode {
-                                Text("2 analiz seç ve karşılaştır")
+                                Text("Select 2 analyses and compare")
                                     .font(.system(size: 14))
                                     .foregroundColor(.gray)
                                     .padding(.horizontal, 20)
@@ -83,33 +83,6 @@ struct RecentsView: View {
                             .padding(.horizontal, 20)
 
                             // MARK: Cards
-                            if vm.hasLockedRecords {
-                                Button { showUpgrade = true } label: {
-                                    HStack(spacing: 10) {
-                                        Image(systemName: "lock.fill")
-                                            .font(.system(size: 14))
-                                        Text("Eski analizlerin Pro ile görüntülenebilir")
-                                            .font(.system(size: 14, weight: .medium))
-                                        Spacer()
-                                        Text("Pro'ya Geç →")
-                                            .font(.system(size: 12, weight: .bold))
-                                            .foregroundColor(secondaryColor)
-                                            .padding(.horizontal, 10)
-                                            .padding(.vertical, 4)
-                                            .background(Color(red: 1.0, green: 0.87, blue: 0.87))
-                                            .cornerRadius(8)
-                                    }
-                                    .foregroundColor(.gray)
-                                    .padding(.horizontal, 20)
-                                    .padding(.vertical, 14)
-                                    .background(Color.white)
-                                    .cornerRadius(14)
-                                    .shadow(color: Color.black.opacity(0.04), radius: 6, x: 0, y: 2)
-                                }
-                                .buttonStyle(.plain)
-                                .padding(.horizontal, 20)
-                            }
-
                             ForEach(vm.records, id: \.self) { record in
                                 let isSelected = compareRecords.contains(record)
                                 Button {
@@ -190,6 +163,110 @@ struct RecentsView: View {
                                 .animation(.spring(response: 0.2), value: isSelected)
                             }
 
+                            // MARK: Locked Preview
+                            if !vm.lockedRecords.isEmpty && !isCompareMode {
+                                ZStack {
+                                    VStack(spacing: 12) {
+                                        ForEach(vm.lockedRecords, id: \.self) { record in
+                                            HStack(alignment: .top, spacing: 14) {
+                                                if let data = record.imageData, let uiImage = UIImage(data: data) {
+                                                    Image(uiImage: uiImage)
+                                                        .resizable()
+                                                        .scaledToFill()
+                                                        .frame(width: 120, height: 220)
+                                                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                                                } else {
+                                                    RoundedRectangle(cornerRadius: 12)
+                                                        .fill(Color(red: 1.0, green: 0.87, blue: 0.87))
+                                                        .frame(width: 120, height: 200)
+                                                        .overlay(
+                                                            Image(systemName: "person.crop.rectangle")
+                                                                .font(.system(size: 24))
+                                                                .foregroundColor(secondaryColor.opacity(0.6))
+                                                        )
+                                                }
+
+                                                VStack(alignment: .leading, spacing: 14) {
+                                                    HStack {
+                                                        Text(record.date ?? Date(), style: .date)
+                                                            .font(.system(size: 14))
+                                                            .foregroundColor(.gray)
+                                                        Spacer()
+                                                        Text(record.condition ?? "Unknown")
+                                                            .font(.system(size: 13, weight: .semibold))
+                                                            .foregroundColor(secondaryColor)
+                                                            .padding(.horizontal, 12)
+                                                            .padding(.vertical, 5)
+                                                            .background(Color(red: 1.0, green: 0.87, blue: 0.87))
+                                                            .cornerRadius(10)
+                                                    }
+
+                                                    HStack(alignment: .firstTextBaseline, spacing: 4) {
+                                                        Text("\(Int(record.overallScore))")
+                                                            .font(.system(size: 36, weight: .bold))
+                                                            .foregroundColor(primaryText)
+                                                        Text("/ 100")
+                                                            .font(.system(size: 16))
+                                                            .foregroundColor(.gray)
+                                                    }
+
+                                                    ScoreBar(label: "Dryness",      value: record.drynessScore,      color: secondaryColor)
+                                                    ScoreBar(label: "Inflammation", value: record.inflammationScore, color: secondaryColor)
+                                                    ScoreBar(label: "Oiliness",     value: record.oilinessScore,     color: secondaryColor)
+                                                }
+                                            }
+                                            .padding(20)
+                                            .background(
+                                                RoundedRectangle(cornerRadius: 16)
+                                                    .fill(Color.white)
+                                            )
+                                            .shadow(color: Color.black.opacity(0.06), radius: 8, x: 0, y: 4)
+                                            .padding(.horizontal, 20)
+                                        }
+                                    }
+                                    .blur(radius: 8)
+                                    .allowsHitTesting(false)
+
+                                    VStack(spacing: 14) {
+                                        ZStack {
+                                            Circle()
+                                                .fill(Color(red: 1.0, green: 0.87, blue: 0.87))
+                                                .frame(width: 72, height: 72)
+                                            Image(systemName: "lock.fill")
+                                                .font(.system(size: 26))
+                                                .foregroundColor(secondaryColor)
+                                        }
+
+                                        Text("See All Your Analyses")
+                                            .font(.system(size: 20, weight: .bold))
+                                            .foregroundColor(primaryText)
+
+                                        Text("Go Pro to access your analysis history")
+                                            .font(.system(size: 14))
+                                            .foregroundColor(.gray)
+                                            .multilineTextAlignment(.center)
+
+                                        Button {
+                                            showUpgrade = true
+                                        } label: {
+                                            HStack(spacing: 8) {
+                                                Image(systemName: "crown.fill")
+                                                    .font(.system(size: 14))
+                                                Text("Go Pro")
+                                                    .font(.system(size: 16, weight: .bold))
+                                            }
+                                            .foregroundColor(.white)
+                                            .padding(.horizontal, 32)
+                                            .padding(.vertical, 14)
+                                            .background(secondaryColor)
+                                            .cornerRadius(14)
+                                            .shadow(color: secondaryColor.opacity(0.3), radius: 8, x: 0, y: 4)
+                                        }
+                                    }
+                                    .padding(.vertical, 40)
+                                }
+                            }
+
                             if isCompareMode {
                                 Color.clear.frame(height: 88)
                             }
@@ -222,7 +299,9 @@ struct RecentsView: View {
             .sheet(isPresented: $showUpgrade) { UpgradeSheetView() }
             .navigationDestination(isPresented: $showDetail) {
                 if let record = selectedRecord {
-                    ResultView(record: record, isFromRecents: true)
+                    ResultView(record: record, isFromRecents: true) {
+                        showDetail = false
+                    }
                 }
             }
             .navigationDestination(isPresented: $showCompare) {
@@ -230,6 +309,9 @@ struct RecentsView: View {
                     CompareView(record1: compareRecords[0], record2: compareRecords[1])
                 }
             }
+        }
+        .onAppear {
+            vm.fetchRecords()
         }
     }
 
