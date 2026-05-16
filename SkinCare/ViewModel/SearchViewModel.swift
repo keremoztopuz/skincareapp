@@ -15,7 +15,9 @@ class SearchViewModel: ObservableObject {
     @Published var isLoading: Bool = false
     
     init() {
-        fetchProducts()
+        Task {
+            await fetchProducts()
+        }
     }
     
     var filteredProducts: [Product] {
@@ -27,12 +29,15 @@ class SearchViewModel: ObservableObject {
             }
         }
     }
-    // dummy datas for now.
-    func fetchProducts() {
-        self.products = [
-            Product(id: UUID(), name: "CeraVe Cleanser", category: "Face Cleanser", imageName: "product1"),
-            Product(id: UUID(), name: "LaRoche-Posay SPF", category: "Sunscreen", imageName: "product2"),
-            Product(id: UUID(), name: "The Ordinary Niacinamide", category: "Serum", imageName: "product3")
-        ]
+
+    @MainActor
+    func fetchProducts() async {
+        isLoading = true
+        do {
+            self.products = try await SupabaseService.shared.fetchProducts()
+        } catch {
+            print("Failed to fetch products for search: \(error.localizedDescription)")
+        }
+        isLoading = false
     }
 }
