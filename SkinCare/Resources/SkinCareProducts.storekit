@@ -1,0 +1,45 @@
+{
+  "identifier" : "F0A8A3A0-1B2C-4D5E-9F6A-7B8C9D0E1F2A",
+  "type" : "local",
+  "version" : 3,
+  "subscriptionGroups" : [
+    {
+      "id" : "skincare_group",
+      "localizations" : [
+        {
+          "description" : "SkinCare Pro Subscription",
+          "displayName" : "SkinCare Pro",
+          "locale" : "en_US"
+        }
+      ],
+      "name" : "SkinCare Pro",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [],
+          "codeOffers" : [],
+          "displayPrice" : "9.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "A1B2C3D4-E5F6-7890-ABCD-EF1234567890",
+          "introductoryOffer" : {
+            "internalID" : "B2C3D4E5-F6A7-8901-BCDE-F12345678901",
+            "paymentMode" : "free",
+            "subscriptionPeriod" : "P3D"
+          },
+          "localizations" : [
+            {
+              "description" : "Full access to all skin analysis features",
+              "displayName" : "Monthly Pro",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "skincare_pro_monthly",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Monthly Pro",
+          "subscriptionGroupID" : "skincare_group",
+          "type" : "RecurringSubscription"
+        }
+      ]
+    }
+  ]
+}
