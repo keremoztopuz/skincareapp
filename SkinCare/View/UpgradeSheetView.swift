@@ -72,7 +72,7 @@ struct UpgradeSheetView: View {
                 VStack(spacing: 0) {
                     featureRow(icon: "checkmark.circle", text: "5 scans / month",              isFree: true)
                     Divider().padding(.horizontal, 20)
-                    featureRow(icon: "checkmark.circle", text: "Acne & Eczema only",            isFree: true)
+                    featureRow(icon: "checkmark.circle", text: "Acne & Redness only",            isFree: true)
                     Divider().padding(.horizontal, 20)
                     featureRow(icon: "checkmark.circle", text: "Last 5 analyses visible",       isFree: true)
                 }
@@ -180,12 +180,16 @@ struct UpgradeSheetView: View {
     // MARK: - Purchase logic
     private func purchase() {
         isPurchasing = true
-        
+
         Purchases.shared.getOfferings { offerings, error in
             if let package = offerings?.current?.monthly {
                 Purchases.shared.purchase(package: package) { transaction, info, error, userCancelled in
                     DispatchQueue.main.async {
-                        if info?.entitlements["pro"]?.isActive == true {
+                        if userCancelled { isPurchasing = false; return }
+                        if error != nil { isPurchasing = false; return }
+
+                        let entitled = info?.entitlements["pro"]?.isActive == true
+                        if entitled || transaction != nil {
                             SubscriptionManager.shared.isPremium = true
                             isPurchasing = false
                             withAnimation { showSuccess = true }
