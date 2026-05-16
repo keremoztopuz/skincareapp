@@ -8,10 +8,24 @@
 // MARK: Article structure
 import Foundation
 
-struct Articles: Identifiable {
+struct Articles: Identifiable, Codable {
     let id : UUID
     let title : String
     let content : String
-    let category : String
-    let imageName : String
+    let imageUrl : String?
+    let readTime : Int?
+    let articleType : String?
+    let isActive : Bool?
+    let isFixed : Bool?
+    let createdAt : Date?
+    
+    enum CodingKeys: String, CodingKey {
+        case id, title, content
+        case imageUrl = "image_url"
+        case readTime = "read_time"
+        case articleType = "article_type"
+        case isActive = "is_active"
+        case isFixed = "is_fixed"
+        case createdAt = "created_at"
+    }
 }
