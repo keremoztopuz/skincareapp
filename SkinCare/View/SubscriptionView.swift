@@ -7,11 +7,14 @@
 
 import Foundation
 import SwiftUI
+import RevenueCat
 
 struct SubscriptionView : View {
     @State private var logoScale: CGFloat = 0
     @State private var titleScale: CGFloat = 0
     @State private var isPulsing = false
+    @State private var isPurchasing = false
+    @State private var purchaseError: String?
     @StateObject private var vm = SubscriptionViewModel()
     @EnvironmentObject var appVM: ContentViewModel
     
@@ -98,7 +101,7 @@ struct SubscriptionView : View {
                                     
                                     VStack(spacing: 8) {
                                         featureRow(text: "5 skin analysis per month")
-                                        featureRow(text: "Basic skin insights (Acne and Eczema)")
+                                        featureRow(text: "Basic skin insights (Acne and Redness)")
                                         featureRow(text: "Limited product recomendations")
                                         featureRow(text: "View last 5 recent scans")
                                     }
@@ -134,7 +137,7 @@ struct SubscriptionView : View {
                                     
                                     VStack(spacing: 8) {
                                         featureRow(text: "Unlimited analysis", weight: .bold)
-                                        featureRow(text: "Full skin insights (Acne, Eczema, Psoriasis, Wrinkles, Eyebags)", weight: .bold)
+                                        featureRow(text: "Full skin insights (Acne, Redness, Psoriasis, Wrinkles, Eyebags)", weight: .bold)
                                         featureRow(text: "Unlimited product recommendation", weight: .bold)
                                         featureRow(text: "Complete history & progress tracking", weight: .bold)
                                     }
@@ -167,14 +170,20 @@ struct SubscriptionView : View {
                         }
                 
                         Button(action: {
-                            appVM.completePurchaseStep(isPremium: true)
+                            purchasePro()
                         }) {
                             VStack(spacing: 2) {
-                                Text("Upgrade Your Plan (Free Trial)")
-                                    .font(.system(size: 18, weight: .bold))
-                                    
-                                Text("Start your 3-day free trial")
-                                    .font(.system(size: 12, weight: .regular))
+                                if isPurchasing {
+                                    ProgressView()
+                                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                        .padding(.vertical, 6)
+                                } else {
+                                    Text("Upgrade Your Plan (Free Trial)")
+                                        .font(.system(size: 18, weight: .bold))
+
+                                    Text("Start your 3-day free trial")
+                                        .font(.system(size: 12, weight: .regular))
+                                }
                             }
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
@@ -182,16 +191,63 @@ struct SubscriptionView : View {
                             .background(secondaryColor)
                             .cornerRadius(12)
                         }
+                        .disabled(isPurchasing)
                     }
                     .padding(.horizontal, 28)
                     .padding(.bottom, 48)
                 }
                 .frame(width: geo.size.width, height: geo.size.height)
             }
-            
+            .alert("Purchase Error", isPresented: Binding(
+                get: { purchaseError != nil },
+                set: { if !$0 { purchaseError = nil } }
+            )) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text(purchaseError ?? "")
+            }
         }
     }
-    // checkmarked text function
+    private func purchasePro() {
+        isPurchasing = true
+        purchaseError = nil
+
+        Purchases.shared.getOfferings { offerings, error in
+            if let error = error {
+                DispatchQueue.main.async {
+                    isPurchasing = false
+                    purchaseError = "Products could not be loaded: \(error.localizedDescription)"
+                }
+                return
+            }
+
+            guard let package = offerings?.current?.monthly ?? offerings?.current?.availablePackages.first else {
+                DispatchQueue.main.async {
+                    isPurchasing = false
+                    purchaseError = "Subscription package not found. Please try again later."
+                }
+                return
+            }
+
+            Purchases.shared.purchase(package: package) { transaction, info, error, userCancelled in
+                DispatchQueue.main.async {
+                    isPurchasing = false
+                    if userCancelled { return }
+                    if let error = error {
+                        purchaseError = "Purchase failed: \(error.localizedDescription)"
+                        return
+                    }
+
+                    let entitled = info?.entitlements["pro"]?.isActive == true
+                    if entitled || transaction != nil {
+                        SubscriptionManager.shared.isPremium = true
+                        appVM.completePurchaseStep(isPremium: true)
+                    }
+                }
+            }
+        }
+    }
+
     func featureRow(text: String, weight: Font.Weight = .regular) -> some View {
         HStack(spacing: 8) {
             Image(systemName: "checkmark")
