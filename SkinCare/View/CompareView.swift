@@ -1,12 +1,12 @@
 import SwiftUI
 internal import CoreData
 
-private func mockRecord(ctx: NSManagedObjectContext, overall: Double, acne: Double, eczema: Double, daysAgo: Double) -> AnalysisRecord {
+private func mockRecord(ctx: NSManagedObjectContext, overall: Double, acne: Double, redness: Double, daysAgo: Double) -> AnalysisRecord {
     let r = AnalysisRecord(context: ctx)
     r.date              = Date(timeIntervalSinceNow: -daysAgo * 86400)
     r.overallScore      = overall
     r.acneScore         = acne
-    r.eczemaScore       = eczema
+    r.eczemaScore       = redness
     r.psoriasisScore    = 30
     r.wrinkleScore      = 20
     r.eyebagScore       = 15
@@ -131,7 +131,7 @@ struct CompareView: View {
                     // MARK: Detail rows with progress bars
                     VStack(spacing: 10) {
                         detailRow(label: "Acne",         val1: record1.acneScore,         val2: record2.acneScore,         higherIsBetter: false)
-                        detailRow(label: "Eczema",       val1: record1.eczemaScore,       val2: record2.eczemaScore,       higherIsBetter: false)
+                        detailRow(label: "Redness",      val1: record1.eczemaScore,       val2: record2.eczemaScore,       higherIsBetter: false)
                         detailRow(label: "Psoriasis",    val1: record1.psoriasisScore,    val2: record2.psoriasisScore,    higherIsBetter: false)
                         detailRow(label: "Wrinkles",     val1: record1.wrinkleScore,      val2: record2.wrinkleScore,      higherIsBetter: false)
                         detailRow(label: "Eye Bags",     val1: record1.eyebagScore,       val2: record2.eyebagScore,       higherIsBetter: false)
@@ -312,12 +312,11 @@ struct CompareView: View {
 struct CompareViewPreviewWrapper: View {
     let ctx = PersistenceController.preview.container.viewContext
     var body: some View {
-        let r1 = mockRecord(ctx: ctx, overall: 88, acne: 25, eczema: 40, daysAgo: 0)
-        let r2 = mockRecord(ctx: ctx, overall: 74, acne: 45, eczema: 60, daysAgo: 7)
+        let r1 = mockRecord(ctx: ctx, overall: 88, acne: 25, redness: 40, daysAgo: 0)
+        let r2 = mockRecord(ctx: ctx, overall: 74, acne: 45, redness: 60, daysAgo: 7)
         CompareView(record1: r1, record2: r2)
     }
 }
 
 #Preview { CompareViewPreviewWrapper() }
-}
-}
+
