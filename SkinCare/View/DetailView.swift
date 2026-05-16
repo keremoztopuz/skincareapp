@@ -9,7 +9,7 @@ import SwiftUI
 
 enum DetailType {
     case product(Product)
-    case news(News)
+    case news(Articles)
 }
 
 struct DetailView: View {
@@ -45,7 +45,7 @@ struct DetailView: View {
                     
                     Spacer()
                     
-                    // Right actions (Heart for product, Share/Save for news)
+                    // Right actions (Heart for product, Share/Save for articles)
                     actionButtons
                 }
                 .padding(.horizontal, 20)
@@ -57,8 +57,8 @@ struct DetailView: View {
                         switch type {
                         case .product(let product):
                             ProductDetailContent(product: product, secondaryColor: secondaryColor, primaryText: primaryText)
-                        case .news(let news):
-                            NewsDetailContent(news: news, secondaryColor: secondaryColor, primaryText: primaryText)
+                        case .news(let article):
+                            ArticleDetailContent(article: article, secondaryColor: secondaryColor, primaryText: primaryText)
                         }
                     }
                     .padding(.horizontal, 20)
@@ -116,33 +116,31 @@ struct ProductDetailContent: View {
                     .frame(height: 350)
                     .shadow(color: Color.black.opacity(0.05), radius: 15, x: 0, y: 8)
                 
-                Image(systemName: "bottle.condiment.fill")
-                    .font(.system(size: 80))
-                    .foregroundColor(secondaryColor.opacity(0.2))
+                if let urlString = product.imageUrl, let url = URL(string: urlString) {
+                    AsyncImage(url: url) { image in
+                        image.resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .clipped()
+                    } placeholder: {
+                        ProgressView()
+                    }
+                    .frame(height: 350)
+                    .clipShape(RoundedRectangle(cornerRadius: 25))
+                } else {
+                    Image(systemName: "bottle.condiment.fill")
+                        .font(.system(size: 80))
+                        .foregroundColor(secondaryColor.opacity(0.2))
+                }
             }
             
             VStack(alignment: .leading, spacing: 8) {
-                Text("GlowLab") // Stub brand - should come from Supabase
+                Text(product.brand ?? "Unknown Brand")
                     .font(.system(size: 14, weight: .medium))
                     .foregroundColor(.gray)
                 
                 Text(product.name)
                     .font(.system(size: 28, weight: .bold))
                     .foregroundColor(primaryText)
-                
-                HStack(spacing: 4) {
-                    ForEach(0..<4) { _ in
-                        Image(systemName: "star.fill")
-                            .foregroundColor(.orange)
-                    }
-                    Image(systemName: "star.leadinghalf.filled")
-                        .foregroundColor(.orange)
-                    
-                    Text("4.8 (1234 reviews)")
-                        .font(.system(size: 14, weight: .medium))
-                        .foregroundColor(.gray)
-                        .padding(.leading, 4)
-                }
             }
             
             Divider()
@@ -152,31 +150,55 @@ struct ProductDetailContent: View {
                     .font(.system(size: 18, weight: .bold))
                     .foregroundColor(primaryText)
                 
-                Text("A lightweight, fast-absorbing serum that delivers intense hydration to your skin. Formulated with hyaluronic acid and vitamin E for long-lasting moisture.")
+                Text(product.description ?? "No description available for this product.")
                     .font(.system(size: 16))
                     .foregroundColor(.gray)
                     .lineSpacing(4)
+            }
+            
+            if let ingredients = product.activeIngredients {
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Active Ingredients")
+                        .font(.system(size: 18, weight: .bold))
+                        .foregroundColor(primaryText)
+                    
+                    Text(ingredients)
+                        .font(.system(size: 16))
+                        .foregroundColor(.gray)
+                }
             }
         }
     }
 }
 
-// MARK: - News Detail Component
-struct NewsDetailContent: View {
-    let news: News
+// MARK: - Article Detail Component
+struct ArticleDetailContent: View {
+    let article: Articles
     let secondaryColor: Color
     let primaryText: Color
     
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            // Image & Category Badge
+            // Image & Badge
             ZStack(alignment: .topLeading) {
                 RoundedRectangle(cornerRadius: 25)
-                    .fill(secondaryColor)
+                    .fill(secondaryColor.opacity(0.1))
                     .frame(height: 250)
                     .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: 5)
                 
-                Text("Skincare Tips")
+                if let urlString = article.imageUrl, let url = URL(string: urlString) {
+                    AsyncImage(url: url) { image in
+                        image.resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .clipped()
+                    } placeholder: {
+                        ProgressView()
+                    }
+                    .frame(height: 250)
+                    .clipShape(RoundedRectangle(cornerRadius: 25))
+                }
+
+                Text(article.articleType ?? "Article")
                     .font(.system(size: 12, weight: .bold))
                     .padding(.horizontal, 12)
                     .padding(.vertical, 6)
@@ -186,43 +208,39 @@ struct NewsDetailContent: View {
                     .padding(20)
             }
             
-            Text(news.title)
+            Text(article.title)
                 .font(.system(size: 32, weight: .bold))
                 .foregroundColor(primaryText)
             
             HStack(spacing: 20) {
-                Label("Dr. Sarah Mitchell", systemImage: "person")
-                Label("May 10, 2026", systemImage: "calendar")
+                HStack(spacing: 6) {
+                    Image(systemName: "person")
+                    Text("Expert Advice")
+                }
+                if let date = article.createdAt {
+                    HStack(spacing: 6) {
+                        Image(systemName: "calendar")
+                        Text(date, style: .date)
+                    }
+                }
             }
             .font(.system(size: 14, weight: .medium))
             .foregroundColor(.gray)
             
-            Text("5 min read")
-                .font(.system(size: 12, weight: .bold))
-                .padding(.horizontal, 10)
-                .padding(.vertical, 4)
-                .background(secondaryColor.opacity(0.1))
-                .foregroundColor(secondaryColor)
-                .cornerRadius(6)
+            if let readTime = article.readTime {
+                Text("\(readTime) min read")
+                    .font(.system(size: 12, weight: .bold))
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 4)
+                    .background(secondaryColor.opacity(0.1))
+                    .foregroundColor(secondaryColor)
+                    .cornerRadius(6)
+            }
             
-            Text(news.content)
+            Text(article.content)
                 .font(.system(size: 16))
                 .foregroundColor(primaryText.opacity(0.8))
                 .lineSpacing(6)
-            
-            VStack(alignment: .leading, spacing: 16) {
-                Text("Related Topics")
-                    .font(.system(size: 18, weight: .bold))
-                    .foregroundColor(primaryText)
-                
-                FlowLayout(spacing: 10) {
-                    TopicBadge(text: "Skincare")
-                    TopicBadge(text: "Beauty Tips")
-                    TopicBadge(text: "Health")
-                    TopicBadge(text: "Wellness")
-                }
-            }
-            .padding(.top, 10)
         }
     }
 }
@@ -262,16 +280,29 @@ struct FlowLayout: View {
     DetailView(type: .product(Product(
         id: UUID(),
         name: "Hydrating Serum",
-        category: "GlowLab",
-        imageName: "bottle.condiment.fill"
+        brand: "GlowLab",
+        description: "A lightweight, fast-absorbing serum.",
+        imageUrl: nil,
+        productType: "Serum",
+        activeIngredients: "Hyaluronic Acid",
+        usageTime: "Night",
+        frequency: "Daily",
+        contraindications: nil,
+        skinTypes: ["Dry", "Normal"],
+        isActive: true
     )))
 }
 
-#Preview("News Detail") {
-    DetailView(type: .news(News(
+#Preview("Article Detail") {
+    DetailView(type: .news(Articles(
         id: UUID(),
         title: "10 Essential Tips for Winter Skin Care",
-        content: "Winter can be harsh on your skin, but with the right approach, you can keep it healthy and glowing throughout the cold months. Here are ten essential tips to protect and nourish your skin during winter.\n\n1. Hydrate from Within: Drink plenty of water throughout the day...",
+        content: "Winter can be harsh on your skin...",
+        imageUrl: nil,
+        readTime: 5,
+        articleType: "Tips",
+        isActive: true,
+        isFixed: false,
         createdAt: Date()
     )))
 }
