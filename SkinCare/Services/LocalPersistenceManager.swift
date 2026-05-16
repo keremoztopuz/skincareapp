@@ -30,7 +30,8 @@ class LocalPersistenceManager {
         }
     }
     // Analysis Records
-    func saveAnalysisRecord(condition: String, confidence: Double, date: Date, drynessScore: Double, inflammationScore: Double, oilinessScore: Double, overallScore: Double, userFeedback: Bool, acneScore: Double, eczemaScore: Double, psoriasisScore: Double, imageData: Data?) {
+    @discardableResult
+    func saveAnalysisRecord(condition: String, confidence: Double, wrinkleScore: Double, eyebagScore: Double, date: Date, drynessScore: Double, inflammationScore: Double, oilinessScore: Double, overallScore: Double, userFeedback: Bool, acneScore: Double, eczemaScore: Double, psoriasisScore: Double, imageData: Data?) -> AnalysisRecord {
         let record = AnalysisRecord(context: context)
         record.condition = condition
         record.confidence = confidence
@@ -40,11 +41,19 @@ class LocalPersistenceManager {
         record.oilinessScore = oilinessScore
         record.overallScore = overallScore
         record.userFeedback = userFeedback
+        record.acneScore = acneScore
+        record.eczemaScore = eczemaScore
+        record.psoriasisScore = psoriasisScore
+        record.wrinkleScore = wrinkleScore
+        record.eyebagScore = eyebagScore
+        record.imageData = imageData
 
         do {
             try context.save()
+            return record
         } catch {
             print("Save error: \(error)")
+            return record
         }
     }
     // Fetching
@@ -66,5 +75,4 @@ class LocalPersistenceManager {
         request.fetchLimit = 1
         return try? context.fetch(request).first
     }
-
 }
