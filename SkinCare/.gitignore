@@ -138,8 +138,8 @@ crashlytics-build.properties
 *.json
 *.lottie
 
-# Claude
-*.claude
+# Development
+*.dev_notes
 
 # End of file
 
