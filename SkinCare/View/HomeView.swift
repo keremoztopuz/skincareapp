@@ -48,6 +48,24 @@ struct HomeView: View {
                         .padding(.horizontal, 20)
                         .padding(.top, 20)
                         
+                        if let error = vm.errorMessage {
+                            VStack(spacing: 12) {
+                                Image(systemName: "wifi.slash")
+                                    .font(.system(size: 24))
+                                    .foregroundColor(.gray)
+                                Text(error)
+                                    .font(.system(size: 14))
+                                    .foregroundColor(.gray)
+                                Button("Try Again") {
+                                    Task { await vm.fetchAllCloudData() }
+                                }
+                                .font(.system(size: 14, weight: .bold))
+                                .foregroundColor(secondaryColor)
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 20)
+                        }
+                        
                         // analysis Button
                         Button(action: {
                             selectedTab = 2
@@ -63,7 +81,7 @@ struct HomeView: View {
                                     .frame(width: 150, height: 150)
                                     .overlay {
                                         VStack(spacing: -18) {
-                                            LottieView(animation: .named("Star loader UI"))
+                                            LottieView(animation: .named("AI Star loader UI"))
                                                 .playing(loopMode: .loop)
                                                 .configure { animationView in
                                                     let white = ColorValueProvider(UIColor.white.lottieColorValue)
@@ -168,18 +186,18 @@ struct HomeView: View {
                             }
                         }
                         
-                        // news horizontal list
+                        // articles horizontal list
                         VStack(alignment: .leading, spacing: 16) {
-                            Text("Latest News")
+                            Text("Latest Articles")
                                 .font(.system(size: 18, weight: .bold))
                                 .foregroundColor(primaryText)
                                 .padding(.horizontal, 20)
-                            
+
                             ScrollView(.horizontal, showsIndicators: false){
                                 HStack(spacing: 16) {
-                                    ForEach(vm.news) { news in
-                                        NavigationLink(destination: DetailView(type: .news(news))) {
-                                            NewsCard(news: news)
+                                    ForEach(vm.articles) { article in
+                                        NavigationLink(destination: DetailView(type: .news(article))) {
+                                            ArticleCard(article: article)
                                         }
                                         .buttonStyle(PlainButtonStyle())
                                     }
@@ -188,11 +206,16 @@ struct HomeView: View {
                             }
                         }
                         
+                        // news horizontal list section removed
+                        
                         // bottom spacing
                         Color.clear.frame(height: 20)
                     }
                 }
             }
+        }
+        .onAppear {
+            vm.fetchNames()
         }
     }
 }
@@ -226,6 +249,7 @@ struct MetricCard: View {
 struct ProductCard: View {
     let product: Product
     let primaryText = Color(red: 0.1, green: 0.1, blue: 0.2)
+    let secondaryColor = Color(red: 0.47, green: 0.11, blue: 0.17)
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -234,9 +258,19 @@ struct ProductCard: View {
                     .fill(Color.white)
                     .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 5)
                 
-                Image(systemName: "face.smiling") // Placeholder
-                    .font(.system(size: 40))
-                    .foregroundColor(Color(red: 0.47, green: 0.11, blue: 0.17).opacity(0.2))
+                if let urlString = product.imageUrl, let url = URL(string: urlString) {
+                    AsyncImage(url: url) { image in
+                        image.resizable().scaledToFill()
+                    } placeholder: {
+                        ProgressView()
+                    }
+                    .frame(width: 160, height: 160)
+                    .clipShape(RoundedRectangle(cornerRadius: 20))
+                } else {
+                    Image(systemName: "face.smiling")
+                        .font(.system(size: 40))
+                        .foregroundColor(secondaryColor.opacity(0.2))
+                }
             }
             .frame(width: 160, height: 160)
             
@@ -246,7 +280,7 @@ struct ProductCard: View {
                     .foregroundColor(primaryText)
                     .lineLimit(1)
                 
-                Text(product.category)
+                Text(product.brand ?? "Unknown Brand")
                     .font(.system(size: 14, weight: .medium))
                     .foregroundColor(.gray)
                     .lineLimit(1)
@@ -257,29 +291,41 @@ struct ProductCard: View {
     }
 }
 
-struct NewsCard: View {
-    let news: News
+struct ArticleCard: View {
+    let article: Articles
     let primaryText = Color(red: 0.1, green: 0.1, blue: 0.2)
+    let secondaryColor = Color(red: 0.47, green: 0.11, blue: 0.17)
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            RoundedRectangle(cornerRadius: 25)
-                .fill(Color.white)
-                .frame(width: 280, height: 180)
-                .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 5)
-                .overlay {
+            ZStack {
+                RoundedRectangle(cornerRadius: 25)
+                    .fill(Color.white)
+                    .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 5)
+                
+                if let urlString = article.imageUrl, let url = URL(string: urlString) {
+                    AsyncImage(url: url) { image in
+                        image.resizable().scaledToFill()
+                    } placeholder: {
+                        ProgressView()
+                    }
+                    .frame(width: 280, height: 180)
+                    .clipShape(RoundedRectangle(cornerRadius: 25))
+                } else {
                     Image(systemName: "newspaper.fill")
                         .font(.system(size: 40))
-                        .foregroundColor(Color(red: 0.47, green: 0.11, blue: 0.17).opacity(0.1))
+                        .foregroundColor(secondaryColor.opacity(0.1))
                 }
+            }
+            .frame(width: 280, height: 180)
             
             VStack(alignment: .leading, spacing: 4){
-                Text(news.title)
+                Text(article.title)
                     .font(.system(size: 16, weight: .bold))
                     .foregroundColor(primaryText)
                     .lineLimit(1)
                 
-                Text(news.content)
+                Text(article.content)
                     .font(.system(size: 14, weight: .regular))
                     .foregroundColor(.gray)
                     .lineLimit(2)
