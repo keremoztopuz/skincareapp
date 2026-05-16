@@ -12,25 +12,30 @@ internal import CoreData
 
 class RecentsViewModel: ObservableObject {
     @Published var records: [AnalysisRecord] = []
+    @Published var lockedRecords: [AnalysisRecord] = []
     @Published var selectedFilter: String = "This Week"
-    
+
     init() {
         fetchRecords()
     }
-    
+
     var freeLimit: Int { SubscriptionManager.shared.freeMonthlyLimit }
     var isPremium: Bool { SubscriptionManager.shared.isPremium }
 
     func fetchRecords() {
         let fetched = LocalPersistenceManager.shared.fetchAnalysisRecords()
         let sorted  = mergeSort(fetched)
-        self.records = isPremium ? sorted : Array(sorted.prefix(freeLimit))
+        if isPremium {
+            self.records = sorted
+            self.lockedRecords = []
+        } else {
+            self.records = Array(sorted.prefix(freeLimit))
+            self.lockedRecords = Array(sorted.dropFirst(freeLimit).prefix(3))
+        }
     }
 
     var hasLockedRecords: Bool {
-        guard !isPremium else { return false }
-        let total = LocalPersistenceManager.shared.fetchAnalysisRecords().count
-        return total > freeLimit
+        !lockedRecords.isEmpty
     }
     
     // MARK: - Merge Sort Implementation (Stable, O(n log n))
