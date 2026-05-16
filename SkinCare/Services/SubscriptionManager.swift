@@ -10,8 +10,11 @@ class SubscriptionManager: ObservableObject {
     
     private func checkSubscriptionStatus() {
         Purchases.shared.getCustomerInfo { info, _ in
+            guard let info = info else { return }
             DispatchQueue.main.async {
-                self.isPremium = info?.entitlements["pro"]?.isActive == true
+                let hasEntitlement = info.entitlements["pro"]?.isActive == true
+                let hasActiveSubscription = !info.activeSubscriptions.isEmpty
+                self.isPremium = hasEntitlement || hasActiveSubscription
             }
         }
     }
