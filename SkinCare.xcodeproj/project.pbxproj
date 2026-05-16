@@ -7,8 +7,19 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FD8C6E462FB51F9700E1EFC0 /* RevenueCat in Frameworks */ = {isa = PBXBuildFile; productRef = FD8C6E452FB51F9700E1EFC0 /* RevenueCat */; };
 		FDFE57982F7BB73D00D6B678 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = FDFE57972F7BB73D00D6B678 /* Lottie */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		FD8C6E542FB6139300E1EFC0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FDB86CAA2F60134900C4B181 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = FDB86CB12F60134900C4B181;
+			remoteInfo = SkinCare;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		FD50B79A2F7BB8D7002808EE /* Embed Frameworks */ = {
@@ -24,10 +35,16 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		FD8C6E502FB6139300E1EFC0 /* SkinCareTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SkinCareTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		FDB86CB22F60134900C4B181 /* SkinCare.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SkinCare.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		FD8C6E512FB6139300E1EFC0 /* SkinCareTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = SkinCareTests;
+			sourceTree = "<group>";
+		};
 		FDB86CB42F60134900C4B181 /* SkinCare */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = SkinCare;
@@ -36,10 +53,18 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		FD8C6E4D2FB6139300E1EFC0 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		FDB86CAF2F60134900C4B181 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FD8C6E462FB51F9700E1EFC0 /* RevenueCat in Frameworks */,
 				FDFE57982F7BB73D00D6B678 /* Lottie in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -47,10 +72,19 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		FD8C6E442FB51F9700E1EFC0 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		FDB86CA92F60134900C4B181 = {
 			isa = PBXGroup;
 			children = (
 				FDB86CB42F60134900C4B181 /* SkinCare */,
+				FD8C6E512FB6139300E1EFC0 /* SkinCareTests */,
+				FD8C6E442FB51F9700E1EFC0 /* Frameworks */,
 				FDB86CB32F60134900C4B181 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -59,6 +93,7 @@
 			isa = PBXGroup;
 			children = (
 				FDB86CB22F60134900C4B181 /* SkinCare.app */,
+				FD8C6E502FB6139300E1EFC0 /* SkinCareTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -66,6 +101,29 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		FD8C6E4F2FB6139300E1EFC0 /* SkinCareTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FD8C6E562FB6139300E1EFC0 /* Build configuration list for PBXNativeTarget "SkinCareTests" */;
+			buildPhases = (
+				FD8C6E4C2FB6139300E1EFC0 /* Sources */,
+				FD8C6E4D2FB6139300E1EFC0 /* Frameworks */,
+				FD8C6E4E2FB6139300E1EFC0 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				FD8C6E552FB6139300E1EFC0 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				FD8C6E512FB6139300E1EFC0 /* SkinCareTests */,
+			);
+			name = SkinCareTests;
+			packageProductDependencies = (
+			);
+			productName = SkinCareTests;
+			productReference = FD8C6E502FB6139300E1EFC0 /* SkinCareTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		FDB86CB12F60134900C4B181 /* SkinCare */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = FDB86CC22F60134A00C4B181 /* Build configuration list for PBXNativeTarget "SkinCare" */;
@@ -85,6 +143,7 @@
 			name = SkinCare;
 			packageProductDependencies = (
 				FDFE57972F7BB73D00D6B678 /* Lottie */,
+				FD8C6E452FB51F9700E1EFC0 /* RevenueCat */,
 			);
 			productName = SkinCare;
 			productReference = FDB86CB22F60134900C4B181 /* SkinCare.app */;
@@ -100,6 +159,10 @@
 				LastSwiftUpdateCheck = 2620;
 				LastUpgradeCheck = 2620;
 				TargetAttributes = {
+					FD8C6E4F2FB6139300E1EFC0 = {
+						CreatedOnToolsVersion = 26.2;
+						TestTargetID = FDB86CB12F60134900C4B181;
+					};
 					FDB86CB12F60134900C4B181 = {
 						CreatedOnToolsVersion = 26.2;
 					};
@@ -116,6 +179,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				FDFE57962F7BB73D00D6B678 /* XCRemoteSwiftPackageReference "lottie-ios" */,
+				FD8C6DD82FB510D600E1EFC0 /* XCRemoteSwiftPackageReference "purchases-ios" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = FDB86CB32F60134900C4B181 /* Products */;
@@ -123,11 +187,19 @@
 			projectRoot = "";
 			targets = (
 				FDB86CB12F60134900C4B181 /* SkinCare */,
+				FD8C6E4F2FB6139300E1EFC0 /* SkinCareTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		FD8C6E4E2FB6139300E1EFC0 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		FDB86CB02F60134900C4B181 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -138,6 +210,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		FD8C6E4C2FB6139300E1EFC0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		FDB86CAE2F60134900C4B181 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -147,7 +226,59 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		FD8C6E552FB6139300E1EFC0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = FDB86CB12F60134900C4B181 /* SkinCare */;
+			targetProxy = FD8C6E542FB6139300E1EFC0 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		FD8C6E572FB6139300E1EFC0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = PSWV2XNZ6P;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.keremoztopuz.SkinCareTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SkinCare.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/SkinCare";
+			};
+			name = Debug;
+		};
+		FD8C6E582FB6139300E1EFC0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = PSWV2XNZ6P;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.keremoztopuz.SkinCareTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SkinCare.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/SkinCare";
+			};
+			name = Release;
+		};
 		FDB86CC02F60134A00C4B181 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -277,7 +408,7 @@
 				DEVELOPMENT_TEAM = PSWV2XNZ6P;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSCameraUsageDescription = "SkinCareAI requires camera access to analyze your skin\n  conditions and provide personalized recommendations.";
+				INFOPLIST_KEY_NSCameraUsageDescription = "SkinCare requires camera access to analyze your skin\n  conditions and provide personalized recommendations.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -310,7 +441,7 @@
 				DEVELOPMENT_TEAM = PSWV2XNZ6P;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSCameraUsageDescription = "SkinCareAI requires camera access to analyze your skin\n  conditions and provide personalized recommendations.";
+				INFOPLIST_KEY_NSCameraUsageDescription = "SkinCare requires camera access to analyze your skin\n  conditions and provide personalized recommendations.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -336,6 +467,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		FD8C6E562FB6139300E1EFC0 /* Build configuration list for PBXNativeTarget "SkinCareTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FD8C6E572FB6139300E1EFC0 /* Debug */,
+				FD8C6E582FB6139300E1EFC0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		FDB86CAD2F60134900C4B181 /* Build configuration list for PBXProject "SkinCare" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -357,6 +497,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		FD8C6DD82FB510D600E1EFC0 /* XCRemoteSwiftPackageReference "purchases-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/RevenueCat/purchases-ios";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.73.0;
+			};
+		};
 		FDFE57962F7BB73D00D6B678 /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/airbnb/lottie-ios";
@@ -368,6 +516,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		FD8C6E452FB51F9700E1EFC0 /* RevenueCat */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FD8C6DD82FB510D600E1EFC0 /* XCRemoteSwiftPackageReference "purchases-ios" */;
+			productName = RevenueCat;
+		};
 		FDFE57972F7BB73D00D6B678 /* Lottie */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = FDFE57962F7BB73D00D6B678 /* XCRemoteSwiftPackageReference "lottie-ios" */;
