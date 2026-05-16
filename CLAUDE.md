@@ -1,17 +1,14 @@
-# SkinCareAI — CLAUDE.md
+# SkinCare — Development Guide
 
 ## Working Style
-- Kullanici "yap", "yaz", "ekle", "go" gibi acik komut vermedikce KOD YAZMA
-- "Anlat", "acikla", "nasil yapicam" gibi ifadelerde sadece adim adim acikla
-- Kullanici kodu kendisi yazmak ve ogrenmek istiyor — hayatinda hic SwiftUI yazmamis birisine anlatir gibi acikla
-- Kullanici onayi olmadan dosya olusturma, duzenleme yapma
-- **Her islem oncesi dosyanin guncel halini oku** — aciklama veya degisiklik yapmadan once mutlaka dosyaya girip son durumu kontrol et
-- **Git Workflow:** Her dosya değişikliği için ayrı ayrı commit ve mesaj kullanılacaktır (toplu commit yapılmayacak).
-- **Commit mesajlarında "co-authorized by Gemini", "Claude", "Codex" gibi ifadeler ASLA kullanma**
-- **Mimari Karar:** Projede `ObservableObject` ve `@Published` kullanılacaktır. Kod yapısını modernize etmek yerine stabiliteye odaklanılacaktır.
+- Do not write code unless explicitly asked
+- Explain step by step for learning
+- Read file content before making changes
+- **Git Workflow:** Each file change must have its own commit and message.
+- **Commit Messages:** Do not use any automated authoring tool mentions.
 
 ## Project Overview
-- **App:** SkinCareAI — iOS SwiftUI cilt analizi uygulamasi (senior design project, CENG495)
+- **App:** SkinCare — iOS SwiftUI skin analysis app
 - **Team:** Berat Kerem Ozttopuz + Zeynep Aslan
 - **Min iOS:** 18.0+
 - **Pattern:** MVVM
