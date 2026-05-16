@@ -1,184 +1,291 @@
 import SwiftUI
 
 struct RecentsView: View {
+    @Binding var selectedTab: Int
     @StateObject private var vm = RecentsViewModel()
-    
+    @State private var selectedRecord: AnalysisRecord? = nil
+    @State private var showDetail = false
+    @State private var isCompareMode = false
+    @State private var compareRecords: [AnalysisRecord] = []
+    @State private var showCompare = false
+    @State private var showUpgrade = false
+
+    let mainColor      = Color(red: 1.0, green: 0.97, blue: 0.97)
+    let secondaryColor = Color(red: 0.47, green: 0.11, blue: 0.17)
+    let primaryText    = Color(red: 0.1,  green: 0.1,  blue: 0.2)
+
     var body: some View {
-        let mainColor = Color(red: 1.0, green: 0.97, blue: 0.97)
-        
         NavigationStack {
-            ZStack {
+            ZStack(alignment: .bottom) {
                 mainColor.ignoresSafeArea()
-                
-                VStack(spacing: 0) {
-                    ScrollView(.vertical, showsIndicators: false) {
-                        VStack(alignment: .leading, spacing: 16) {
-                            
-                            if vm.records.isEmpty {
-                                EmptyStateView()
-                            } else {
+
+                ScrollView(.vertical, showsIndicators: false) {
+                    VStack(alignment: .leading, spacing: 16) {
+
+                        if vm.records.isEmpty {
+                            EmptyStateView(onScanTap: { selectedTab = 2 })
+                        } else {
+                            // MARK: Header
+                            HStack {
                                 Text("Recent Analysis")
                                     .font(.system(size: 28, weight: .bold))
-                                    .padding(.horizontal, 20)
-                                    .padding(.top, 20)
-                                
-                                // Time filter dropdown
-                                FilterMenu(selectedFilter: $vm.selectedFilter)
-                                    .padding(.horizontal, 20)
-                                
-                                ForEach(vm.records, id: \.self) { record in
-                                    NavigationLink(destination: ResultView(record: record, isFromRecents: true)) {
-                                        AnalysisCard(record: record)
+                                    .foregroundColor(primaryText)
+                                Spacer()
+                                Button {
+                                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                        isCompareMode.toggle()
+                                        compareRecords = []
                                     }
-                                    .buttonStyle(PlainButtonStyle())
+                                } label: {
+                                    HStack(spacing: 6) {
+                                        Image(systemName: isCompareMode ? "xmark" : "arrow.left.arrow.right")
+                                            .font(.system(size: 13, weight: .semibold))
+                                        Text(isCompareMode ? "Cancel" : "Compare")
+                                            .font(.system(size: 14, weight: .semibold))
+                                    }
+                                    .foregroundColor(secondaryColor)
+                                    .padding(.horizontal, 14)
+                                    .padding(.vertical, 8)
+                                    .background(Color(red: 1.0, green: 0.87, blue: 0.87))
+                                    .cornerRadius(20)
                                 }
+                            }
+                            .padding(.horizontal, 20)
+                            .padding(.top, 20)
+
+                            if isCompareMode {
+                                Text("2 analiz seç ve karşılaştır")
+                                    .font(.system(size: 14))
+                                    .foregroundColor(.gray)
+                                    .padding(.horizontal, 20)
+                                    .transition(.opacity)
+                            }
+
+                            // MARK: Filter
+                            Menu {
+                                Button("All Time") { vm.selectedFilter = "All Time" }
+                                Button("This Week") { vm.selectedFilter = "This Week" }
+                                Button("This Month") { vm.selectedFilter = "This Month" }
+                            } label: {
+                                HStack {
+                                    Image(systemName: "calendar").font(.system(size: 16))
+                                    Text(vm.selectedFilter).font(.system(size: 16, weight: .medium))
+                                    Spacer()
+                                    Image(systemName: "chevron.down").font(.system(size: 14))
+                                }
+                                .foregroundColor(primaryText)
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 12)
+                                .background(Color.white)
+                                .cornerRadius(12)
+                                .shadow(color: Color.black.opacity(0.04), radius: 4, x: 0, y: 2)
+                            }
+                            .padding(.horizontal, 20)
+
+                            // MARK: Cards
+                            if vm.hasLockedRecords {
+                                Button { showUpgrade = true } label: {
+                                    HStack(spacing: 10) {
+                                        Image(systemName: "lock.fill")
+                                            .font(.system(size: 14))
+                                        Text("Eski analizlerin Pro ile görüntülenebilir")
+                                            .font(.system(size: 14, weight: .medium))
+                                        Spacer()
+                                        Text("Pro'ya Geç →")
+                                            .font(.system(size: 12, weight: .bold))
+                                            .foregroundColor(secondaryColor)
+                                            .padding(.horizontal, 10)
+                                            .padding(.vertical, 4)
+                                            .background(Color(red: 1.0, green: 0.87, blue: 0.87))
+                                            .cornerRadius(8)
+                                    }
+                                    .foregroundColor(.gray)
+                                    .padding(.horizontal, 20)
+                                    .padding(.vertical, 14)
+                                    .background(Color.white)
+                                    .cornerRadius(14)
+                                    .shadow(color: Color.black.opacity(0.04), radius: 6, x: 0, y: 2)
+                                }
+                                .buttonStyle(.plain)
+                                .padding(.horizontal, 20)
+                            }
+
+                            ForEach(vm.records, id: \.self) { record in
+                                let isSelected = compareRecords.contains(record)
+                                Button {
+                                    if isCompareMode {
+                                        handleCompareSelection(record)
+                                    } else {
+                                        selectedRecord = record
+                                        showDetail = true
+                                    }
+                                } label: {
+                                    HStack(alignment: .top, spacing: 14) {
+                                        if let data = record.imageData, let uiImage = UIImage(data: data) {
+                                            Image(uiImage: uiImage)
+                                                .resizable()
+                                                .scaledToFill()
+                                                .frame(width: 120, height: 220)
+                                                .clipShape(RoundedRectangle(cornerRadius: 12))
+                                        } else {
+                                            RoundedRectangle(cornerRadius: 12)
+                                                .fill(Color(red: 1.0, green: 0.87, blue: 0.87))
+                                                .frame(width: 120, height: 200)
+                                                .overlay(
+                                                    Image(systemName: "person.crop.rectangle")
+                                                        .font(.system(size: 24))
+                                                        .foregroundColor(secondaryColor.opacity(0.6))
+                                                )
+                                        }
+
+                                        VStack(alignment: .leading, spacing: 14) {
+                                            HStack {
+                                                Text(record.date ?? Date(), style: .date)
+                                                    .font(.system(size: 14))
+                                                    .foregroundColor(.gray)
+                                                Spacer()
+                                                if isCompareMode {
+                                                    Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                                                        .font(.system(size: 22))
+                                                        .foregroundColor(isSelected ? secondaryColor : Color.gray.opacity(0.4))
+                                                        .animation(.spring(response: 0.2), value: isSelected)
+                                                } else {
+                                                    Text(record.condition ?? "Unknown")
+                                                        .font(.system(size: 13, weight: .semibold))
+                                                        .foregroundColor(secondaryColor)
+                                                        .padding(.horizontal, 12)
+                                                        .padding(.vertical, 5)
+                                                        .background(Color(red: 1.0, green: 0.87, blue: 0.87))
+                                                        .cornerRadius(10)
+                                                }
+                                            }
+
+                                            HStack(alignment: .firstTextBaseline, spacing: 4) {
+                                                Text("\(Int(record.overallScore))")
+                                                    .font(.system(size: 36, weight: .bold))
+                                                    .foregroundColor(primaryText)
+                                                Text("/ 100")
+                                                    .font(.system(size: 16))
+                                                    .foregroundColor(.gray)
+                                            }
+
+                                            ScoreBar(label: "Dryness",      value: record.drynessScore,      color: secondaryColor)
+                                            ScoreBar(label: "Inflammation", value: record.inflammationScore, color: secondaryColor)
+                                            ScoreBar(label: "Oiliness",     value: record.oilinessScore,     color: secondaryColor)
+                                        }
+                                    }
+                                    .padding(20)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 16)
+                                            .fill(Color.white)
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: 16)
+                                                    .stroke(isSelected ? secondaryColor : Color.clear, lineWidth: 2)
+                                            )
+                                    )
+                                    .shadow(color: Color.black.opacity(isSelected ? 0.1 : 0.06), radius: 8, x: 0, y: 4)
+                                    .padding(.horizontal, 20)
+                                }
+                                .buttonStyle(.plain)
+                                .animation(.spring(response: 0.2), value: isSelected)
+                            }
+
+                            if isCompareMode {
+                                Color.clear.frame(height: 88)
                             }
                         }
                     }
                 }
+
+                // MARK: Compare bottom button
+                if isCompareMode && compareRecords.count == 2 {
+                    VStack(spacing: 0) {
+                        Button {
+                            showCompare = true
+                        } label: {
+                            Text("Compare (2)")
+                                .font(.system(size: 17, weight: .bold))
+                                .foregroundColor(.white)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 18)
+                                .background(secondaryColor)
+                                .cornerRadius(16)
+                                .shadow(color: secondaryColor.opacity(0.3), radius: 10, x: 0, y: 5)
+                        }
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 14)
+                    }
+                    .background(mainColor.shadow(.drop(color: .black.opacity(0.07), radius: 8, y: -4)))
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                }
+            }
+            .sheet(isPresented: $showUpgrade) { UpgradeSheetView() }
+            .navigationDestination(isPresented: $showDetail) {
+                if let record = selectedRecord {
+                    ResultView(record: record, isFromRecents: true)
+                }
+            }
+            .navigationDestination(isPresented: $showCompare) {
+                if compareRecords.count == 2 {
+                    CompareView(record1: compareRecords[0], record2: compareRecords[1])
+                }
             }
         }
     }
-}
 
-// MARK: - Subviews
-
-struct AnalysisCard: View {
-    let record: AnalysisRecord
-    let secondaryColor = Color(red: 0.47, green: 0.11, blue: 0.17)
-    
-    var body: some View {
-        HStack(spacing: 16) {
-            // MARK: - Image Section
-            ZStack {
-                if let imageData = record.imageData, let uiImage = UIImage(data: imageData) {
-                    Image(uiImage: uiImage)
-                        .resizable()
-                        .scaledToFill()
-                } else {
-                    Image("guidegood1") // placeholder for image
-                        .resizable()
-                        .scaledToFill()
-                }
+    private func handleCompareSelection(_ record: AnalysisRecord) {
+        withAnimation(.spring(response: 0.2)) {
+            if let idx = compareRecords.firstIndex(of: record) {
+                compareRecords.remove(at: idx)
+            } else if compareRecords.count < 2 {
+                compareRecords.append(record)
             }
-            .frame(width: 70, height: 70)
-            .cornerRadius(12)
-            .clipped()
-            .padding(.leading, 12)
-            
-            // MARK: - Info Section : The most detected disease
-            VStack(alignment: .leading, spacing: 8) {
+        }
+    }
+
+    struct ScoreBar: View {
+        let label: String
+        let value: Double
+        let color: Color
+
+        var body: some View {
+            VStack(alignment: .leading, spacing: 4) {
                 HStack {
-                    Text(record.date ?? Date(), style: .date)
-                        .font(.system(size: 13, weight: .medium))
+                    Text(label)
+                        .font(.system(size: 14))
                         .foregroundColor(.gray)
-                    
                     Spacer()
-                    
-                    Text(record.condition ?? "Acne")
-                        .font(.system(size: 11, weight: .bold))
-                        .foregroundColor(secondaryColor)
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 4)
-                        .background(secondaryColor.opacity(0.1))
-                        .cornerRadius(8)
-                }
-                
-                HStack(alignment: .firstTextBaseline, spacing: 4) {
-                    Text("\(Int(record.overallScore))")
-                        .font(.system(size: 28, weight: .bold))
+                    Text("\(Int(value))%")
+                        .font(.system(size: 14, weight: .medium))
                         .foregroundColor(Color(red: 0.1, green: 0.1, blue: 0.2))
-                    Text("/ 100")
-                        .font(.system(size: 14, weight: .semibold))
-                        .foregroundColor(.gray)
                 }
-                
-                VStack(spacing: 8) {
-                    ScoreBar(label: "Dryness", value: record.drynessScore, color: secondaryColor)
-                    ScoreBar(label: "Inflammation", value: record.inflammationScore, color: secondaryColor)
-                    ScoreBar(label: "Oiliness", value: record.oilinessScore, color: secondaryColor)
+                GeometryReader { geo in
+                    ZStack(alignment: .leading) {
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(color.opacity(0.15))
+                            .frame(height: 6)
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(color)
+                            .frame(width: geo.size.width * (value / 100), height: 6)
+                    }
                 }
+                .frame(height: 6)
             }
-            .padding(.vertical, 16)
-            .padding(.trailing, 16)
-        }
-        .background(Color.white)
-        .cornerRadius(18)
-        .shadow(color: Color.black.opacity(0.06), radius: 10, x: 0, y: 5)
-        .padding(.horizontal, 20)
-    }
-}
-// MARK: Score Bar: This view is for user skin results score bars
-struct ScoreBar: View {
-    let label: String
-    let value: Double
-    let color: Color
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            HStack {
-                Text(label)
-                    .font(.system(size: 11, weight: .medium))
-                    .foregroundColor(.gray.opacity(0.8))
-                Spacer()
-                Text("\(Int(value))%")
-                    .font(.system(size: 11, weight: .bold))
-                    .foregroundColor(Color(red: 0.1, green: 0.1, blue: 0.2))
-            }
-            
-            GeometryReader { geo in
-                ZStack(alignment: .leading) {
-                    RoundedRectangle(cornerRadius: 3)
-                        .fill(color.opacity(0.1))
-                        .frame(height: 4)
-                    
-                    RoundedRectangle(cornerRadius: 3)
-                        .fill(color)
-                        .frame(width: geo.size.width * (value / 100), height: 4)
-                }
-            }
-            .frame(height: 4)
         }
     }
 }
-// MARK: Filter Menu : This view is for filtering the timeline of the recent scans
-struct FilterMenu: View {
-    @Binding var selectedFilter: String
-    
-    var body: some View {
-        Menu {
-            Button("All Time") { selectedFilter = "All Time" }
-            Button("This Week") { selectedFilter = "This Week" }
-            Button("This Month") { selectedFilter = "This Month" }
-        } label: {
-            HStack {
-                Image(systemName: "calendar")
-                    .font(.system(size: 16))
-                Text(selectedFilter)
-                    .font(.system(size: 16, weight: .medium))
-                Spacer()
-                Image(systemName: "chevron.down")
-                    .font(.system(size: 14))
-            }
-            .foregroundColor(Color(red: 0.1, green: 0.1, blue: 0.2))
-            .padding(.horizontal, 16)
-            .padding(.vertical, 12)
-            .background(Color.white)
-            .cornerRadius(12)
-            .shadow(color: Color.black.opacity(0.04), radius: 4, x: 0, y: 2)
-        }
-    }
-}
-// MARK: Empty State View : This view is for new user whose not yet make any scans.
+
 struct EmptyStateView: View {
+    var onScanTap: () -> Void = {}
     let secondaryColor = Color(red: 0.47, green: 0.11, blue: 0.17)
-    
+
     var body: some View {
         VStack(spacing: 24) {
             Spacer()
+
             ZStack {
                 Circle()
-                    .fill(Color(red: 1.0, green: 0.87, blue:0.87))
+                    .fill(Color(red: 1.0, green: 0.87, blue: 0.87))
                     .frame(width: 160, height: 160)
                 Circle()
                     .fill(secondaryColor)
@@ -187,7 +294,7 @@ struct EmptyStateView: View {
                     .font(.system(size: 40))
                     .foregroundColor(.white)
             }
-            
+
             VStack(spacing: 10) {
                 Text("No Analysis Yet")
                     .font(.system(size: 24, weight: .bold))
@@ -196,15 +303,11 @@ struct EmptyStateView: View {
                     .foregroundColor(.gray)
                     .multilineTextAlignment(.center)
             }
-            
-            Button(action: {
-                print("Redirect to camera")
-            }) {
+
+            Button(action: onScanTap) {
                 HStack(spacing: 10) {
-                    Image(systemName: "viewfinder")
-                        .font(.system(size: 20))
-                    Text("Make your first scan")
-                        .font(.system(size: 17, weight: .semibold))
+                    Image(systemName: "viewfinder").font(.system(size: 20))
+                    Text("Make your first scan").font(.system(size: 17, weight: .semibold))
                 }
                 .foregroundColor(.white)
                 .padding(.horizontal, 36)
@@ -213,6 +316,7 @@ struct EmptyStateView: View {
                 .cornerRadius(16)
             }
             Spacer()
+            Spacer()
         }
         .frame(maxWidth: .infinity)
         .frame(minHeight: 600)
@@ -220,5 +324,5 @@ struct EmptyStateView: View {
 }
 
 #Preview {
-    RecentsView()
+    RecentsView(selectedTab: .constant(3))
 }
