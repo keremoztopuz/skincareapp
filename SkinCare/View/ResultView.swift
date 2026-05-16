@@ -11,6 +11,7 @@ import SwiftUI
 struct ResultView: View {
     @Environment(\.dismiss) var dismiss
     @StateObject private var vm: ResultsViewModel
+    var onDismiss: (() -> Void)? = nil
     
     let mainColor = Color(red: 1.0, green: 0.97, blue: 0.97)
     let secondaryColor = Color(red: 0.47, green: 0.11, blue: 0.17)
@@ -25,9 +26,10 @@ struct ResultView: View {
 
     private var isPremium: Bool { SubscriptionManager.shared.isPremium }
     
-    init(record: AnalysisRecord?, isFromRecents: Bool) {
+    init(record: AnalysisRecord?, isFromRecents: Bool, onDismiss: (() -> Void)? = nil) {
         self.record = record
         self.isFromRecents = isFromRecents
+        self.onDismiss = onDismiss
         self._vm = StateObject(wrappedValue: ResultsViewModel(record: record))
     }
     
@@ -40,7 +42,13 @@ struct ResultView: View {
 
                     // MARK: - Back Button
                     HStack {
-                        Button(action: { dismiss() }) {
+                        Button(action: { 
+                            if let onDismiss = onDismiss {
+                                onDismiss()
+                            } else {
+                                dismiss()
+                            }
+                        }) {
                             Image(systemName: "arrow.left")
                                 .font(.system(size: 16, weight: .bold))
                                 .foregroundColor(.white)
@@ -99,7 +107,7 @@ struct ResultView: View {
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: 16) {
                                 ResultBar(title: "Acne",     score: record?.acneScore    ?? 0, icon: "face.dashed",  color: secondaryColor)
-                                ResultBar(title: "Eczema",   score: record?.eczemaScore  ?? 0, icon: "drop.fill",    color: secondaryColor)
+                                ResultBar(title: "Redness",   score: record?.eczemaScore  ?? 0, icon: "drop.fill",    color: secondaryColor)
                                 if isPremium {
                                     ResultBar(title: "Wrinkles",  score: record?.wrinkleScore   ?? 0, icon: "sun.max.fill",  color: secondaryColor)
                                     ResultBar(title: "Eyebags",   score: record?.eyebagScore    ?? 0, icon: "flame.fill",    color: secondaryColor)
@@ -124,19 +132,23 @@ struct ResultView: View {
                             
                             ScrollView(.horizontal, showsIndicators: false) {
                                 HStack(spacing: 16) {
-                                    ForEach(isPremium ? vm.recommendProduct : Array(vm.recommendProduct.prefix(2))) { product in
-                                        Button {
-                                            selectedProduct = product
-                                            showProductDetail = true
-                                        } label: {
-                                            ProductCard(product: product)
+                                    if vm.isLoading {
+                                        ProgressView()
+                                            .frame(width: 160, height: 160)
+                                    } else {
+                                        ForEach(isPremium ? vm.recommendProduct : Array(vm.recommendProduct.prefix(2))) { product in
+                                            Button {
+                                                selectedProduct = product
+                                                showProductDetail = true
+                                            } label: {
+                                                ProductCard(product: product)
+                                            }
+                                            .buttonStyle(.plain)
                                         }
-                                        .buttonStyle(.plain)
                                     }
                                 }
                                 .padding(.horizontal, 20)
-                            }
-                        }
+                            }                        }
                     }
                     
                     // MARK: - Action Button (Only for Fresh Analysis)
