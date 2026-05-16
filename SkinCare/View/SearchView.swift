@@ -74,20 +74,32 @@ struct SearchProductCard: View {
     
     var body: some View {
         HStack(spacing: 16) {
-            RoundedRectangle(cornerRadius: 12)
-                .fill(secondaryColor.opacity(0.05))
-                .frame(width: 60, height: 60)
-                .overlay {
+            ZStack {
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(secondaryColor.opacity(0.05))
+                    .frame(width: 60, height: 60)
+                
+                if let urlString = product.imageUrl, let url = URL(string: urlString) {
+                    AsyncImage(url: url) { image in
+                        image.resizable().scaledToFill()
+                    } placeholder: {
+                        ProgressView()
+                    }
+                    .frame(width: 60, height: 60)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                } else {
                     Image(systemName: "bottle.condiment.fill")
                         .foregroundColor(secondaryColor.opacity(0.2))
                 }
+            }
             
             VStack(alignment: .leading, spacing: 4) {
                 Text(product.name)
                     .font(.system(size: 16, weight: .bold))
                     .foregroundColor(primaryText)
+                    .lineLimit(1)
                 
-                Text(product.category)
+                Text(product.brand ?? "Unknown Brand")
                     .font(.system(size: 12, weight: .bold))
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
@@ -98,18 +110,9 @@ struct SearchProductCard: View {
             
             Spacer()
             
-            HStack(spacing: 4) {
-                Image(systemName: "star.fill")
-                    .foregroundColor(.orange)
-                    .font(.system(size: 12))
-                Text("4.8")
-                    .font(.system(size: 14, weight: .bold))
-                    .foregroundColor(primaryText)
-            }
-            .padding(.horizontal, 10)
-            .padding(.vertical, 6)
-            .background(Color.orange.opacity(0.1))
-            .cornerRadius(10)
+            Image(systemName: "chevron.right")
+                .font(.system(size: 14, weight: .bold))
+                .foregroundColor(.gray.opacity(0.3))
         }
         .padding(16)
         .background(Color.white)
