@@ -54,64 +54,79 @@ struct CameraView: View {
                 Spacer()
                 
                 ZStack {
-                    if vm.isAnalyzing, let captured = vm.capturedImage {
-                        Image(uiImage: captured)
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 340, height: 420)
-                            .cornerRadius(30)
-                            .clipped()
-
-                        // Scan line
-                        ZStack {
-                            Rectangle()
-                                .fill(
-                                    LinearGradient(
-                                        colors: [
-                                            secondaryColor.opacity(0),
-                                            secondaryColor.opacity(0.6),
-                                            secondaryColor.opacity(0)
-                                        ],
-                                        startPoint: .top,
-                                        endPoint: .bottom
-                                    )
-                                )
-                                .frame(width: 340, height: 40)
-
-                            Rectangle()
-                                .fill(secondaryColor)
-                                .frame(width: 340, height: 2)
+                    // 1. Live Camera or Captured Image
+                    Group {
+                        if let captured = vm.capturedImage {
+                            Image(uiImage: captured)
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 350, height: 440)
+                                .cornerRadius(30)
+                                .clipped()
+                                .transition(.opacity)
+                        } else {
+                            CameraPreview(session: vm.session)
+                                .frame(width: 350, height: 440)
+                                .cornerRadius(30)
+                                .clipped()
+                                .background(Color.gray.opacity(0.05))
+                                .overlay {
+                                    if vm.isAnalyzing {
+                                        // "Fake" freeze with blur while waiting for high-res photo
+                                        Rectangle()
+                                            .fill(.ultraThinMaterial)
+                                    }
+                                }
                         }
-                        .offset(y: scanOffset)
-                        .frame(width: 340, height: 420)
-                        .cornerRadius(30)
-                        .clipped()
-
-                        // Scanning label
-                        VStack {
-                            Spacer()
-                            Text("Scanning...")
-                                .font(.system(size: 14, weight: .semibold))
-                                .foregroundColor(.white)
-                                .padding(.horizontal, 16)
-                                .padding(.vertical, 6)
-                                .background(secondaryColor.opacity(0.7))
-                                .cornerRadius(10)
-                                .padding(.bottom, 16)
-                        }
-                        .frame(width: 340, height: 420)
-
-                    } else {
-                        CameraPreview(session: vm.session)
-                            .frame(width: 340, height: 420)
-                            .cornerRadius(30)
-                            .clipped()
-                            .background(Color.gray.opacity(0.05))
                     }
 
+                    // 2. Scanning UI (Always visible during analysis, regardless of image arrival)
+                    if vm.isAnalyzing {
+                        ZStack {
+                            // Scan line
+                            ZStack {
+                                Rectangle()
+                                    .fill(
+                                        LinearGradient(
+                                            colors: [
+                                                secondaryColor.opacity(0),
+                                                secondaryColor.opacity(0.6),
+                                                secondaryColor.opacity(0)
+                                            ],
+                                            startPoint: .top,
+                                            endPoint: .bottom
+                                        )
+                                    )
+                                    .frame(width: 350, height: 40)
+
+                                Rectangle()
+                                    .fill(secondaryColor)
+                                    .frame(width: 350, height: 2)
+                            }
+                            .offset(y: scanOffset)
+                            .frame(width: 350, height: 440)
+                            .clipped()
+
+                            // Scanning label
+                            VStack {
+                                Spacer()
+                                Text("Analyzing Skin...")
+                                    .font(.system(size: 14, weight: .semibold))
+                                    .foregroundColor(.white)
+                                    .padding(.horizontal, 16)
+                                    .padding(.vertical, 8)
+                                    .background(secondaryColor.opacity(0.8))
+                                    .cornerRadius(12)
+                                    .padding(.bottom, 20)
+                            }
+                        }
+                        .transition(.opacity)
+                    }
+
+                    // 3. Static Guides
                     RoundedRectangle(cornerRadius: 35)
                         .stroke(secondaryColor, lineWidth: 4)
-                        .frame(width: 350, height: 430)
+                        .frame(width: 360, height: 450)
                         .mask(
                             ZStack {
                                 VStack {
@@ -140,7 +155,9 @@ struct CameraView: View {
                             .foregroundColor(secondaryColor.opacity(0.2))
                     }
                 }
+                .frame(width: 360, height: 450)
                 .frame(maxWidth: .infinity)
+                .animation(.easeInOut, value: vm.isAnalyzing)
                 
                 Spacer()
                 
@@ -150,9 +167,12 @@ struct CameraView: View {
                         showQuotaAlert = true
                         return
                     }
-                    scanOffset = -210
+                    
                     vm.capturePhoto()
-                    withAnimation(.linear(duration: 1.8)) {
+                    
+                    // Reset and start scan line animation
+                    scanOffset = -210
+                    withAnimation(.easeInOut(duration: 1.5).repeatForever(autoreverses: true)) {
                         scanOffset = 210
                     }
                 }) {
@@ -176,11 +196,11 @@ struct CameraView: View {
             .padding(.horizontal, 24)
         }
         
-        .alert("Scan Hakkın Doldu", isPresented: $showQuotaAlert) {
-            Button("Pro'ya Geç") { showUpgrade = true }
-            Button("Tamam", role: .cancel) {}
+        .alert("Scan Limit Reached", isPresented: $showQuotaAlert) {
+            Button("Go Pro") { showUpgrade = true }
+            Button("OK", role: .cancel) {}
         } message: {
-            Text("Aylık \(SubscriptionManager.shared.freeMonthlyLimit) ücretsiz scan hakkını kullandın. Pro'ya geç ve sınırsız analiz yap.")
+            Text("You've used your \(SubscriptionManager.shared.freeMonthlyLimit) free monthly scans. Go Pro for unlimited analysis.")
         }
         .sheet(isPresented: $showUpgrade) { UpgradeSheetView() }
         .onAppear {
@@ -188,19 +208,36 @@ struct CameraView: View {
                 showGuide = true
             }
             vm.checkPermission()
+            vm.resetScanner()
         }
         .preferredColorScheme(.light)
         .fullScreenCover(isPresented: $showGuide) {
             CameraGuideView()
         }
         .onChange(of: vm.analysisRecord) { oldValue, newValue in
-            if vm.capturedImage != nil {
+            if vm.capturedImage != nil && newValue != nil {
                 scanOffset = -210
                 showResult = true
             }
         }
-        .fullScreenCover(isPresented: $showResult) {
-            ResultView(record: vm.analysisRecord, isFromRecents: false)
+        .fullScreenCover(isPresented: $showResult, onDismiss: {
+            vm.resetScanner()
+        }) {
+            ResultView(record: vm.analysisRecord, isFromRecents: false) {
+                showResult = false
+                vm.resetScanner()
+            }
+        }
+        .onChange(of: vm.isAnalyzing) { oldValue, newValue in
+            if newValue {
+                // Instant animation trigger
+                scanOffset = -210
+                withAnimation(.easeInOut(duration: 1.5).repeatForever(autoreverses: true)) {
+                    scanOffset = 210
+                }
+            } else {
+                scanOffset = -210
+            }
         }
     }
     
