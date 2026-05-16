@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import RevenueCat
 internal import CoreData
 
 @main
@@ -20,5 +21,9 @@ struct SkinCareApp: App {
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
                 .environmentObject(appVM)
         }
+    }
+    
+    init() {
+        Purchases.configure(withAPIKey: "test_AstXKlNoXETqYLbrEpPjBfHELfH")
     }
 }
