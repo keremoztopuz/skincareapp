@@ -15,7 +15,6 @@ class MoreViewModel: ObservableObject {
     @Published var userAge: String = ""
     @Published var userGender: String = ""
     @Published var userSkinType: String = ""
-    @AppStorage("isPremium") var isPremium: Bool = false
 
     init() { loadProfile() }
 
