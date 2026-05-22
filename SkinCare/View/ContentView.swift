@@ -11,6 +11,8 @@ struct ContentView: View {
         switch vm.currentState {
         case .onboarding:
             OnBoardingView()
+        case .disclaimer:
+            DisclaimerView()
         case .profileSetup:
             ProfileSetupView()
         case .mainApp:
