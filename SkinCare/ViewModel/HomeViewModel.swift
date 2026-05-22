@@ -34,6 +34,9 @@ class HomeViewModel: ObservableObject {
     
     @MainActor
     func fetchAllCloudData() async {
+        // Prevent redundant fetching if data is already present
+        guard products.isEmpty || articles.isEmpty else { return }
+        
         isLoading = true
         errorMessage = nil
         
