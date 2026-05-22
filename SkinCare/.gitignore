@@ -137,6 +137,7 @@ crashlytics-build.properties
 
 # Lottie
 *.json
+!Contents.json
 *.lottie
 
 # Development
