@@ -9,6 +9,7 @@ import XCTest
 import Testing
 import Vision
 @testable import SkinCare
+internal import CoreData
 
 @Test func testScoringEngineCalculation() {
     // mock data for test
@@ -28,19 +29,26 @@ import Vision
     XCTAssertGreaterThan(result.inflammationScore, 50)
 }
 
-@Test func testFaceDetectionAndCropping() async {
-    let viewModel = CameraViewModel()
-    // fake image for test
+@Test func testFaceDetectionWithDummyImage() throws {
     let size = CGSize(width: 1000, height: 1000)
     UIGraphicsBeginImageContext(size)
     UIColor.red.setFill()
     UIRectFill(CGRect(origin: .zero, size: size))
     let dummyImage = UIGraphicsGetImageFromCurrentImageContext()
     UIGraphicsEndImageContext()
-    
-    guard let image = dummyImage else { return }
-    
-    XCTAssertTrue(viewModel.isAnalyzing, "Analyse started.")
+
+    guard let cgImage = dummyImage?.cgImage else {
+        XCTFail("Failed to create dummy image")
+        return
+    }
+
+    let handler = VNImageRequestHandler(cgImage: cgImage, orientation: .up)
+    let request = VNDetectFaceRectanglesRequest()
+
+    try handler.perform([request])
+
+    let results = request.results ?? []
+    XCTAssertTrue(results.isEmpty, "No face should be detected in a plain red image")
 }
 
 @Test func testVisionFaceDetectionWithRealImage() throws {
@@ -61,4 +69,56 @@ import Vision
     let face = results.first!
     XCTAssertGreaterThan(face.boundingBox.width, 0)
     XCTAssertGreaterThan(face.boundingBox.height, 0)
+}
+
+@Test func testScoringEngineHealthySkin() {
+    
+    let engine = ScoringEngine()
+    let result = engine.calculateScore(acne: 0, redness: 0, psoriasis: 0, benLezyon: 0, healthy: 0.9, skinType: "normal")
+    
+    XCTAssertGreaterThan(result.overallScore, 70)
+    XCTAssertLessThan(result.inflammationScore, 40)
+}
+
+@Test func testScoringEngineMultipleConditions() {
+    
+    let engine = ScoringEngine()
+    let results = engine.calculateScore(acne: 0.7, redness: 0.6, psoriasis: 0.5, benLezyon: 0.0, healthy: 0.1, skinType: "oily")
+    
+    XCTAssertLessThan(results.overallScore, 50)
+    XCTAssertGreaterThan(results.inflammationScore, 50)
+}
+
+@Test func testScoringEngineSkinTypeComparison() {
+    let engine = ScoringEngine()
+    let oilyResult = engine.calculateScore(acne: 0.5, redness: 0, psoriasis: 0, benLezyon: 0, healthy: 0, skinType: "oily")
+    let dryResult = engine.calculateScore(acne: 0.5, redness: 0, psoriasis: 0, benLezyon: 0, healthy: 0, skinType: "dry")
+    let normalResult = engine.calculateScore(acne: 0.5, redness: 0, psoriasis: 0, benLezyon: 0, healthy: 0, skinType: "normal")
+    let combinationResult = engine.calculateScore(acne: 0.5, redness: 0, psoriasis: 0, benLezyon: 0, healthy: 0, skinType: "combination")
+    let sensitiveResult = engine.calculateScore(acne: 0.5, redness: 0, psoriasis: 0, benLezyon: 0, healthy: 0, skinType: "sensitive")
+    
+    XCTAssertGreaterThanOrEqual(oilyResult.overallScore, 0)
+    XCTAssertLessThanOrEqual(oilyResult.overallScore, 100)
+    XCTAssertGreaterThanOrEqual(dryResult.overallScore, 0)
+    XCTAssertLessThanOrEqual(dryResult.overallScore, 100)
+    XCTAssertGreaterThanOrEqual(normalResult.overallScore, 0)
+    XCTAssertLessThanOrEqual(normalResult.overallScore, 100)
+    XCTAssertGreaterThanOrEqual(combinationResult.overallScore, 0)
+    XCTAssertLessThanOrEqual(combinationResult.overallScore, 100)
+    XCTAssertGreaterThanOrEqual(sensitiveResult.overallScore, 0)
+    XCTAssertLessThanOrEqual(sensitiveResult.overallScore, 100)
+}
+
+@Test func testScoringEngineBoundaryValues() {
+    let engine = ScoringEngine()
+    let result = engine.calculateScore(acne: 0.0, redness: 0.0, psoriasis: 0.0, benLezyon: 0.0, healthy: 0.0, skinType: "normal")
+
+    XCTAssertGreaterThanOrEqual(result.overallScore, 0)
+    XCTAssertLessThanOrEqual(result.overallScore, 100)
+    XCTAssertEqual(result.dominantCondition, "")
+
+    let maxResult = engine.calculateScore(acne: 1.0, redness: 1.0, psoriasis: 1.0, benLezyon: 1.0, healthy: 1.0, skinType: "normal")
+
+    XCTAssertGreaterThanOrEqual(maxResult.overallScore, 0)
+    XCTAssertLessThanOrEqual(maxResult.overallScore, 100)
 }
