@@ -12,6 +12,7 @@ internal import Combine
 enum AppState {
     case splash
     case onboarding
+    case disclaimer
     case profileSetup
     case loading
     case mainApp
@@ -22,6 +23,11 @@ class ContentViewModel: ObservableObject {
     @Published var hasCompletedOnBoarding: Bool {
         didSet {
             UserDefaults.standard.set(hasCompletedOnBoarding, forKey: "hasCompletedOnBoarding")
+        }
+    }
+    @Published var hasAcceptedDisclaimer: Bool {
+        didSet {
+            UserDefaults.standard.set(hasAcceptedDisclaimer, forKey: "hasAcceptedDisclaimer")
         }
     }
     @Published var hasCompletedProfile: Bool {
@@ -50,6 +56,8 @@ class ContentViewModel: ObservableObject {
             return .splash
         } else if !hasCompletedOnBoarding {
             return .onboarding
+        } else if !hasAcceptedDisclaimer {
+            return .disclaimer
         } else if !hasCompletedProfile {
             return .profileSetup
         } else if showLoading {
@@ -63,6 +71,7 @@ class ContentViewModel: ObservableObject {
     
     init() {
         self.hasCompletedOnBoarding = UserDefaults.standard.bool(forKey: "hasCompletedOnBoarding")
+        self.hasAcceptedDisclaimer = UserDefaults.standard.bool(forKey: "hasAcceptedDisclaimer")
         self.hasCompletedProfile = UserDefaults.standard.bool(forKey: "hasCompletedProfile")
         self.hasCompletedSubscription = UserDefaults.standard.bool(forKey: "hasCompletedSubscription")
         self.isPremium = SubscriptionManager.shared.isPremium
@@ -75,6 +84,10 @@ class ContentViewModel: ObservableObject {
     
     func completeOnBoarding() {
         hasCompletedOnBoarding = true
+    }
+
+    func acceptDisclaimer() {
+        hasAcceptedDisclaimer = true
     }
     
     func completeProfile() {
