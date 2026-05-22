@@ -4,8 +4,15 @@ import CoreML
 import Vision
 internal import Combine
 
+enum CameraPermissionStatus {
+    case notDetermined
+    case authorized
+    case denied
+}
+
 class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate {
     @Published var session = AVCaptureSession()
+    @Published var permissionStatus: CameraPermissionStatus = .notDetermined
     @Published var isPermissionGranted = false
     private var photoOutput = AVCapturePhotoOutput()
     @Published var capturedImage: UIImage? = nil
@@ -26,19 +33,27 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
     func checkPermission() {
         switch AVCaptureDevice.authorizationStatus(for: .video) {
         case .authorized:
+            self.permissionStatus = .authorized
             self.isPermissionGranted = true
             self.setupSession()
         case .notDetermined:
-            AVCaptureDevice.requestAccess(for: .video) { granted in
-                DispatchQueue.main.async {
-                    self.isPermissionGranted = granted
-                    if granted {
-                        self.setupSession()
-                    }
+            self.permissionStatus = .notDetermined
+            self.isPermissionGranted = false
+        default:
+            self.permissionStatus = .denied
+            self.isPermissionGranted = false
+        }
+    }
+    
+    func requestPermission() {
+        AVCaptureDevice.requestAccess(for: .video) { granted in
+            DispatchQueue.main.async {
+                self.isPermissionGranted = granted
+                self.permissionStatus = granted ? .authorized : .denied
+                if granted {
+                    self.setupSession()
                 }
             }
-        default:
-            self.isPermissionGranted = false
         }
     }
     
@@ -90,9 +105,17 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
     
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
         guard let data = photo.fileDataRepresentation(),
-              let originalImage = UIImage(data: data) else { 
+              var originalImage = UIImage(data: data) else { 
             DispatchQueue.main.async { self.isAnalyzing = false }
             return 
+        }
+
+        // If using front camera, we need to flip it horizontally to match the mirrored preview
+        if let deviceInput = session.inputs.first as? AVCaptureDeviceInput,
+           deviceInput.device.position == .front {
+            if let cgImage = originalImage.cgImage {
+                originalImage = UIImage(cgImage: cgImage, scale: originalImage.scale, orientation: .leftMirrored)
+            }
         }
 
         // Show the captured frame immediately in the "freeze" state with correct orientation
@@ -168,11 +191,13 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
                 height: box.height * height
             )
             
-            let padding = rect.width * 0.4
-            let paddedRect = rect.insetBy(dx: -padding, dy: -padding)
+            // Adding 15% padding
+            let paddingW = rect.width * 0.20
+            let paddingH = rect.height * 0.40
+            let paddedRect = rect.insetBy(dx: -paddingW, dy: -paddingH)
             
             if let faceImage = cgImage.cropping(to: paddedRect) {
-                // Return upright image (already normalized)
+                // Return upright image
                 completion(UIImage(cgImage: faceImage))
             } else {
                 completion(nil)
