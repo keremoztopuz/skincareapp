@@ -2,6 +2,7 @@ import SwiftUI
 
 struct MoreView: View {
     @StateObject private var vm = MoreViewModel()
+    @AppStorage("isPremium") private var isPremium = false
     @State private var showEditProfile = false
     @State private var showUpgrade = false
 
@@ -77,52 +78,104 @@ struct MoreView: View {
                         }
                     }
                     
-                    VStack(alignment: .leading, spacing: 20) {
-                        HStack(spacing: 16) {
-                            ZStack {
-                                RoundedRectangle(cornerRadius: 12)
-                                    .fill(mainColor)
-                                    .frame(width: 48, height: 48)
-                                
-                                Image(systemName: "crown.fill")
-                                    .font(.system(size: 22))
+                    if isPremium {
+                        VStack(alignment: .leading, spacing: 20) {
+                            HStack(spacing: 16) {
+                                ZStack {
+                                    Circle()
+                                        .fill(Color.white.opacity(0.2))
+                                        .frame(width: 52, height: 52)
+
+                                    Image(systemName: "crown.fill")
+                                        .font(.system(size: 24))
+                                        .foregroundColor(.white)
+                                }
+
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text("Premium Active")
+                                        .font(.system(size: 20, weight: .bold))
+                                        .foregroundColor(.white)
+                                    Text("All features unlocked")
+                                        .font(.system(size: 14))
+                                        .foregroundColor(.white.opacity(0.8))
+                                }
+
+                                Spacer()
+
+                                Image(systemName: "checkmark.seal.fill")
+                                    .font(.system(size: 28))
+                                    .foregroundColor(.white.opacity(0.9))
+                            }
+
+                            Divider()
+                                .background(Color.white.opacity(0.3))
+
+                            VStack(alignment: .leading, spacing: 10) {
+                                ActiveFeatureRow(text: "Unlimited skin analyses")
+                                ActiveFeatureRow(text: "Advanced AI insights")
+                                ActiveFeatureRow(text: "Personalized recommendations")
+                                ActiveFeatureRow(text: "Full history & progress tracking")
+                            }
+                        }
+                        .padding(24)
+                        .background(
+                            LinearGradient(
+                                colors: [secondaryColor, secondaryColor.opacity(0.85)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .cornerRadius(25)
+                        .padding(.horizontal, 20)
+                        .shadow(color: secondaryColor.opacity(0.3), radius: 15, x: 0, y: 8)
+                    } else {
+                        VStack(alignment: .leading, spacing: 20) {
+                            HStack(spacing: 16) {
+                                ZStack {
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .fill(mainColor)
+                                        .frame(width: 48, height: 48)
+
+                                    Image(systemName: "crown.fill")
+                                        .font(.system(size: 22))
+                                        .foregroundColor(secondaryColor)
+                                }
+
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text("Go Premium")
+                                        .font(.system(size: 20, weight: .bold))
+                                        .foregroundColor(.white)
+                                    Text("Unlock all advanced features")
+                                        .font(.system(size: 14))
+                                        .foregroundColor(.white.opacity(0.8))
+                                }
+                            }
+
+                            VStack(alignment: .leading, spacing: 10) {
+                                PremiumFeatureRow(text: "Unlimited skin analyses")
+                                PremiumFeatureRow(text: "Advanced AI insights")
+                                PremiumFeatureRow(text: "Personalized recommendations")
+                                PremiumFeatureRow(text: "Full history & progress tracking")
+                            }
+
+                            Button(action: { showUpgrade = true }) {
+                                Text("Upgrade Now")
+                                    .font(.system(size: 16, weight: .bold))
                                     .foregroundColor(secondaryColor)
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 18)
+                                    .background(Color.white)
+                                    .cornerRadius(16)
+                                    .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 3)
                             }
-
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text("Go Premium")
-                                    .font(.system(size: 20, weight: .bold))
-                                    .foregroundColor(.white)
-                                Text("Unlock all advanced features")
-                                    .font(.system(size: 14))
-                                    .foregroundColor(.white.opacity(0.8))
-                            }
+                            .padding(.top, 10)
                         }
-
-                        VStack(alignment: .leading, spacing: 10) {
-                            PremiumFeatureRow(text: "Unlimited skin analyses")
-                            PremiumFeatureRow(text: "Advanced AI insights")
-                            PremiumFeatureRow(text: "Personalized recommendations")
-                            PremiumFeatureRow(text: "Full history & progress tracking")
-                        }
-
-                        Button(action: { showUpgrade = true }) {
-                            Text("Upgrade Now")
-                                .font(.system(size: 16, weight: .bold))
-                                .foregroundColor(secondaryColor)
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, 18)
-                                .background(Color.white)
-                                .cornerRadius(16)
-                                .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 3)
-                        }
-                        .padding(.top, 10)
+                        .padding(24)
+                        .background(secondaryColor)
+                        .cornerRadius(25)
+                        .padding(.horizontal, 20)
+                        .shadow(color: secondaryColor.opacity(0.3), radius: 15, x: 0, y: 8)
                     }
-                    .padding(24)
-                    .background(secondaryColor)
-                    .cornerRadius(25)
-                    .padding(.horizontal, 20)
-                    .shadow(color: secondaryColor.opacity(0.3), radius: 15, x: 0, y: 8)
 
                     Color.clear.frame(height: 20)
                 }
@@ -204,6 +257,20 @@ struct ProfileEditSheet: View {
                 .background(Color.white)
                 .cornerRadius(12)
                 .shadow(color: Color.black.opacity(0.04), radius: 5, x: 0, y: 2)
+        }
+    }
+}
+
+struct ActiveFeatureRow: View {
+    let text: String
+    var body: some View {
+        HStack(spacing: 10) {
+            Image(systemName: "checkmark.circle.fill")
+                .font(.system(size: 14))
+                .foregroundColor(.green)
+            Text(text)
+                .font(.system(size: 14, weight: .medium))
+                .foregroundColor(.white.opacity(0.9))
         }
     }
 }
