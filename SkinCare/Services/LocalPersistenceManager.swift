@@ -78,6 +78,15 @@ class LocalPersistenceManager {
         }
     }
     // Fetching User Profile
+    func deleteAnalysisRecord(_ record: AnalysisRecord) {
+        context.delete(record)
+        do {
+            try context.save()
+        } catch {
+            print("Delete error: \(error)")
+        }
+    }
+
     func fetchUserProfile() -> UserProfile? {
         let request: NSFetchRequest<UserProfile> = UserProfile.fetchRequest()
         request.sortDescriptors = [NSSortDescriptor(key: "createdAt", ascending: false)]
