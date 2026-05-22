@@ -34,6 +34,11 @@ class RecentsViewModel: ObservableObject {
         }
     }
 
+    func deleteRecord(_ record: AnalysisRecord) {
+        LocalPersistenceManager.shared.deleteAnalysisRecord(record)
+        fetchRecords()
+    }
+
     var hasLockedRecords: Bool {
         !lockedRecords.isEmpty
     }
