@@ -11,7 +11,7 @@ import SwiftUI
 struct ProfileView: View {
     var body: some View {
         let mainColor = Color(red: 1.0, green: 0.97, blue: 0.97)
-        let secondaryColor = Color(red: 0.47, green: 0.11, blue: 0.17)
+        //let secondaryColor = Color(red: 0.47, green: 0.11, blue: 0.17)
         let primaryText = Color(red: 0.1, green: 0.1, blue: 0.2)
         
         ZStack {
