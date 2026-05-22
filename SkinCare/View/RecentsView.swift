@@ -85,82 +85,88 @@ struct RecentsView: View {
                             // MARK: Cards
                             ForEach(vm.records, id: \.self) { record in
                                 let isSelected = compareRecords.contains(record)
-                                Button {
-                                    if isCompareMode {
-                                        handleCompareSelection(record)
-                                    } else {
-                                        selectedRecord = record
-                                        showDetail = true
+                                SwipeToDeleteContainer(onDelete: {
+                                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                        vm.deleteRecord(record)
                                     }
-                                } label: {
-                                    HStack(alignment: .top, spacing: 14) {
-                                        if let data = record.imageData, let uiImage = UIImage(data: data) {
-                                            Image(uiImage: uiImage)
-                                                .resizable()
-                                                .scaledToFill()
-                                                .frame(width: 120, height: 220)
-                                                .clipShape(RoundedRectangle(cornerRadius: 12))
+                                }, disabled: isCompareMode) {
+                                    Button {
+                                        if isCompareMode {
+                                            handleCompareSelection(record)
                                         } else {
-                                            RoundedRectangle(cornerRadius: 12)
-                                                .fill(Color(red: 1.0, green: 0.87, blue: 0.87))
-                                                .frame(width: 120, height: 200)
-                                                .overlay(
-                                                    Image(systemName: "person.crop.rectangle")
-                                                        .font(.system(size: 24))
-                                                        .foregroundColor(secondaryColor.opacity(0.6))
-                                                )
+                                            selectedRecord = record
+                                            showDetail = true
                                         }
+                                    } label: {
+                                        HStack(alignment: .top, spacing: 14) {
+                                            if let data = record.imageData, let uiImage = UIImage(data: data) {
+                                                Image(uiImage: uiImage)
+                                                    .resizable()
+                                                    .scaledToFill()
+                                                    .frame(width: 120, height: 220)
+                                                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                                            } else {
+                                                RoundedRectangle(cornerRadius: 12)
+                                                    .fill(Color(red: 1.0, green: 0.87, blue: 0.87))
+                                                    .frame(width: 120, height: 200)
+                                                    .overlay(
+                                                        Image(systemName: "person.crop.rectangle")
+                                                            .font(.system(size: 24))
+                                                            .foregroundColor(secondaryColor.opacity(0.6))
+                                                    )
+                                            }
 
-                                        VStack(alignment: .leading, spacing: 14) {
-                                            HStack {
-                                                Text(record.date ?? Date(), style: .date)
-                                                    .font(.system(size: 14))
-                                                    .foregroundColor(.gray)
-                                                Spacer()
-                                                if isCompareMode {
-                                                    Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-                                                        .font(.system(size: 22))
-                                                        .foregroundColor(isSelected ? secondaryColor : Color.gray.opacity(0.4))
-                                                        .animation(.spring(response: 0.2), value: isSelected)
-                                                } else {
-                                                    Text(record.condition ?? "Unknown")
-                                                        .font(.system(size: 13, weight: .semibold))
-                                                        .foregroundColor(secondaryColor)
-                                                        .padding(.horizontal, 12)
-                                                        .padding(.vertical, 5)
-                                                        .background(Color(red: 1.0, green: 0.87, blue: 0.87))
-                                                        .cornerRadius(10)
+                                            VStack(alignment: .leading, spacing: 14) {
+                                                HStack {
+                                                    Text(record.date ?? Date(), style: .date)
+                                                        .font(.system(size: 14))
+                                                        .foregroundColor(.gray)
+                                                    Spacer()
+                                                    if isCompareMode {
+                                                        Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                                                            .font(.system(size: 22))
+                                                            .foregroundColor(isSelected ? secondaryColor : Color.gray.opacity(0.4))
+                                                            .animation(.spring(response: 0.2), value: isSelected)
+                                                    } else {
+                                                        Text(record.condition ?? "Unknown")
+                                                            .font(.system(size: 13, weight: .semibold))
+                                                            .foregroundColor(secondaryColor)
+                                                            .padding(.horizontal, 12)
+                                                            .padding(.vertical, 5)
+                                                            .background(Color(red: 1.0, green: 0.87, blue: 0.87))
+                                                            .cornerRadius(10)
+                                                    }
                                                 }
-                                            }
 
-                                            HStack(alignment: .firstTextBaseline, spacing: 4) {
-                                                Text("\(Int(record.overallScore))")
-                                                    .font(.system(size: 36, weight: .bold))
-                                                    .foregroundColor(primaryText)
-                                                Text("/ 100")
-                                                    .font(.system(size: 16))
-                                                    .foregroundColor(.gray)
-                                            }
+                                                HStack(alignment: .firstTextBaseline, spacing: 4) {
+                                                    Text("\(Int(record.overallScore))")
+                                                        .font(.system(size: 36, weight: .bold))
+                                                        .foregroundColor(primaryText)
+                                                    Text("/ 100")
+                                                        .font(.system(size: 16))
+                                                        .foregroundColor(.gray)
+                                                }
 
-                                            ScoreBar(label: "Dryness",      value: record.drynessScore,      color: secondaryColor)
-                                            ScoreBar(label: "Inflammation", value: record.inflammationScore, color: secondaryColor)
-                                            ScoreBar(label: "Oiliness",     value: record.oilinessScore,     color: secondaryColor)
+                                                ScoreBar(label: "Dryness",      value: record.drynessScore,      color: secondaryColor)
+                                                ScoreBar(label: "Inflammation", value: record.inflammationScore, color: secondaryColor)
+                                                ScoreBar(label: "Oiliness",     value: record.oilinessScore,     color: secondaryColor)
+                                            }
                                         }
+                                        .padding(20)
+                                        .background(
+                                            RoundedRectangle(cornerRadius: 16)
+                                                .fill(Color.white)
+                                                .overlay(
+                                                    RoundedRectangle(cornerRadius: 16)
+                                                        .stroke(isSelected ? secondaryColor : Color.clear, lineWidth: 2)
+                                                )
+                                        )
+                                        .shadow(color: Color.black.opacity(isSelected ? 0.1 : 0.06), radius: 8, x: 0, y: 4)
+                                        .padding(.horizontal, 20)
                                     }
-                                    .padding(20)
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 16)
-                                            .fill(Color.white)
-                                            .overlay(
-                                                RoundedRectangle(cornerRadius: 16)
-                                                    .stroke(isSelected ? secondaryColor : Color.clear, lineWidth: 2)
-                                            )
-                                    )
-                                    .shadow(color: Color.black.opacity(isSelected ? 0.1 : 0.06), radius: 8, x: 0, y: 4)
-                                    .padding(.horizontal, 20)
+                                    .buttonStyle(.plain)
+                                    .animation(.spring(response: 0.2), value: isSelected)
                                 }
-                                .buttonStyle(.plain)
-                                .animation(.spring(response: 0.2), value: isSelected)
                             }
 
                             // MARK: Locked Preview
@@ -402,6 +408,74 @@ struct EmptyStateView: View {
         }
         .frame(maxWidth: .infinity)
         .frame(minHeight: 600)
+    }
+}
+
+struct SwipeToDeleteContainer<Content: View>: View {
+    let onDelete: () -> Void
+    let disabled: Bool
+    let content: Content
+
+    @State private var offset: CGFloat = 0
+    @State private var showDeleteButton = false
+
+    private let deleteWidth: CGFloat = 80
+    private let secondaryColor = Color(red: 0.47, green: 0.11, blue: 0.17)
+
+    init(onDelete: @escaping () -> Void, disabled: Bool = false, @ViewBuilder content: () -> Content) {
+        self.onDelete = onDelete
+        self.disabled = disabled
+        self.content = content()
+    }
+
+    var body: some View {
+        ZStack(alignment: .trailing) {
+            Button {
+                onDelete()
+            } label: {
+                VStack(spacing: 4) {
+                    Image(systemName: "trash.fill")
+                        .font(.system(size: 20))
+                    Text("Delete")
+                        .font(.system(size: 12, weight: .medium))
+                }
+                .foregroundColor(.white)
+                .frame(width: deleteWidth)
+                .frame(maxHeight: .infinity)
+                .background(secondaryColor)
+                .cornerRadius(16)
+            }
+            .padding(.trailing, 20)
+            .opacity(showDeleteButton ? 1 : 0)
+
+            content
+                .offset(x: offset)
+                .highPriorityGesture(
+                    DragGesture(minimumDistance: 20)
+                        .onChanged { value in
+                            guard !disabled else { return }
+                            let translation = value.translation.width
+                            if translation < 0 {
+                                offset = max(translation, -deleteWidth - 20)
+                            } else if showDeleteButton {
+                                offset = min(-deleteWidth + translation, 0)
+                            }
+                        }
+                        .onEnded { value in
+                            guard !disabled else { return }
+                            withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                if value.translation.width < -40 {
+                                    offset = -deleteWidth
+                                    showDeleteButton = true
+                                } else {
+                                    offset = 0
+                                    showDeleteButton = false
+                                }
+                            }
+                        }
+                )
+        }
+        .clipped()
     }
 }
 
