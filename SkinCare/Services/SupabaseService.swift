@@ -15,58 +15,66 @@ class SupabaseService {
     func fetchProducts() async throws -> [Product] {
         return try await client
             .from("products")
-            .select()
+            .select("id, name, brand, image_url, is_active")
             .eq("is_active", value: true)
+            .limit(20)
             .execute()
             .value
     }
-    
+
     // MARK: - Fetch Recommended Products for a condition
     func fetchRecommendedProducts(for conditionKey: String) async throws -> [Product] {
-        // 1. Get the condition ID first
-        let condition: [ConditionID] = try await client
-            .from("conditions")
-            .select("id")
-            .eq("key", value: conditionKey.lowercased())
-            .execute()
-            .value
-
-        guard let conditionId = condition.first?.id else {
-            return []
+        // Optimized: Fetching products directly through the join table in a single request
+        struct ConditionWithProducts: Codable {
+            let products: [Product]
         }
 
-        // 2. Get product IDs linked to this condition
-        let links: [ProductLink] = try await client
-            .from("product_conditions")
-            .select("product_id")
-            .eq("condition_id", value: conditionId)
+        let result: [ConditionWithProducts] = try await client
+            .from("conditions")
+            .select("products(id, name, brand, image_url, is_active)")
+            .eq("key", value: conditionKey.lowercased())
+            .eq("products.is_active", value: true)
             .execute()
             .value
 
-        let productIds = links.map { $0.productId }
-        guard !productIds.isEmpty else { return [] }
-
-        // 3. Fetch the actual products
-        return try await client
-            .from("products")
-            .select()
-            .in("id", value: productIds)
-            .eq("is_active", value: true)
-            .execute()
-            .value
+        return result.first?.products ?? []
     }
-    
+
     // MARK: - Fetch Articles
     func fetchArticles() async throws -> [Articles] {
         return try await client
             .from("articles")
-            .select()
+            .select("id, title, image_url, is_active, created_at")
             .eq("is_active", value: true)
             .order("created_at", ascending: false)
+            .limit(10)
             .execute()
             .value
     }
-}
+
+    // MARK: - Fetch Single Product Detail
+    func fetchProductDetail(id: UUID) async throws -> Product {
+        return try await client
+            .from("products")
+            .select()
+            .eq("id", value: id.uuidString)
+            .single()
+            .execute()
+            .value
+    }
+
+    // MARK: - Fetch Single Article Detail
+    func fetchArticleDetail(id: UUID) async throws -> Articles {
+        return try await client
+            .from("articles")
+            .select()
+            .eq("id", value: id.uuidString)
+            .single()
+            .execute()
+            .value
+    }
+    }
+
 
 // Helper structs for decoding relational joins
 struct ConditionID: Codable {
