@@ -1,5 +1,6 @@
 import SwiftUI
 import AVFoundation
+import Lottie
 internal import Combine
 
 struct CameraView: View {
@@ -8,7 +9,6 @@ struct CameraView: View {
     @AppStorage("hasSeenCameraGuide") private var hasSeenCameraGuide = false
     @State private var showGuide = false
     @State private var showResult = false
-    @State private var scanOffset: CGFloat = -210
     @State private var showQuotaAlert = false
     @State private var showUpgrade = false
     
@@ -54,9 +54,103 @@ struct CameraView: View {
                 Spacer()
                 
                 ZStack {
-                    // 1. Live Camera or Captured Image
+                    // Live Camera or Captured Image
                     Group {
-                        if let captured = vm.capturedImage {
+                        if vm.permissionStatus == .denied {
+                            VStack(spacing: 20) {
+                                ZStack {
+                                    Circle()
+                                        .fill(Color(red: 1.0, green: 0.87, blue: 0.87))
+                                        .frame(width: 100, height: 100)
+                                    Circle()
+                                        .fill(secondaryColor)
+                                        .frame(width: 68, height: 68)
+                                    Image(systemName: "camera.fill")
+                                        .font(.system(size: 28))
+                                        .foregroundColor(.white)
+                                }
+
+                                Text("Camera Access Required")
+                                    .font(.system(size: 20, weight: .bold))
+                                    .foregroundColor(primaryText)
+
+                                Text("To analyze your skin, we need access to your camera. Your photos never leave your device.")
+                                    .font(.system(size: 14))
+                                    .foregroundColor(.gray)
+                                    .multilineTextAlignment(.center)
+                                    .padding(.horizontal, 24)
+
+                                Button {
+                                    if let url = URL(string: UIApplication.openSettingsURLString) {
+                                        UIApplication.shared.open(url)
+                                    }
+                                } label: {
+                                    HStack(spacing: 8) {
+                                        Image(systemName: "gear")
+                                            .font(.system(size: 15, weight: .semibold))
+                                        Text("Open Settings")
+                                            .font(.system(size: 16, weight: .bold))
+                                    }
+                                    .foregroundColor(.white)
+                                    .padding(.horizontal, 32)
+                                    .padding(.vertical, 14)
+                                    .background(secondaryColor)
+                                    .cornerRadius(14)
+                                }
+                            }
+                            .frame(width: 350, height: 440)
+                            .background(
+                                RoundedRectangle(cornerRadius: 30)
+                                    .fill(Color.white)
+                            )
+                            .shadow(color: Color.black.opacity(0.06), radius: 10, x: 0, y: 5)
+                        } else if vm.permissionStatus == .notDetermined {
+                            VStack(spacing: 20) {
+                                ZStack {
+                                    Circle()
+                                        .fill(Color(red: 1.0, green: 0.87, blue: 0.87))
+                                        .frame(width: 100, height: 100)
+                                    Circle()
+                                        .fill(secondaryColor)
+                                        .frame(width: 68, height: 68)
+                                    Image(systemName: "camera.fill")
+                                        .font(.system(size: 28))
+                                        .foregroundColor(.white)
+                                }
+
+                                Text("Ready to Scan?")
+                                    .font(.system(size: 20, weight: .bold))
+                                    .foregroundColor(primaryText)
+
+                                Text("Enable camera access to start your skin analysis journey.")
+                                    .font(.system(size: 14))
+                                    .foregroundColor(.gray)
+                                    .multilineTextAlignment(.center)
+                                    .padding(.horizontal, 24)
+
+                                Button {
+                                    vm.requestPermission()
+                                } label: {
+                                    HStack(spacing: 8) {
+                                        Image(systemName: "camera.fill")
+                                            .font(.system(size: 15, weight: .semibold))
+                                        Text("Enable Camera")
+                                            .font(.system(size: 16, weight: .bold))
+                                    }
+                                    .foregroundColor(.white)
+                                    .padding(.horizontal, 32)
+                                    .padding(.vertical, 14)
+                                    .background(secondaryColor)
+                                    .cornerRadius(14)
+                                }
+                            }
+                            .frame(width: 350, height: 440)
+                            .background(
+                                RoundedRectangle(cornerRadius: 30)
+                                    .fill(Color.white)
+                            )
+                            .shadow(color: Color.black.opacity(0.06), radius: 10, x: 0, y: 5)
+                        } else if let captured = vm.capturedImage {
                             Image(uiImage: captured)
                                 .resizable()
                                 .scaledToFill()
@@ -70,89 +164,59 @@ struct CameraView: View {
                                 .cornerRadius(30)
                                 .clipped()
                                 .background(Color.gray.opacity(0.05))
-                                .overlay {
-                                    if vm.isAnalyzing {
-                                        // "Fake" freeze with blur while waiting for high-res photo
-                                        Rectangle()
-                                            .fill(.ultraThinMaterial)
-                                    }
-                                }
                         }
                     }
 
-                    // 2. Scanning UI (Always visible during analysis, regardless of image arrival)
+                    // 2. Scanning UI (Lottie Animation)
                     if vm.isAnalyzing {
-                        ZStack {
-                            // Scan line
-                            ZStack {
-                                Rectangle()
-                                    .fill(
-                                        LinearGradient(
-                                            colors: [
-                                                secondaryColor.opacity(0),
-                                                secondaryColor.opacity(0.6),
-                                                secondaryColor.opacity(0)
-                                            ],
-                                            startPoint: .top,
-                                            endPoint: .bottom
-                                        )
-                                    )
-                                    .frame(width: 350, height: 40)
-
-                                Rectangle()
-                                    .fill(secondaryColor)
-                                    .frame(width: 350, height: 2)
+                        LottieView(animation: .named("scanning"))
+                            .playing(loopMode: .loop)
+                            .configure { animationView in
+                                let color = ColorValueProvider(UIColor(red: 0.47, green: 0.11, blue: 0.17, alpha: 1.0).lottieColorValue)
+                                animationView.setValueProvider(color, keypath: AnimationKeypath(keypath: "**.Color"))
+                                animationView.setValueProvider(color, keypath: AnimationKeypath(keypath: "**.Fill.Color"))
+                                animationView.setValueProvider(color, keypath: AnimationKeypath(keypath: "**.Stroke.Color"))
+                                animationView.contentMode = .scaleAspectFill
                             }
-                            .offset(y: scanOffset)
-                            .frame(width: 350, height: 440)
+                            .frame(width: 360, height: 450)
+                            .scaleEffect(1.1) // Force a slight overflow to ensure full coverage
                             .clipped()
-
-                            // Scanning label
-                            VStack {
-                                Spacer()
-                                Text("Analyzing Skin...")
-                                    .font(.system(size: 14, weight: .semibold))
-                                    .foregroundColor(.white)
-                                    .padding(.horizontal, 16)
-                                    .padding(.vertical, 8)
-                                    .background(secondaryColor.opacity(0.8))
-                                    .cornerRadius(12)
-                                    .padding(.bottom, 20)
-                            }
-                        }
-                        .transition(.opacity)
+                            .transition(.opacity)
                     }
 
-                    // 3. Static Guides
-                    RoundedRectangle(cornerRadius: 35)
-                        .stroke(secondaryColor, lineWidth: 4)
-                        .frame(width: 360, height: 450)
-                        .mask(
-                            ZStack {
-                                VStack {
-                                    HStack {
-                                        Rectangle().frame(width: 60, height: 60)
+
+                    // Static Guides & Center Indicators
+                    if vm.permissionStatus == .authorized {
+                        RoundedRectangle(cornerRadius: 35)
+                            .stroke(secondaryColor, lineWidth: 4)
+                            .frame(width: 360, height: 450)
+                            .mask(
+                                ZStack {
+                                    VStack {
+                                        HStack {
+                                            Rectangle().frame(width: 60, height: 60)
+                                            Spacer()
+                                            Rectangle().frame(width: 60, height: 60)
+                                        }
                                         Spacer()
-                                        Rectangle().frame(width: 60, height: 60)
-                                    }
-                                    Spacer()
-                                    HStack {
-                                        Rectangle().frame(width: 60, height: 60)
-                                        Spacer()
-                                        Rectangle().frame(width: 60, height: 60)
+                                        HStack {
+                                            Rectangle().frame(width: 60, height: 60)
+                                            Spacer()
+                                            Rectangle().frame(width: 60, height: 60)
+                                        }
                                     }
                                 }
-                            }
-                        )
+                            )
 
-                    if !vm.isAnalyzing {
-                        Ellipse()
-                            .stroke(secondaryColor, style: StrokeStyle(lineWidth: 2, dash: [6]))
-                            .frame(width: 220, height: 300)
+                        if !vm.isAnalyzing && vm.capturedImage == nil {
+                            Ellipse()
+                                .stroke(secondaryColor, style: StrokeStyle(lineWidth: 2, dash: [6]))
+                                .frame(width: 220, height: 300)
 
-                        Image(systemName: "camera.fill")
-                            .font(.system(size: 50))
-                            .foregroundColor(secondaryColor.opacity(0.2))
+                            Image(systemName: "camera.fill")
+                                .font(.system(size: 50))
+                                .foregroundColor(secondaryColor.opacity(0.2))
+                        }
                     }
                 }
                 .frame(width: 360, height: 450)
@@ -169,12 +233,6 @@ struct CameraView: View {
                     }
                     
                     vm.capturePhoto()
-                    
-                    // Reset and start scan line animation
-                    scanOffset = -210
-                    withAnimation(.easeInOut(duration: 1.5).repeatForever(autoreverses: true)) {
-                        scanOffset = 210
-                    }
                 }) {
                     HStack(spacing: 12) {
                         Image(systemName: vm.isAnalyzing ? "hourglass" : "viewfinder")
@@ -186,11 +244,15 @@ struct CameraView: View {
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 20)
-                    .background(vm.isAnalyzing ? secondaryColor.opacity(0.6) : secondaryColor)
+                    .background(
+                        (vm.isAnalyzing || !vm.isPermissionGranted) 
+                        ? secondaryColor.opacity(0.5) 
+                        : secondaryColor
+                    )
                     .cornerRadius(16)
-                    .shadow(color: secondaryColor.opacity(0.3), radius: 10, x: 0, y: 5)
+                    .shadow(color: secondaryColor.opacity(vm.isPermissionGranted ? 0.3 : 0), radius: 10, x: 0, y: 5)
                 }
-                .disabled(vm.isAnalyzing)
+                .disabled(vm.isAnalyzing || !vm.isPermissionGranted)
                 .padding(.bottom, 30)
             }
             .padding(.horizontal, 24)
@@ -210,13 +272,19 @@ struct CameraView: View {
             vm.checkPermission()
             vm.resetScanner()
         }
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
+            vm.checkPermission()
+        }
         .preferredColorScheme(.light)
-        .fullScreenCover(isPresented: $showGuide) {
+        .fullScreenCover(isPresented: $showGuide, onDismiss: {
+            if vm.permissionStatus == .notDetermined {
+                vm.requestPermission()
+            }
+        }) {
             CameraGuideView()
         }
         .onChange(of: vm.analysisRecord) { oldValue, newValue in
             if vm.capturedImage != nil && newValue != nil {
-                scanOffset = -210
                 showResult = true
             }
         }
@@ -226,17 +294,6 @@ struct CameraView: View {
             ResultView(record: vm.analysisRecord, isFromRecents: false) {
                 showResult = false
                 vm.resetScanner()
-            }
-        }
-        .onChange(of: vm.isAnalyzing) { oldValue, newValue in
-            if newValue {
-                // Instant animation trigger
-                scanOffset = -210
-                withAnimation(.easeInOut(duration: 1.5).repeatForever(autoreverses: true)) {
-                    scanOffset = 210
-                }
-            } else {
-                scanOffset = -210
             }
         }
     }
