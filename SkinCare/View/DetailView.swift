@@ -15,6 +15,9 @@ enum DetailType {
 struct DetailView: View {
     @Environment(\.dismiss) var dismiss
     let type: DetailType
+    @State private var fullProduct: Product?
+    @State private var fullArticle: Articles?
+    @State private var isLoadingFullDetail = false
     
     let mainColor = Color(red: 1.0, green: 0.97, blue: 0.97)
     let secondaryColor = Color(red: 0.47, green: 0.11, blue: 0.17)
@@ -54,11 +57,21 @@ struct DetailView: View {
                 
                 ScrollView(.vertical, showsIndicators: false) {
                     VStack(alignment: .leading, spacing: 24) {
-                        switch type {
-                        case .product(let product):
-                            ProductDetailContent(product: product, secondaryColor: secondaryColor, primaryText: primaryText)
-                        case .news(let article):
-                            ArticleDetailContent(article: article, secondaryColor: secondaryColor, primaryText: primaryText)
+                        if isLoadingFullDetail {
+                            VStack {
+                                Spacer()
+                                ProgressView("Loading full details...")
+                                    .padding(.top, 100)
+                                Spacer()
+                            }
+                            .frame(maxWidth: .infinity)
+                        } else {
+                            switch type {
+                            case .product(let product):
+                                ProductDetailContent(product: fullProduct ?? product, secondaryColor: secondaryColor, primaryText: primaryText)
+                            case .news(let article):
+                                ArticleDetailContent(article: fullArticle ?? article, secondaryColor: secondaryColor, primaryText: primaryText)
+                            }
                         }
                     }
                     .padding(.horizontal, 20)
@@ -67,6 +80,26 @@ struct DetailView: View {
             }
         }
         .navigationBarBackButtonHidden(true)
+        .onAppear {
+            loadFullDetail()
+        }
+    }
+    
+    private func loadFullDetail() {
+        isLoadingFullDetail = true
+        Task {
+            do {
+                switch type {
+                case .product(let product):
+                    self.fullProduct = try await SupabaseService.shared.fetchProductDetail(id: product.id)
+                case .news(let article):
+                    self.fullArticle = try await SupabaseService.shared.fetchArticleDetail(id: article.id)
+                }
+            } catch {
+                print("Failed to fetch full detail: \(error)")
+            }
+            isLoadingFullDetail = false
+        }
     }
     
     private var navigationTitle: String {
