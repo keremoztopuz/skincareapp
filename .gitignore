@@ -1,0 +1,37 @@
+# macOS
+.DS_Store
+._*
+
+# Xcode user state
+xcuserdata/
+*.xcuserstate
+*.xcbkptlist
+*.xccheckout
+*.xcscmblueprint
+
+# Xcode build output
+DerivedData/
+build/
+Build/
+*.xcarchive
+*.ipa
+*.dSYM
+*.dSYM.zip
+
+# SwiftPM
+.swiftpm/
+.build/
+
+# Environment and local secrets
+.env
+.env.*
+*.secret
+secrets/
+SkinCare/Model/SupabaseConfig.swift
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
