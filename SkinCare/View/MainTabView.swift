@@ -16,27 +16,27 @@ struct MainTabView: View {
         TabView(selection: $selectedTab){
             HomeView(selectedTab: $selectedTab)
                 .tabItem {
-                    Label("Home", systemImage: "house")
+                    Label(NSLocalizedString("tab_home", comment: ""), systemImage: "house")
                 }
                 .tag(0)
             SearchView()
                 .tabItem {
-                    Label("Search", systemImage: "magnifyingglass")
+                    Label(NSLocalizedString("tab_search", comment: ""), systemImage: "magnifyingglass")
                 }
                 .tag(1)
             CameraView()
                 .tabItem {
-                    Label("Camera", systemImage: "camera")
+                    Label(NSLocalizedString("tab_camera", comment: ""), systemImage: "camera")
                 }
                 .tag(2)
             RecentsView(selectedTab: $selectedTab)
                 .tabItem {
-                    Label("Recents", systemImage: "book")
+                    Label(NSLocalizedString("tab_recents", comment: ""), systemImage: "book")
                 }
                 .tag(3)
             MoreView()
                 .tabItem {
-                    Label("Profile", systemImage: "person")
+                    Label(NSLocalizedString("tab_profile", comment: ""), systemImage: "person")
                 }
                 .tag(4)
         }
