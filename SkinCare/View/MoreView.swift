@@ -19,11 +19,11 @@ struct MoreView: View {
                 VStack(alignment: .leading, spacing: 32) {
                     HStack {
                         VStack(alignment: .leading, spacing: 4) {
-                            Text("Profile")
+                            Text(NSLocalizedString("profile", comment: ""))
                                 .font(.system(size: 34, weight: .bold))
                                 .foregroundColor(primaryText)
                             
-                            Text("Manage your information")
+                            Text(NSLocalizedString("manage_information", comment: ""))
                                 .font(.system(size: 16, weight: .regular))
                                 .foregroundColor(.gray)
                         }
@@ -61,7 +61,7 @@ struct MoreView: View {
                     }
                     
                     VStack(alignment: .leading, spacing: 16) {
-                        Text("Personal Information")
+                        Text(NSLocalizedString("personal_information", comment: ""))
                             .font(.system(size: 18, weight: .bold))
                             .foregroundColor(primaryText)
                             .padding(.horizontal, 20)
@@ -92,10 +92,10 @@ struct MoreView: View {
                                 }
 
                                 VStack(alignment: .leading, spacing: 2) {
-                                    Text("Premium Active")
+                                    Text(NSLocalizedString("premium_active", comment: ""))
                                         .font(.system(size: 20, weight: .bold))
                                         .foregroundColor(.white)
-                                    Text("All features unlocked")
+                                    Text(NSLocalizedString("all_features_unlocked", comment: ""))
                                         .font(.system(size: 14))
                                         .foregroundColor(.white.opacity(0.8))
                                 }
@@ -142,10 +142,10 @@ struct MoreView: View {
                                 }
 
                                 VStack(alignment: .leading, spacing: 2) {
-                                    Text("Go Premium")
+                                    Text(NSLocalizedString("go_premium", comment: ""))
                                         .font(.system(size: 20, weight: .bold))
                                         .foregroundColor(.white)
-                                    Text("Unlock all advanced features")
+                                    Text(NSLocalizedString("unlock_advanced_features", comment: ""))
                                         .font(.system(size: 14))
                                         .foregroundColor(.white.opacity(0.8))
                                 }
@@ -159,7 +159,7 @@ struct MoreView: View {
                             }
 
                             Button(action: { showUpgrade = true }) {
-                                Text("Upgrade Now")
+                                Text(NSLocalizedString("upgrade_now", comment: ""))
                                     .font(.system(size: 16, weight: .bold))
                                     .foregroundColor(secondaryColor)
                                     .frame(maxWidth: .infinity)
