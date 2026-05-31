@@ -12,9 +12,35 @@
         <attribute name="inflammationScore" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="oilinessScore" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="overallScore" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="pigmentationScore" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="psoriasisScore" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="hydrationScore" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="userFeedback" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="wrinkleScore" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+    </entity>
+    <entity name="RoutineItem" representedClassName="RoutineItem" syncable="YES" codeGenerationType="class">
+        <attribute name="addedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="isManuallyAdded" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="productBrand" optional="YES" attributeType="String"/>
+        <attribute name="productId" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="productImageUrl" optional="YES" attributeType="String"/>
+        <attribute name="productName" optional="YES" attributeType="String"/>
+        <attribute name="productType" optional="YES" attributeType="String"/>
+        <attribute name="routineTime" optional="YES" attributeType="String"/>
+        <attribute name="stepOrder" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+    </entity>
+    <entity name="RoutineSuggestion" representedClassName="RoutineSuggestion" syncable="YES" codeGenerationType="class">
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="isAccepted" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="productBrand" optional="YES" attributeType="String"/>
+        <attribute name="productId" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="productImageUrl" optional="YES" attributeType="String"/>
+        <attribute name="productName" optional="YES" attributeType="String"/>
+        <attribute name="productType" optional="YES" attributeType="String"/>
+        <attribute name="routineTime" optional="YES" attributeType="String"/>
+        <attribute name="stepOrder" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="suggestedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
     </entity>
     <entity name="UserProfile" representedClassName="UserProfile" syncable="YES" codeGenerationType="class">
         <attribute name="ageRange" optional="YES" attributeType="String"/>
