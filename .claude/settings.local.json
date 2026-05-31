@@ -3,7 +3,18 @@
     "allow": [
       "Bash(git add *)",
       "Bash(git commit *)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "WebSearch",
+      "Bash(pip3 install *)",
+      "Bash(python3 scrape_images.py)",
+      "Bash(pip3 list *)",
+      "Bash(python3 filter_images.py)",
+      "Bash(mv /Users/keremoztopuz/Desktop/SkinDataset/wrinkles_rejected/* /Users/keremoztopuz/Desktop/SkinDataset/wrinkles/)",
+      "Bash(mv /Users/keremoztopuz/Desktop/SkinDataset/eye_bags_rejected/* /Users/keremoztopuz/Desktop/SkinDataset/eye_bags/)",
+      "Bash(kaggle --version)",
+      "Bash(python3 -c ' *)",
+      "Bash(python3 *)",
+      "WebFetch(domain:universe.roboflow.com)"
     ]
   }
 }
