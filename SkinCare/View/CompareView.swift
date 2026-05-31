@@ -7,7 +7,8 @@ private func mockRecord(ctx: NSManagedObjectContext, overall: Double, acne: Doub
     r.overallScore      = overall
     r.acneScore         = acne
     r.eczemaScore       = redness
-    r.psoriasisScore    = 30
+    r.pigmentationScore = 30
+    r.hydrationScore    = 65
     r.wrinkleScore      = 20
     r.eyebagScore       = 15
     r.drynessScore      = 40
@@ -68,7 +69,7 @@ struct CompareView: View {
                                 .shadow(color: secondaryColor.opacity(0.3), radius: 5, x: 0, y: 3)
                         }
                         Spacer()
-                        Text("Compare Analyses")
+                        Text(NSLocalizedString("compare_analyses", comment: ""))
                             .font(.system(size: 18, weight: .bold))
                             .foregroundColor(primaryText)
                         Spacer()
@@ -86,7 +87,7 @@ struct CompareView: View {
                                 .fill(Color.white)
                                 .frame(width: 40, height: 40)
                                 .shadow(color: Color.black.opacity(0.07), radius: 5, x: 0, y: 2)
-                            Text("vs")
+                            Text(NSLocalizedString("vs", comment: ""))
                                 .font(.system(size: 12, weight: .bold))
                                 .foregroundColor(secondaryColor)
                         }
@@ -121,7 +122,7 @@ struct CompareView: View {
 
                     // MARK: Skin Metrics title
                     HStack {
-                        Text("Skin Metrics")
+                        Text(NSLocalizedString("skin_metrics", comment: ""))
                             .font(.system(size: 17, weight: .bold))
                             .foregroundColor(primaryText)
                         Spacer()
@@ -132,7 +133,8 @@ struct CompareView: View {
                     VStack(spacing: 10) {
                         detailRow(label: "Acne",         val1: record1.acneScore,         val2: record2.acneScore,         higherIsBetter: false)
                         detailRow(label: "Redness",      val1: record1.eczemaScore,       val2: record2.eczemaScore,       higherIsBetter: false)
-                        detailRow(label: "Psoriasis",    val1: record1.psoriasisScore,    val2: record2.psoriasisScore,    higherIsBetter: false)
+                        detailRow(label: "Pigmentation", val1: record1.pigmentationScore, val2: record2.pigmentationScore, higherIsBetter: false)
+                        detailRow(label: "Hydration",    val1: record1.hydrationScore,    val2: record2.hydrationScore,    higherIsBetter: true)
                         detailRow(label: "Wrinkles",     val1: record1.wrinkleScore,      val2: record2.wrinkleScore,      higherIsBetter: false)
                         detailRow(label: "Eye Bags",     val1: record1.eyebagScore,       val2: record2.eyebagScore,       higherIsBetter: false)
                         detailRow(label: "Dryness",      val1: record1.drynessScore,      val2: record2.drynessScore,      higherIsBetter: false)
@@ -147,7 +149,7 @@ struct CompareView: View {
                             Image(systemName: "sparkles")
                                 .font(.system(size: 15))
                                 .foregroundColor(secondaryColor)
-                            Text("AI Insight")
+                            Text(NSLocalizedString("ai_insight", comment: ""))
                                 .font(.system(size: 15, weight: .bold))
                                 .foregroundColor(secondaryColor)
                         }
@@ -231,7 +233,7 @@ struct CompareView: View {
                         .font(.system(size: 12, weight: .bold))
                         .foregroundColor(diffColor)
                 }
-                Text("vs")
+                Text(NSLocalizedString("vs", comment: ""))
                     .font(.system(size: 11))
                     .foregroundColor(.gray.opacity(0.5))
             }
