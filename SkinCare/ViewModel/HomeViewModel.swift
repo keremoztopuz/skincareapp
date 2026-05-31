@@ -22,11 +22,17 @@ class HomeViewModel: ObservableObject {
     @Published var avgDryness: Int = 0
     @Published var avgOiliness: Int = 0
     @Published var avgInflammation: Int = 0
-    
+
+    // Routine Summary
+    @Published var routineStepNames: [String] = []
+    @Published var routineItemCount: Int = 0
+    @Published var hasPendingSuggestions: Bool = false
+
     init() {
         fetchNames()
         fetchStatistics()
-        
+        fetchRoutineSummary()
+
         Task {
             await fetchAllCloudData()
         }
@@ -34,25 +40,24 @@ class HomeViewModel: ObservableObject {
     
     @MainActor
     func fetchAllCloudData() async {
-        // Prevent redundant fetching if data is already present
-        guard products.isEmpty || articles.isEmpty else { return }
-        
+        guard products.isEmpty && articles.isEmpty else { return }
+
         isLoading = true
         errorMessage = nil
-        
+
         do {
             async let fetchedProducts = SupabaseService.shared.fetchProducts()
             async let fetchedArticles = SupabaseService.shared.fetchArticles()
-            
+
             let (p, a) = try await (fetchedProducts, fetchedArticles)
-            
+
             self.products = p
             self.articles = a
         } catch {
-            self.errorMessage = "Error: \(error.localizedDescription)"
+            self.errorMessage = "Internet connection required for products and articles."
             print("Supabase error: \(error)")
         }
-        
+
         isLoading = false
     }
     
@@ -75,6 +80,17 @@ class HomeViewModel: ObservableObject {
         }
     }
     
+    func fetchRoutineSummary() {
+        let hour = Calendar.current.component(.hour, from: Date())
+        let timeKey = hour < 18 ? "morning" : "evening"
+        let items = LocalPersistenceManager.shared.fetchRoutineItems(for: timeKey)
+        routineStepNames = items.sorted(by: { $0.stepOrder < $1.stepOrder }).compactMap {
+            $0.productType?.replacingOccurrences(of: "_", with: " ").capitalized
+        }
+        routineItemCount = items.count
+        hasPendingSuggestions = !LocalPersistenceManager.shared.fetchPendingSuggestions().isEmpty
+    }
+
     func fetchNames() {
         let profile = LocalPersistenceManager.shared.fetchUserProfile()
         if let profile = profile {
