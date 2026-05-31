@@ -21,11 +21,11 @@ struct SearchView: View {
             
             VStack(alignment: .leading, spacing: 20) {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Search")
+                    Text(NSLocalizedString("search", comment: ""))
                         .font(.system(size: 34, weight: .bold))
                         .foregroundColor(primaryText)
                     
-                    Text("Find the best products for your skin")
+                    Text(NSLocalizedString("find_best_products", comment: ""))
                         .font(.system(size: 16, weight: .regular))
                         .foregroundColor(.gray)
                 }
