@@ -37,11 +37,11 @@ struct CameraGuideView: View {
                 }
                 .onAppear { isPulsing = true }
                 
-                Text("Camera Guidelines")
+                Text(NSLocalizedString("camera_guidelines", comment: ""))
                     .font(.system(size: 28, weight: .bold))
                     .foregroundColor(.black)
                 
-                Text("Follow these essentials for accurate skin analysis")
+                Text(NSLocalizedString("follow_essentials", comment: ""))
                     .font(.system(size: 15, weight: .regular))
                     .foregroundColor(.gray)
                     .multilineTextAlignment(.center)
@@ -52,7 +52,7 @@ struct CameraGuideView: View {
                             Image(systemName: "checkmark.circle.fill")
                                 .foregroundColor(secondaryColor)
                             
-                            Text("Do's")
+                            Text(NSLocalizedString("dos", comment: ""))
                                 .font(.system(size: 17, weight: .semibold))
                         }
                         
@@ -105,7 +105,7 @@ struct CameraGuideView: View {
                             Image(systemName: "xmark.circle.fill")
                                 .foregroundColor(secondaryColor)
                             
-                            Text("Don'ts")
+                            Text(NSLocalizedString("donts", comment: ""))
                                 .font(.system(size: 17, weight: .semibold))
                         }
                         VStack(spacing: 6) {
@@ -162,7 +162,7 @@ struct CameraGuideView: View {
                 hasSeenCameraGuide = true
                 dismiss()
             }) {
-                Text("Next")
+                Text(NSLocalizedString("next", comment: ""))
                     .font(.system(size: 18, weight: .bold))
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
