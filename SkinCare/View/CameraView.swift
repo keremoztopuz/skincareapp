@@ -22,11 +22,11 @@ struct CameraView: View {
             
             VStack(alignment: .leading, spacing: 12) {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Face Analysis")
+                    Text(NSLocalizedString("face_analysis", comment: ""))
                         .font(.system(size: 34, weight: .bold))
                         .foregroundColor(primaryText)
 
-                    Text("Position your face within the oval frame")
+                    Text(NSLocalizedString("position_face", comment: ""))
                         .font(.system(size: 16, weight: .regular))
                         .foregroundColor(.gray)
                 }
@@ -70,11 +70,11 @@ struct CameraView: View {
                                         .foregroundColor(.white)
                                 }
 
-                                Text("Camera Access Required")
+                                Text(NSLocalizedString("camera_access_required", comment: ""))
                                     .font(.system(size: 20, weight: .bold))
                                     .foregroundColor(primaryText)
 
-                                Text("To analyze your skin, we need access to your camera. Your photos never leave your device.")
+                                Text(NSLocalizedString("camera_access_description", comment: ""))
                                     .font(.system(size: 14))
                                     .foregroundColor(.gray)
                                     .multilineTextAlignment(.center)
@@ -88,7 +88,7 @@ struct CameraView: View {
                                     HStack(spacing: 8) {
                                         Image(systemName: "gear")
                                             .font(.system(size: 15, weight: .semibold))
-                                        Text("Open Settings")
+                                        Text(NSLocalizedString("open_settings", comment: ""))
                                             .font(.system(size: 16, weight: .bold))
                                     }
                                     .foregroundColor(.white)
@@ -118,11 +118,11 @@ struct CameraView: View {
                                         .foregroundColor(.white)
                                 }
 
-                                Text("Ready to Scan?")
+                                Text(NSLocalizedString("ready_to_scan", comment: ""))
                                     .font(.system(size: 20, weight: .bold))
                                     .foregroundColor(primaryText)
 
-                                Text("Enable camera access to start your skin analysis journey.")
+                                Text(NSLocalizedString("enable_camera_description", comment: ""))
                                     .font(.system(size: 14))
                                     .foregroundColor(.gray)
                                     .multilineTextAlignment(.center)
@@ -134,7 +134,7 @@ struct CameraView: View {
                                     HStack(spacing: 8) {
                                         Image(systemName: "camera.fill")
                                             .font(.system(size: 15, weight: .semibold))
-                                        Text("Enable Camera")
+                                        Text(NSLocalizedString("enable_camera", comment: ""))
                                             .font(.system(size: 16, weight: .bold))
                                     }
                                     .foregroundColor(.white)
@@ -262,7 +262,7 @@ struct CameraView: View {
             Button("Go Pro") { showUpgrade = true }
             Button("OK", role: .cancel) {}
         } message: {
-            Text("You've used your \(SubscriptionManager.shared.freeMonthlyLimit) free monthly scans. Go Pro for unlimited analysis.")
+            Text(String(format: NSLocalizedString("free_scans_used", comment: ""), SubscriptionManager.shared.freeMonthlyLimit))
         }
         .sheet(isPresented: $showUpgrade) { UpgradeSheetView() }
         .onAppear {
@@ -291,7 +291,7 @@ struct CameraView: View {
         .fullScreenCover(isPresented: $showResult, onDismiss: {
             vm.resetScanner()
         }) {
-            ResultView(record: vm.analysisRecord, isFromRecents: false) {
+            ResultView(record: vm.analysisRecord, isFromRecents: false, heatmaps: vm.heatmaps, faceRect: vm.faceRect) {
                 showResult = false
                 vm.resetScanner()
             }
