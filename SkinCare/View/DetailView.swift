@@ -179,7 +179,7 @@ struct ProductDetailContent: View {
             Divider()
             
             VStack(alignment: .leading, spacing: 12) {
-                Text("Description")
+                Text(NSLocalizedString("description", comment: ""))
                     .font(.system(size: 18, weight: .bold))
                     .foregroundColor(primaryText)
                 
@@ -191,7 +191,7 @@ struct ProductDetailContent: View {
             
             if let ingredients = product.activeIngredients {
                 VStack(alignment: .leading, spacing: 12) {
-                    Text("Active Ingredients")
+                    Text(NSLocalizedString("active_ingredients", comment: ""))
                         .font(.system(size: 18, weight: .bold))
                         .foregroundColor(primaryText)
                     
@@ -248,7 +248,7 @@ struct ArticleDetailContent: View {
             HStack(spacing: 20) {
                 HStack(spacing: 6) {
                     Image(systemName: "person")
-                    Text("Expert Advice")
+                    Text(NSLocalizedString("expert_advice", comment: ""))
                 }
                 if let date = article.createdAt {
                     HStack(spacing: 6) {
@@ -270,7 +270,7 @@ struct ArticleDetailContent: View {
                     .cornerRadius(6)
             }
             
-            Text(article.content)
+            Text(article.content ?? "")
                 .font(.system(size: 16))
                 .foregroundColor(primaryText.opacity(0.8))
                 .lineSpacing(6)
