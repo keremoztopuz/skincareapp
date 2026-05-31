@@ -20,11 +20,11 @@ struct ProfileView: View {
             ScrollView(.vertical, showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 32) {
                     VStack(alignment: .leading, spacing: 4) {
-                        Text("Skin Journey")
+                        Text(NSLocalizedString("skin_journey", comment: ""))
                             .font(.system(size: 34, weight: .bold))
                             .foregroundColor(primaryText)
                         
-                        Text("Track your progress over time")
+                        Text(NSLocalizedString("track_progress_over_time", comment: ""))
                             .font(.system(size: 16, weight: .regular))
                             .foregroundColor(.gray)
                     }
@@ -33,7 +33,7 @@ struct ProfileView: View {
                     
                     // Placeholder for stats or charts
                     VStack(alignment: .leading, spacing: 16) {
-                        Text("Weekly Progress")
+                        Text(NSLocalizedString("weekly_progress", comment: ""))
                             .font(.system(size: 18, weight: .bold))
                             .foregroundColor(primaryText)
                         
@@ -42,7 +42,7 @@ struct ProfileView: View {
                             .frame(height: 200)
                             .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 5)
                             .overlay {
-                                Text("Your skin data will appear here")
+                                Text(NSLocalizedString("skin_data_appear_here", comment: ""))
                                     .font(.system(size: 14))
                                     .foregroundColor(.gray)
                             }
@@ -50,7 +50,7 @@ struct ProfileView: View {
                     .padding(.horizontal, 20)
                     
                     VStack(alignment: .leading, spacing: 16) {
-                        Text("Recent Achievements")
+                        Text(NSLocalizedString("recent_achievements", comment: ""))
                             .font(.system(size: 18, weight: .bold))
                             .foregroundColor(primaryText)
                         
