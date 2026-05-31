@@ -27,7 +27,7 @@ struct RecentsView: View {
                         } else {
                             // MARK: Header
                             HStack {
-                                Text("Recent Analysis")
+                                Text(NSLocalizedString("recent_analysis", comment: ""))
                                     .font(.system(size: 28, weight: .bold))
                                     .foregroundColor(primaryText)
                                 Spacer()
@@ -54,7 +54,7 @@ struct RecentsView: View {
                             .padding(.top, 20)
 
                             if isCompareMode {
-                                Text("Select 2 analyses and compare")
+                                Text(NSLocalizedString("select_2_analyses", comment: ""))
                                     .font(.system(size: 14))
                                     .foregroundColor(.gray)
                                     .padding(.horizontal, 20)
@@ -63,9 +63,9 @@ struct RecentsView: View {
 
                             // MARK: Filter
                             Menu {
-                                Button("All Time") { vm.selectedFilter = "All Time" }
-                                Button("This Week") { vm.selectedFilter = "This Week" }
-                                Button("This Month") { vm.selectedFilter = "This Month" }
+                                Button(NSLocalizedString("all_time", comment: "")) { vm.selectedFilter = "All Time" }
+                                Button(NSLocalizedString("this_week", comment: "")) { vm.selectedFilter = "This Week" }
+                                Button(NSLocalizedString("this_month", comment: "")) { vm.selectedFilter = "This Month" }
                             } label: {
                                 HStack {
                                     Image(systemName: "calendar").font(.system(size: 16))
@@ -243,11 +243,11 @@ struct RecentsView: View {
                                                 .foregroundColor(secondaryColor)
                                         }
 
-                                        Text("See All Your Analyses")
+                                        Text(NSLocalizedString("see_all_analyses", comment: ""))
                                             .font(.system(size: 20, weight: .bold))
                                             .foregroundColor(primaryText)
 
-                                        Text("Go Pro to access your analysis history")
+                                        Text(NSLocalizedString("go_pro_history", comment: ""))
                                             .font(.system(size: 14))
                                             .foregroundColor(.gray)
                                             .multilineTextAlignment(.center)
@@ -258,7 +258,7 @@ struct RecentsView: View {
                                             HStack(spacing: 8) {
                                                 Image(systemName: "crown.fill")
                                                     .font(.system(size: 14))
-                                                Text("Go Pro")
+                                                Text(NSLocalizedString("go_pro", comment: ""))
                                                     .font(.system(size: 16, weight: .bold))
                                             }
                                             .foregroundColor(.white)
@@ -286,7 +286,7 @@ struct RecentsView: View {
                         Button {
                             showCompare = true
                         } label: {
-                            Text("Compare (2)")
+                            Text(NSLocalizedString("compare_2", comment: ""))
                                 .font(.system(size: 17, weight: .bold))
                                 .foregroundColor(.white)
                                 .frame(maxWidth: .infinity)
@@ -384,9 +384,9 @@ struct EmptyStateView: View {
             }
 
             VStack(spacing: 10) {
-                Text("No Analysis Yet")
+                Text(NSLocalizedString("no_analysis_yet", comment: ""))
                     .font(.system(size: 24, weight: .bold))
-                Text("Go to camera view to make your first scan")
+                Text(NSLocalizedString("go_to_camera", comment: ""))
                     .font(.system(size: 16))
                     .foregroundColor(.gray)
                     .multilineTextAlignment(.center)
@@ -395,7 +395,7 @@ struct EmptyStateView: View {
             Button(action: onScanTap) {
                 HStack(spacing: 10) {
                     Image(systemName: "viewfinder").font(.system(size: 20))
-                    Text("Make your first scan").font(.system(size: 17, weight: .semibold))
+                    Text(NSLocalizedString("make_first_scan", comment: "")).font(.system(size: 17, weight: .semibold))
                 }
                 .foregroundColor(.white)
                 .padding(.horizontal, 36)
@@ -436,7 +436,7 @@ struct SwipeToDeleteContainer<Content: View>: View {
                 VStack(spacing: 4) {
                     Image(systemName: "trash.fill")
                         .font(.system(size: 20))
-                    Text("Delete")
+                    Text(NSLocalizedString("delete", comment: ""))
                         .font(.system(size: 12, weight: .medium))
                 }
                 .foregroundColor(.white)
