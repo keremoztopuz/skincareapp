@@ -51,7 +51,7 @@ struct DisclaimerView: View {
                 .padding(.bottom, 28)
 
                 VStack(spacing: 24) {
-                    Text("Important Notice")
+                    Text(NSLocalizedString("important_notice", comment: ""))
                         .font(.system(size: 28, weight: .bold))
                         .foregroundColor(primaryText)
                         .multilineTextAlignment(.center)
@@ -100,7 +100,7 @@ struct DisclaimerView: View {
                             }
                         }
 
-                        Text("I have read and accept the terms above")
+                        Text(NSLocalizedString("accept_terms", comment: ""))
                             .font(.system(size: 15, weight: .medium))
                             .foregroundColor(primaryText)
                             .multilineTextAlignment(.leading)
@@ -113,7 +113,7 @@ struct DisclaimerView: View {
                     appVM.acceptDisclaimer()
                 } label: {
                     HStack {
-                        Text("Continue")
+                        Text(NSLocalizedString("continue", comment: ""))
                         Image(systemName: "chevron.right")
                     }
                     .frame(maxWidth: .infinity)
