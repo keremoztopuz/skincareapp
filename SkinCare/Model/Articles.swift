@@ -11,7 +11,7 @@ import Foundation
 struct Articles: Identifiable, Codable {
     let id : UUID
     let title : String
-    let content : String
+    let content : String?
     let imageUrl : String?
     let readTime : Int?
     let articleType : String?
