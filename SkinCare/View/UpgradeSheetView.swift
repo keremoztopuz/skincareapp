@@ -41,10 +41,10 @@ struct UpgradeSheetView: View {
 
                 // MARK: Title
                 VStack(spacing: 8) {
-                    Text("Upgrade to Pro")
+                    Text(NSLocalizedString("upgrade_to_pro", comment: ""))
                         .font(.system(size: 28, weight: .bold))
                         .foregroundColor(primaryText)
-                    Text("Unlock full skin analysis capabilities")
+                    Text(NSLocalizedString("unlock_full_capabilities", comment: ""))
                         .font(.system(size: 15))
                         .foregroundColor(.gray)
                         .multilineTextAlignment(.center)
@@ -56,7 +56,7 @@ struct UpgradeSheetView: View {
                 VStack(spacing: 0) {
                     featureRow(icon: "infinity",             text: "Unlimited monthly scans",                 isFree: false)
                     Divider().padding(.horizontal, 20)
-                    featureRow(icon: "waveform.path.ecg",   text: "Full analysis: Psoriasis, Wrinkles, Eye Bags", isFree: false)
+                    featureRow(icon: "waveform.path.ecg",   text: "Full analysis: Wrinkles, Eye Bags, Pigmentation, Hydration", isFree: false)
                     Divider().padding(.horizontal, 20)
                     featureRow(icon: "clock.arrow.circlepath", text: "Full history — all past scans",         isFree: false)
                     Divider().padding(.horizontal, 20)
@@ -84,7 +84,7 @@ struct UpgradeSheetView: View {
                 Spacer()
 
                 // MARK: Price badge
-                Text("$9.99 / month  ·  Cancel anytime")
+                Text(NSLocalizedString("price_monthly", comment: ""))
                     .font(.system(size: 13))
                     .foregroundColor(.gray)
                     .padding(.bottom, 12)
@@ -101,7 +101,7 @@ struct UpgradeSheetView: View {
                         } else {
                             Image(systemName: "crown.fill")
                                 .font(.system(size: 17))
-                            Text("Upgrade Now")
+                            Text(NSLocalizedString("upgrade_now", comment: ""))
                                 .font(.system(size: 17, weight: .bold))
                         }
                     }
@@ -119,7 +119,7 @@ struct UpgradeSheetView: View {
                 Button {
                     dismiss()
                 } label: {
-                    Text("Continue with Free Plan")
+                    Text(NSLocalizedString("continue_with_free_plan", comment: ""))
                         .font(.system(size: 15))
                         .foregroundColor(.gray)
                         .padding(.vertical, 14)
@@ -167,10 +167,10 @@ struct UpgradeSheetView: View {
                         .font(.system(size: 52))
                         .foregroundColor(Color(red: 0.1, green: 0.6, blue: 0.3))
                 }
-                Text("Welcome to Pro!")
+                Text(NSLocalizedString("welcome_to_pro", comment: ""))
                     .font(.system(size: 22, weight: .bold))
                     .foregroundColor(.white)
-                Text("All features are now unlocked.")
+                Text(NSLocalizedString("all_features_now_unlocked", comment: ""))
                     .font(.system(size: 15))
                     .foregroundColor(.white.opacity(0.85))
             }
