@@ -69,7 +69,7 @@ struct SplashView: View {
                         .padding(.top, 12)
                         .scaleEffect(titleScale)
                     
-                    Text("Your personal AI assisted skincare expert")
+                    Text(NSLocalizedString("your_personal_expert", comment: ""))
                         .font(.system(size: 14))
                         .foregroundColor(.gray)
                         .multilineTextAlignment(.center)
