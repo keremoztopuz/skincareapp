@@ -7,18 +7,21 @@ struct HomeView: View {
     @StateObject private var vm = HomeViewModel()
     @Binding var selectedTab: Int
     
-    let routineInfo = (
-        title: "Morning Routine",
-        icon: "sun.max.fill",
-        description: "Focus on hydration and protection. Apply a gentle cleanser followed by a vitamin C serum and SPF 30+.",
-        products: ["Cleanser", "Vitamin C", "SPF 30"]
-    )
-    
+    var routineTitle: String {
+        let hour = Calendar.current.component(.hour, from: Date())
+        return hour < 18 ? NSLocalizedString("morning_routine", comment: "") : NSLocalizedString("evening_routine", comment: "")
+    }
+
+    var routineIcon: String {
+        let hour = Calendar.current.component(.hour, from: Date())
+        return hour < 18 ? "sun.max.fill" : "moon.fill"
+    }
+
     var greetingText: String {
         let hour = Calendar.current.component(.hour, from: Date())
-        if hour < 12 { return "Good Morning" }
-        if hour < 18 { return "Good Afternoon" }
-        return "Good Evening"
+        if hour < 12 { return NSLocalizedString("good_morning", comment: "") }
+        if hour < 18 { return NSLocalizedString("good_afternoon", comment: "") }
+        return NSLocalizedString("good_evening", comment: "")
     }
     
     // MARK: Main View
@@ -41,7 +44,7 @@ struct HomeView: View {
                                 .font(.system(size: 34, weight: .bold))
                                 .foregroundColor(primaryText)
                             
-                            Text("Let's take care of your skin today")
+                            Text(NSLocalizedString("lets_take_care", comment: ""))
                                 .font(.system(size: 16, weight: .regular))
                                 .foregroundColor(.gray)
                         }
@@ -91,7 +94,7 @@ struct HomeView: View {
                                                 .padding(.leading, 10)
                                                 .padding(.top, -12)
                                             
-                                            Text("Skin analysis")
+                                            Text(NSLocalizedString("skin_analysis", comment: ""))
                                                 .foregroundColor(.white)
                                                 .font(.system(size: 16, weight: .bold))
                                                 .padding(.top, 15)
@@ -104,7 +107,7 @@ struct HomeView: View {
                         
                         // skin health grid
                         VStack(alignment: .leading, spacing: 16) {
-                            Text("Your Skin Health (Avg.)")
+                            Text(NSLocalizedString("your_skin_health_avg", comment: ""))
                                 .font(.system(size: 18, weight: .bold))
                                 .foregroundColor(primaryText)
                             
@@ -121,88 +124,145 @@ struct HomeView: View {
                         }
                         .padding(.horizontal, 20)
                         
-                        // recommendation card
+                        // routine card
                         VStack(alignment: .leading, spacing: 16) {
-                            Text("Today's Recommendations")
-                                .font(.system(size: 18, weight: .bold))
-                                .foregroundColor(primaryText)
-                            
-                            ZStack(alignment: .topLeading) {
-                                RoundedRectangle(cornerRadius: 25)
-                                    .fill(secondaryColor)
-                                    .frame(maxWidth: .infinity)
-                                    .shadow(color: secondaryColor.opacity(0.3), radius: 15, x: 0, y: 8)
+                            HStack {
+                                Text(NSLocalizedString("your_routine", comment: ""))
+                                    .font(.system(size: 18, weight: .bold))
+                                    .foregroundColor(primaryText)
+                                if vm.hasPendingSuggestions {
+                                    Circle()
+                                        .fill(secondaryColor)
+                                        .frame(width: 8, height: 8)
+                                }
+                            }
 
-                                VStack(alignment: .leading, spacing: 12) {
-                                    HStack {
-                                        Text(routineInfo.title)
-                                            .font(.system(size: 24, weight: .bold))
-                                        Spacer()
-                                        Image(systemName: routineInfo.icon)
-                                            .font(.system(size: 24))
-                                    }
-                                    
-                                    Text(routineInfo.description)
-                                        .font(.system(size: 16, weight: .medium))
-                                        .multilineTextAlignment(.leading)
-                                        .fixedSize(horizontal: false, vertical: true)
-                                        .opacity(0.9)
-                                    
-                                    HStack(spacing: 8) {
-                                        ForEach(routineInfo.products, id: \.self) { product in
-                                            Text(product)
-                                                .font(.system(size: 14, weight: .semibold))
-                                                .padding(.horizontal, 12)
-                                                .padding(.vertical, 8)
-                                                .background(Color.white.opacity(0.15))
-                                                .cornerRadius(12)
+                            NavigationLink(destination: RoutineView(selectedTab: $selectedTab)) {
+                                ZStack(alignment: .topLeading) {
+                                    RoundedRectangle(cornerRadius: 25)
+                                        .fill(secondaryColor)
+                                        .frame(maxWidth: .infinity)
+                                        .shadow(color: secondaryColor.opacity(0.3), radius: 15, x: 0, y: 8)
+
+                                    VStack(alignment: .leading, spacing: 12) {
+                                        HStack {
+                                            Text(routineTitle)
+                                                .font(.system(size: 24, weight: .bold))
+                                            Spacer()
+                                            Image(systemName: routineIcon)
+                                                .font(.system(size: 24))
+                                        }
+
+                                        if vm.routineItemCount > 0 {
+                                            Text(String(format: NSLocalizedString("steps_configured_%lld", comment: ""), vm.routineItemCount))
+                                                .font(.system(size: 16, weight: .medium))
+                                                .opacity(0.9)
+
+                                            HStack(spacing: 8) {
+                                                ForEach(vm.routineStepNames, id: \.self) { name in
+                                                    Text(name)
+                                                        .font(.system(size: 14, weight: .semibold))
+                                                        .padding(.horizontal, 12)
+                                                        .padding(.vertical, 8)
+                                                        .background(Color.white.opacity(0.15))
+                                                        .cornerRadius(12)
+                                                }
+                                            }
+                                            .padding(.top, 4)
+                                        } else {
+                                            Text(NSLocalizedString("tap_to_setup_routine", comment: ""))
+                                                .font(.system(size: 16, weight: .medium))
+                                                .multilineTextAlignment(.leading)
+                                                .fixedSize(horizontal: false, vertical: true)
+                                                .opacity(0.9)
                                         }
                                     }
-                                    .padding(.top, 4)
+                                    .foregroundColor(.white)
+                                    .padding(24)
                                 }
-                                .foregroundColor(.white)
-                                .padding(24)
                             }
+                            .buttonStyle(.plain)
                         }
                         .padding(.horizontal, 20)
                         
                         // products horizontal list
                         VStack(alignment: .leading, spacing: 16) {
-                            Text("Recommended Products")
-                                .font(.system(size: 18, weight: .bold))
-                                .foregroundColor(primaryText)
-                                .padding(.horizontal, 20)
-                            
-                            ScrollView(.horizontal, showsIndicators: false) {
-                                HStack(spacing: 16) {
-                                    ForEach(vm.products) { product in
-                                        NavigationLink(destination: DetailView(type: .product(product))) {
-                                            ProductCard(product: product)
-                                        }
-                                        .buttonStyle(PlainButtonStyle())
-                                    }
-                                }
-                                .padding(.horizontal, 20)
-                            }
-                        }
-                        
-                        // articles horizontal list
-                        VStack(alignment: .leading, spacing: 16) {
-                            Text("Latest Articles")
+                            Text(NSLocalizedString("recommended_products", comment: ""))
                                 .font(.system(size: 18, weight: .bold))
                                 .foregroundColor(primaryText)
                                 .padding(.horizontal, 20)
 
-                            ScrollView(.horizontal, showsIndicators: false){
-                                HStack(spacing: 16) {
-                                    ForEach(vm.articles) { article in
-                                        NavigationLink(destination: DetailView(type: .news(article))) {
-                                            ArticleCard(article: article)
+                            if vm.isLoading && vm.products.isEmpty {
+                                ScrollView(.horizontal, showsIndicators: false) {
+                                    HStack(spacing: 16) {
+                                        ForEach(0..<3, id: \.self) { _ in
+                                            VStack(alignment: .leading, spacing: 12) {
+                                                RoundedRectangle(cornerRadius: 20)
+                                                    .fill(outerColor)
+                                                    .frame(width: 160, height: 160)
+                                                RoundedRectangle(cornerRadius: 8)
+                                                    .fill(outerColor)
+                                                    .frame(width: 120, height: 14)
+                                                RoundedRectangle(cornerRadius: 6)
+                                                    .fill(outerColor.opacity(0.6))
+                                                    .frame(width: 80, height: 12)
+                                            }
+                                            .frame(width: 160)
                                         }
-                                        .buttonStyle(PlainButtonStyle())
                                     }
+                                    .padding(.horizontal, 20)
                                 }
+                            } else {
+                                ScrollView(.horizontal, showsIndicators: false) {
+                                    HStack(spacing: 16) {
+                                        ForEach(vm.products) { product in
+                                            NavigationLink(destination: DetailView(type: .product(product))) {
+                                                ProductCard(product: product)
+                                            }
+                                            .buttonStyle(PlainButtonStyle())
+                                        }
+                                    }
+                                    .padding(.horizontal, 20)
+                                }
+                            }
+                        }
+
+                        // articles horizontal list
+                        VStack(alignment: .leading, spacing: 16) {
+                            Text(NSLocalizedString("latest_articles", comment: ""))
+                                .font(.system(size: 18, weight: .bold))
+                                .foregroundColor(primaryText)
                                 .padding(.horizontal, 20)
+
+                            if vm.isLoading && vm.articles.isEmpty {
+                                ScrollView(.horizontal, showsIndicators: false) {
+                                    HStack(spacing: 16) {
+                                        ForEach(0..<2, id: \.self) { _ in
+                                            VStack(alignment: .leading, spacing: 12) {
+                                                RoundedRectangle(cornerRadius: 25)
+                                                    .fill(outerColor)
+                                                    .frame(width: 280, height: 180)
+                                                RoundedRectangle(cornerRadius: 8)
+                                                    .fill(outerColor)
+                                                    .frame(width: 200, height: 14)
+                                            }
+                                            .frame(width: 280)
+                                        }
+                                    }
+                                    .padding(.horizontal, 20)
+                                }
+                            } else {
+                                ScrollView(.horizontal, showsIndicators: false) {
+                                    HStack(spacing: 16) {
+                                        ForEach(vm.articles) { article in
+                                            NavigationLink(destination: DetailView(type: .news(article))) {
+                                                ArticleCard(article: article)
+                                            }
+                                            .buttonStyle(PlainButtonStyle())
+                                        }
+                                    }
+                                    .padding(.horizontal, 20)
+                                }
                             }
                         }
                         
@@ -216,6 +276,7 @@ struct HomeView: View {
         }
         .onAppear {
             vm.fetchNames()
+            vm.fetchRoutineSummary()
         }
     }
 }
@@ -325,7 +386,7 @@ struct ArticleCard: View {
                     .foregroundColor(primaryText)
                     .lineLimit(1)
                 
-                Text(article.content)
+                Text(article.content ?? "")
                     .font(.system(size: 14, weight: .regular))
                     .foregroundColor(.gray)
                     .lineLimit(2)
