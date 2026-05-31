@@ -48,9 +48,16 @@ class ResultsViewModel: ObservableObject {
             self.recommendProduct = try await SupabaseService.shared.fetchRecommendedProducts(for: condition)
         } catch {
             print("Failed to fetch recommended products: \(error.localizedDescription)")
-            // Fallback or empty state
         }
-        
+
+        if let record = self.record {
+            let skinType = LocalPersistenceManager.shared.fetchUserProfile()?.skinType ?? "Normal"
+            let suggestions = await RoutineEngine.shared.generateRoutine(from: record, skinType: skinType)
+            if !suggestions.isEmpty {
+                LocalPersistenceManager.shared.saveSuggestions(suggestions)
+            }
+        }
+
         isLoading = false
     }
 }
