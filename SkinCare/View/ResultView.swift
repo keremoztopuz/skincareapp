@@ -19,16 +19,24 @@ struct ResultView: View {
     
     let record: AnalysisRecord?
     let isFromRecents: Bool
+    let heatmaps: [String: [[Float]]]
+    let faceRect: CGRect
     @State private var showRecommendations = false
     @State private var selectedProduct: Product? = nil
     @State private var showProductDetail = false
     @State private var showUpgrade = false
+    @State private var showRoutine = false
+    @State private var routineCreated = false
+    @State private var showHeatmap = false
+    @State private var selectedHeatmapCondition: String = ""
 
     private var isPremium: Bool { SubscriptionManager.shared.isPremium }
-    
-    init(record: AnalysisRecord?, isFromRecents: Bool, onDismiss: (() -> Void)? = nil) {
+
+    init(record: AnalysisRecord?, isFromRecents: Bool, heatmaps: [String: [[Float]]] = [:], faceRect: CGRect = .zero, onDismiss: (() -> Void)? = nil) {
         self.record = record
         self.isFromRecents = isFromRecents
+        self.heatmaps = heatmaps
+        self.faceRect = faceRect
         self.onDismiss = onDismiss
         self._vm = StateObject(wrappedValue: ResultsViewModel(record: record))
     }
@@ -64,7 +72,7 @@ struct ResultView: View {
 
                     // MARK: - Scanned Image Section
                     VStack(alignment: .leading, spacing: 14) {
-                        Text("Scanned Image")
+                        Text(NSLocalizedString("scanned_image", comment: ""))
                             .font(.system(size: 18, weight: .bold))
                             .foregroundColor(primaryText)
                         
@@ -99,23 +107,25 @@ struct ResultView: View {
                     
                     // MARK: - Results Section
                     VStack(alignment: .leading, spacing: 16) {
-                        Text("Results")
+                        Text(NSLocalizedString("results", comment: ""))
                             .font(.system(size: 18, weight: .bold))
                             .foregroundColor(primaryText)
                             .padding(.horizontal, 20)
                         
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: 16) {
-                                ResultBar(title: "Acne",     score: record?.acneScore    ?? 0, icon: "face.dashed",  color: secondaryColor)
-                                ResultBar(title: "Redness",   score: record?.eczemaScore  ?? 0, icon: "drop.fill",    color: secondaryColor)
+                                resultBarButton(title: "Acne",    score: record?.acneScore   ?? 0, icon: "face.dashed", heatmapKey: "Acne")
+                                resultBarButton(title: "Redness", score: record?.eczemaScore ?? 0, icon: "drop.fill",   heatmapKey: "Redness")
                                 if isPremium {
-                                    ResultBar(title: "Wrinkles",  score: record?.wrinkleScore   ?? 0, icon: "sun.max.fill",  color: secondaryColor)
-                                    ResultBar(title: "Eyebags",   score: record?.eyebagScore    ?? 0, icon: "flame.fill",    color: secondaryColor)
-                                    ResultBar(title: "Psoriasis", score: record?.psoriasisScore ?? 0, icon: "face.smiling",  color: secondaryColor)
+                                    ResultBar(title: "Wrinkles",      score: record?.wrinkleScore      ?? 0, icon: "sun.max.fill",       color: secondaryColor)
+                                    ResultBar(title: "Eyebags",       score: record?.eyebagScore       ?? 0, icon: "eye.fill",           color: secondaryColor)
+                                    ResultBar(title: "Pigmentation",  score: record?.pigmentationScore ?? 0, icon: "circle.hexagongrid",  color: secondaryColor)
+                                    ResultBar(title: "Hydration",     score: record?.hydrationScore    ?? 0, icon: "drop.degreesign",    color: secondaryColor)
                                 } else {
                                     Button { showUpgrade = true } label: { lockedBar(title: "Wrinkles") }.buttonStyle(.plain)
                                     Button { showUpgrade = true } label: { lockedBar(title: "Eyebags") }.buttonStyle(.plain)
-                                    Button { showUpgrade = true } label: { lockedBar(title: "Psoriasis") }.buttonStyle(.plain)
+                                    Button { showUpgrade = true } label: { lockedBar(title: "Pigmentation") }.buttonStyle(.plain)
+                                    Button { showUpgrade = true } label: { lockedBar(title: "Hydration") }.buttonStyle(.plain)
                                 }
                             }
                             .padding(.horizontal, 20)
@@ -125,7 +135,7 @@ struct ResultView: View {
                     // MARK: - Recommended Products
                     if isFromRecents || showRecommendations {
                         VStack(alignment: .leading, spacing: 16) {
-                            Text("Recommended Products")
+                            Text(NSLocalizedString("recommended_products", comment: ""))
                                 .font(.system(size: 18, weight: .bold))
                                 .foregroundColor(primaryText)
                                 .padding(.horizontal, 20)
@@ -151,7 +161,7 @@ struct ResultView: View {
                             }                        }
                     }
                     
-                    // MARK: - Action Button (Only for Fresh Analysis)
+                    // MARK: - Action Buttons
                     if !isFromRecents && !showRecommendations {
                         Button(action: {
                             withAnimation { showRecommendations = true }
@@ -159,7 +169,7 @@ struct ResultView: View {
                             HStack(spacing: 12) {
                                 Image(systemName: "sparkles")
                                     .font(.system(size: 20))
-                                Text("See Recommendations")
+                                Text(NSLocalizedString("see_recommendations", comment: ""))
                                     .font(.system(size: 16, weight: .bold))
                             }
                             .foregroundColor(.white)
@@ -172,8 +182,28 @@ struct ResultView: View {
                         .padding(.horizontal, 20)
                         .padding(.top, 10)
                         .padding(.bottom, 40)
+                    } else if (isFromRecents || showRecommendations) && !vm.recommendProduct.isEmpty {
+                        Button(action: {
+                            createRoutineFromProducts()
+                        }) {
+                            HStack(spacing: 12) {
+                                Image(systemName: routineCreated ? "checkmark.circle.fill" : "calendar.badge.plus")
+                                    .font(.system(size: 20))
+                                Text(routineCreated ? "Routine Created!" : "Create a Routine")
+                                    .font(.system(size: 16, weight: .bold))
+                            }
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 22)
+                            .background(secondaryColor)
+                            .cornerRadius(20)
+                            .shadow(color: secondaryColor.opacity(0.3), radius: 10, x: 0, y: 8)
+                        }
+                        .disabled(routineCreated)
+                        .padding(.horizontal, 20)
+                        .padding(.top, 10)
+                        .padding(.bottom, 40)
                     } else {
-                        // Bottom spacing for Recents mode
                         Color.clear.frame(height: 20)
                     }
                 }
@@ -187,6 +217,84 @@ struct ResultView: View {
                     DetailView(type: .product(product))
                 }
             }
+        }
+        .fullScreenCover(isPresented: $showRoutine) {
+            NavigationStack {
+                RoutineView(selectedTab: .constant(0))
+            }
+        }
+        .sheet(isPresented: $showHeatmap) {
+            if let faceData = record?.imageData,
+               let faceImage = UIImage(data: faceData),
+               let grid = heatmaps[selectedHeatmapCondition] {
+                HeatmapOverlayView(faceImage: faceImage, heatmap: grid, conditionName: selectedHeatmapCondition, faceRect: faceRect)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func resultBarButton(title: String, score: Double, icon: String, heatmapKey: String) -> some View {
+        let hasHeatmap = heatmaps[heatmapKey] != nil
+        Button {
+            if hasHeatmap {
+                selectedHeatmapCondition = heatmapKey
+                showHeatmap = true
+            }
+        } label: {
+            ZStack(alignment: .topTrailing) {
+                ResultBar(title: title, score: score, icon: icon, color: secondaryColor)
+                if hasHeatmap {
+                    Image(systemName: "viewfinder")
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundColor(.white)
+                        .padding(6)
+                        .background(secondaryColor)
+                        .clipShape(Circle())
+                        .offset(x: -8, y: 8)
+                }
+            }
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func createRoutineFromProducts() {
+        let products = isPremium ? vm.recommendProduct : Array(vm.recommendProduct.prefix(2))
+        let manager = LocalPersistenceManager.shared
+
+        let stepMap: [String: (order: Int16, times: [String])] = [
+            "cleanser":   (0, ["morning", "evening"]),
+            "serum":      (1, ["morning"]),
+            "treatment":  (1, ["evening"]),
+            "eye_cream":  (2, ["evening"]),
+            "eye_serum":  (2, ["evening"]),
+            "moisturizer":(3, ["morning", "evening"]),
+            "sunscreen":  (4, ["morning"])
+        ]
+
+        for product in products {
+            guard let type = product.productType,
+                  let mapping = stepMap[type] else { continue }
+
+            for time in mapping.times {
+                manager.saveRoutineItem(
+                    productId: product.id,
+                    productName: product.name,
+                    productBrand: product.brand,
+                    productImageUrl: product.imageUrl,
+                    productType: type,
+                    routineTime: time,
+                    stepOrder: mapping.order,
+                    isManuallyAdded: false
+                )
+            }
+        }
+
+        withAnimation {
+            routineCreated = true
+        }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+            showRoutine = true
         }
     }
 
