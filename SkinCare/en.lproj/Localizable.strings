@@ -1,0 +1,171 @@
+/* Tabs */
+"tab_home" = "Home";
+"tab_search" = "Search";
+"tab_camera" = "Camera";
+"tab_recents" = "Recents";
+"tab_profile" = "Profile";
+
+/* Home */
+"good_morning" = "Good Morning";
+"good_afternoon" = "Good Afternoon";
+"good_evening" = "Good Evening";
+"lets_take_care" = "Let's take care of your skin today";
+"skin_analysis" = "Skin analysis";
+"your_skin_health_avg" = "Your Skin Health (Avg.)";
+"your_routine" = "Your Routine";
+"steps_configured_%lld" = "%lld steps configured";
+"tap_to_setup_routine" = "Tap to set up your personalized skincare routine";
+"recommended_products" = "Recommended Products";
+"latest_articles" = "Latest Articles";
+"morning_routine" = "Morning Routine";
+"evening_routine" = "Evening Routine";
+
+/* Search */
+"search" = "Search";
+"find_best_products" = "Find the best products for your skin";
+
+/* Camera */
+"face_analysis" = "Face Analysis";
+"position_face" = "Position your face within the oval frame";
+"camera_access_required" = "Camera Access Required";
+"camera_access_description" = "To analyze your skin, we need access to your camera. Your photos never leave your device.";
+"open_settings" = "Open Settings";
+"ready_to_scan" = "Ready to Scan?";
+"enable_camera_description" = "Enable camera access to start your skin analysis journey.";
+"enable_camera" = "Enable Camera";
+"free_scans_used" = "You've used your %lld free monthly scans. Go Pro for unlimited analysis.";
+
+/* Recents */
+"recent_analysis" = "Recent Analysis";
+"select_2_analyses" = "Select 2 analyses and compare";
+"all_time" = "All Time";
+"this_week" = "This Week";
+"this_month" = "This Month";
+"see_all_analyses" = "See All Your Analyses";
+"go_pro_history" = "Go Pro to access your analysis history";
+"go_pro" = "Go Pro";
+"compare_2" = "Compare (2)";
+"no_analysis_yet" = "No Analysis Yet";
+"go_to_camera" = "Go to camera view to make your first scan";
+"make_first_scan" = "Make your first scan";
+"delete" = "Delete";
+
+/* More / Profile */
+"profile" = "Profile";
+"manage_information" = "Manage your information";
+"personal_information" = "Personal Information";
+"premium_active" = "Premium Active";
+"all_features_unlocked" = "All features unlocked";
+"go_premium" = "Go Premium";
+"unlock_advanced_features" = "Unlock all advanced features";
+"upgrade_now" = "Upgrade Now";
+
+/* Subscription */
+"unlock_premium" = "Unlock Premium";
+"start_free_trial" = "Start 3-Day Free Trial";
+"continue_with_free" = "Continue with Free";
+"then_price_monthly" = "Then $4.99/month. Cancel anytime.";
+"no_thanks_free" = "No thanks, continue with Free";
+"restore_purchases" = "Restore Purchases";
+"free_trial_included" = "3-day free trial included";
+"popular" = "POPULAR";
+"5_analysis_per_month" = "5 skin analysis per month";
+"basic_insights" = "Basic insights (Acne & Redness)";
+"limited_recommendations" = "Limited recommendations";
+"last_5_scans" = "Last 5 recent scans";
+"unlimited_analysis" = "Unlimited analysis";
+"all_conditions_detected" = "All conditions detected";
+"full_recommendations" = "Full product recommendations";
+"complete_history" = "Complete history & tracking";
+"purchase_error" = "Purchase Error";
+
+/* Onboarding */
+"onboarding_title_1" = "Welcome to SkinCare AI";
+"onboarding_desc_1" = "Your personal dermatological assistant powered by advanced AI technology.";
+"onboarding_title_2" = "AI-Powered Skin Analysis";
+"onboarding_desc_2" = "Analyze your skin in seconds with your camera. Get instant insights.";
+"onboarding_title_3" = "Data Stays On Device";
+"onboarding_desc_3" = "Your face data never leaves your device. We prioritize your privacy.";
+"onboarding_title_4" = "Track Your Progress";
+"onboarding_desc_4" = "Save every analysis and see how you improve over time.";
+"back" = "Back";
+"next" = "Next";
+"get_started" = "Get Started";
+"skip" = "Skip";
+
+/* Profile Setup */
+"whats_your_name" = "What's your name?";
+"lets_get_to_know" = "Let's get to know you";
+"please_enter_name" = "Please enter your name.";
+"continue" = "Continue";
+"how_old" = "How old are you?";
+"helps_personalize_routines" = "Helps us personalize your routines";
+"whats_your_gender" = "What's your gender?";
+"helps_tailor_recommendations" = "Helps us tailor your recommendations";
+"please_select_gender" = "Please select your gender.";
+"whats_your_skin_type" = "What's your skin type?";
+"customize_analysis" = "We'll customize your analysis";
+"please_select_skin_type" = "Please select your skin type.";
+
+/* Result */
+"scanned_image" = "Scanned Image";
+"results" = "Results";
+"see_recommendations" = "See Recommendations";
+
+/* Detail */
+"description" = "Description";
+"active_ingredients" = "Active Ingredients";
+"expert_advice" = "Expert Advice";
+"min_read" = "%lld min read";
+
+/* Compare */
+"compare_analyses" = "Compare Analyses";
+"skin_metrics" = "Skin Metrics";
+"ai_insight" = "AI Insight";
+"vs" = "vs";
+
+/* Camera Guide */
+"camera_guidelines" = "Camera Guidelines";
+"follow_essentials" = "Follow these essentials for accurate skin analysis";
+"dos" = "Do's";
+"donts" = "Don'ts";
+
+/* Disclaimer */
+"important_notice" = "Important Notice";
+"accept_terms" = "I have read and accept the terms above";
+
+/* Upgrade Sheet */
+"upgrade_to_pro" = "Upgrade to Pro";
+"unlock_full_capabilities" = "Unlock full skin analysis capabilities";
+"price_monthly" = "$4.99 / month  ·  Cancel anytime";
+"continue_with_free_plan" = "Continue with Free Plan";
+"welcome_to_pro" = "Welcome to Pro!";
+"all_features_now_unlocked" = "All features are now unlocked.";
+
+/* Profile View */
+"skin_journey" = "Skin Journey";
+"track_progress_over_time" = "Track your progress over time";
+"weekly_progress" = "Weekly Progress";
+"skin_data_appear_here" = "Your skin data will appear here";
+"recent_achievements" = "Recent Achievements";
+
+/* Routine */
+"personalized_routine" = "Personalized Routine";
+"upgrade_for_routine" = "Upgrade to Pro to get a personalized morning and evening skincare routine based on your skin analysis.";
+"morning" = "Morning";
+"evening" = "Evening";
+"new_recommendations" = "New Recommendations";
+"products_count_%lld" = "%lld products";
+"accept_all" = "Accept All";
+"dismiss" = "Dismiss";
+"no_products_found" = "No products found";
+"cancel" = "Cancel";
+
+/* Heatmap */
+"low" = "Low";
+"high" = "High";
+"heatmap_description" = "Areas highlighted in red show where %@ signs were detected.";
+
+/* Common */
+"ok" = "OK";
+"your_personal_expert" = "Your personal AI assisted skincare expert";
