@@ -26,7 +26,7 @@ struct ProfileSetupView: View {
                     }) {
                         HStack(spacing: 4) {
                             Image(systemName: "chevron.left")
-                            Text("Back")
+                            Text(NSLocalizedString("back", comment: ""))
                         }
                         .font(.system(size: 16, weight: .medium))
                         .foregroundColor(Color(red: 0.47, green: 0.11, blue: 0.17))
@@ -39,13 +39,13 @@ struct ProfileSetupView: View {
                 Group {
                     if vm.currentPage == 0 {
                         VStack(alignment: .leading, spacing: 12) {
-                            Text("What's your name?")
+                            Text(NSLocalizedString("whats_your_name", comment: ""))
                                 .font(.system(size: 28, weight:
                                         .bold))
                                 .foregroundColor(Color(red: 0.1,
                                                        green: 0.1, blue: 0.2))
                             
-                            Text("Let's get to know you")
+                            Text(NSLocalizedString("lets_get_to_know", comment: ""))
                                 .font(.system(size: 16))
                                 .foregroundColor(.gray)
                             
@@ -58,7 +58,7 @@ struct ProfileSetupView: View {
                             
                             ZStack {
                                 if vm.showNameWarning {
-                                    Text("Please enter your name.")
+                                    Text(NSLocalizedString("please_enter_name", comment: ""))
                                         .font(.system(size: 14))
                                         .foregroundColor(Color(red:
                                         0.47, green: 0.11, blue: 0.17))
@@ -85,7 +85,7 @@ struct ProfileSetupView: View {
                 Button(action: {
                     vm.handleContinue()
                 }) {
-                    Text("Continue")
+                    Text(NSLocalizedString("continue", comment: ""))
                         .font(.system(size: 18, weight: .bold))
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
@@ -112,12 +112,12 @@ struct ProfileSetupView: View {
         @Binding var age: Int
         var body: some View {
             VStack (alignment: .leading, spacing: 12){
-                Text("How old are you?")
+                Text(NSLocalizedString("how_old", comment: ""))
                     .font(.system(size: 28, weight: .bold))
                     .foregroundColor(Color(red: 0.1,
                                            green: 0.1, blue: 0.2))
                 
-                Text("Helps us personalize your routines")
+                Text(NSLocalizedString("helps_personalize_routines", comment: ""))
                     .font(.system(size: 16))
                     .foregroundColor(.gray)
                 
@@ -142,11 +142,11 @@ struct ProfileSetupView: View {
         var showWarning: Bool
         var body: some View {
             VStack(alignment: .leading, spacing: 12) {
-                Text("What's your gender?")
+                Text(NSLocalizedString("whats_your_gender", comment: ""))
                     .font(.system(size: 28, weight: .bold))
                     .foregroundColor(Color(red: 0.1, green: 0.1, blue: 0.2))
 
-                Text("Helps us tailor your recommendations")
+                Text(NSLocalizedString("helps_tailor_recommendations", comment: ""))
                     .font(.system(size: 16))
                     .foregroundColor(.gray)
 
@@ -169,7 +169,7 @@ struct ProfileSetupView: View {
 
                 ZStack {
                     if showWarning {
-                        Text("Please select your gender.")
+                        Text(NSLocalizedString("please_select_gender", comment: ""))
                             .font(.system(size: 14))
                             .foregroundColor(Color(red: 0.47, green: 0.11, blue: 0.17))
                             .frame(maxWidth: .infinity, alignment: .center)
@@ -189,11 +189,11 @@ struct ProfileSetupView: View {
             let selectedColor = Color(red: 0.47, green: 0.11, blue: 0.17)
             let darkColor = Color(red: 0.1, green: 0.1, blue: 0.2)
             VStack(alignment: .leading, spacing: 12) {
-                Text("What's your skin type?")
+                Text(NSLocalizedString("whats_your_skin_type", comment: ""))
                     .font(.system(size: 28, weight: .bold))
                     .foregroundColor(Color(red: 0.1, green: 0.1, blue: 0.2))
 
-                Text("We'll customize your analysis")
+                Text(NSLocalizedString("customize_analysis", comment: ""))
                     .font(.system(size: 16))
                     .foregroundColor(.gray)
 
@@ -222,7 +222,7 @@ struct ProfileSetupView: View {
 
                 ZStack {
                     if showWarning {
-                        Text("Please select your skin type.")
+                        Text(NSLocalizedString("please_select_skin_type", comment: ""))
                             .font(.system(size: 14))
                             .foregroundColor(Color(red: 0.47, green: 0.11, blue: 0.17))
                             .frame(maxWidth: .infinity, alignment: .center)
