@@ -27,8 +27,6 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
     @Published var hydrationScore: Double = 0
     @Published var analysisRecord: AnalysisRecord? = nil
     @Published var isAnalyzing: Bool = false
-    var heatmaps: [String: [[Float]]] = [:]
-    var faceRect: CGRect = .zero
 
     private let engine = ScoringEngine()
 
@@ -130,7 +128,7 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
                 return
             }
 
-            let (croppedImage, normalizedFaceRect) = await withCheckedContinuation { continuation in
+            let (croppedImage, _) = await withCheckedContinuation { continuation in
                 detectFaceAndCrop(normalizedImage) { cropped, faceNormRect in
                     continuation.resume(returning: (cropped, faceNormRect))
                 }
@@ -157,7 +155,6 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
 
             await MainActor.run {
                 self.capturedImage = normalizedImage
-                self.faceRect = normalizedFaceRect
                 self.buildRecord()
             }
         }
@@ -290,33 +287,9 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
         let condition = ["Acne": acne, "Redness": redness]
         let top = condition.max(by: { $0.value < $1.value })
 
-        // Extract heatmaps [1, 5, 12, 12] — only Acne (0) and Redness (1)
-        var extractedHeatmaps: [String: [[Float]]] = [:]
-        if let hm = output.featureValue(for: "heatmaps")?.multiArrayValue {
-            let classMap: [(index: Int, name: String)] = [(0, "Acne"), (1, "Redness")]
-            for entry in classMap {
-                var grid = [[Float]]()
-                var maxVal: Float = 0
-                for h in 0..<12 {
-                    var row = [Float]()
-                    for w in 0..<12 {
-                        let val = Float(truncating: hm[[0, entry.index, h, w] as [NSNumber]])
-                        if val > maxVal { maxVal = val }
-                        row.append(val)
-                    }
-                    grid.append(row)
-                }
-                if maxVal > 0 {
-                    grid = grid.map { $0.map { $0 / maxVal } }
-                }
-                extractedHeatmaps[entry.name] = grid
-            }
-        }
-
         DispatchQueue.main.async {
             self.currentAcneScore    = acne
             self.currentRednessScore = redness
-            self.heatmaps = extractedHeatmaps
             self.detectedCondition = (top?.value ?? 0) > 40 ? top?.key : "Healthy"
             group.leave()
         }
@@ -659,8 +632,6 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
             self.capturedImage = nil
             self.analysisRecord = nil
             self.isAnalyzing = false
-            self.heatmaps = [:]
-            self.faceRect = .zero
         }
         if !session.isRunning {
             DispatchQueue.global(qos: .background).async {
