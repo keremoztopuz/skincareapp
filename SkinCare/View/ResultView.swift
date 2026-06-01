@@ -50,13 +50,7 @@ struct ResultView: View {
 
                     // MARK: - Back Button
                     HStack {
-                        Button(action: { 
-                            if let onDismiss = onDismiss {
-                                onDismiss()
-                            } else {
-                                dismiss()
-                            }
-                        }) {
+                        Button(action: closeResult) {
                             Image(systemName: "arrow.left")
                                 .font(.system(size: 16, weight: .bold))
                                 .foregroundColor(.white)
@@ -229,6 +223,13 @@ struct ResultView: View {
                let grid = heatmaps[selectedHeatmapCondition] {
                 HeatmapOverlayView(faceImage: faceImage, heatmap: grid, conditionName: selectedHeatmapCondition, faceRect: faceRect)
             }
+        }
+    }
+
+    private func closeResult() {
+        dismiss()
+        DispatchQueue.main.async {
+            onDismiss?()
         }
     }
 
