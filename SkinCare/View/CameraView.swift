@@ -291,7 +291,7 @@ struct CameraView: View {
         .fullScreenCover(isPresented: $showResult, onDismiss: {
             vm.resetScanner()
         }) {
-            ResultView(record: vm.analysisRecord, isFromRecents: false, heatmaps: vm.heatmaps, faceRect: vm.faceRect) {
+            ResultView(record: vm.analysisRecord, isFromRecents: false) {
                 showResult = false
                 vm.resetScanner()
             }
