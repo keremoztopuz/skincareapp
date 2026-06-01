@@ -160,7 +160,7 @@ struct OnBoardingView: View {
                         Button(action: { vm.currentPage -= 1 }) {
                             HStack {
                                 Image(systemName: "chevron.left")
-                                Text(NSLocalizedString("back", comment: ""))
+                                Text(AppStrings.back)
                             }
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 18)
@@ -181,7 +181,7 @@ struct OnBoardingView: View {
                         }
                     }) {
                         HStack {
-                            Text(vm.currentPage == vm.pages.count - 1 ? NSLocalizedString("get_started", comment: "") : NSLocalizedString("next", comment: ""))
+                            Text(vm.currentPage == vm.pages.count - 1 ? AppStrings.getStarted : AppStrings.next)
                             Image(systemName: "chevron.right")
                         }
                         .frame(maxWidth: .infinity)
@@ -198,7 +198,7 @@ struct OnBoardingView: View {
 
             // skip button 
             if vm.currentPage < vm.pages.count - 1 {
-                Button(NSLocalizedString("skip", comment: "")) {
+                Button(AppStrings.skip) {
                     appVM.completeOnBoarding()
                 }
                 .foregroundColor(.black)
