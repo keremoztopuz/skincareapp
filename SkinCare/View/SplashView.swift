@@ -10,11 +10,11 @@ import SwiftUI
 struct SplashView: View {
     // tips
     private let tips: [String] = [
-        "Get ready to shine!",
-        "Your skin is your home.",
-        "Drinking 2 liters of water keeps your skin hydrated.",
-        "Don't forget to moisturize in your night routine.",
-        "Vitamin C serum helps even out your skin tone."
+        AppStrings.splashTipShine,
+        AppStrings.splashTipSkinHome,
+        AppStrings.splashTipWater,
+        AppStrings.splashTipMoisturize,
+        AppStrings.splashTipVitaminC
     ]
     
     var loadingMessage: String? = nil
