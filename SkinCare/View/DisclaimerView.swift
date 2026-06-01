@@ -59,17 +59,17 @@ struct DisclaimerView: View {
                     VStack(alignment: .leading, spacing: 16) {
                         DisclaimerItem(
                             icon: "cross.case.fill",
-                            text: "This app does not provide medical diagnosis or treatment. The analyses are for informational purposes only and do not replace professional medical advice."
+                            text: NSLocalizedString("disclaimer_medical", comment: "")
                         )
 
                         DisclaimerItem(
                             icon: "allergens.fill",
-                            text: "Before using any recommended product, apply a small amount to a patch of skin and wait 24 hours to check for allergic reactions."
+                            text: NSLocalizedString("disclaimer_patch_test", comment: "")
                         )
 
                         DisclaimerItem(
                             icon: "hand.raised.fill",
-                            text: "We accept no liability for any adverse reactions or outcomes resulting from the use of recommended products. Use all suggestions at your own risk."
+                            text: NSLocalizedString("disclaimer_liability", comment: "")
                         )
                     }
                     .padding(.horizontal, 8)
