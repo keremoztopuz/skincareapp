@@ -130,7 +130,7 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
                 return
             }
 
-            let (croppedImage, normalizedFaceRect) = await withCheckedContinuation { continuation in
+            let (croppedImage, _) = await withCheckedContinuation { continuation in
                 detectFaceAndCrop(normalizedImage) { cropped, faceNormRect in
                     continuation.resume(returning: (cropped, faceNormRect))
                 }
@@ -156,8 +156,8 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
             }
 
             await MainActor.run {
-                self.capturedImage = normalizedImage
-                self.faceRect = normalizedFaceRect
+                self.capturedImage = imageToAnalyze
+                self.faceRect = .zero
                 self.buildRecord()
             }
         }
