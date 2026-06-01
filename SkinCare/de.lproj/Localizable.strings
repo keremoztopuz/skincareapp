@@ -77,6 +77,11 @@
 "next" = "Weiter";
 "get_started" = "Loslegen";
 "skip" = "Überspringen";
+"splash_tip_shine" = "Mach dich bereit zu strahlen!";
+"splash_tip_skin_home" = "Deine Haut ist dein Zuhause.";
+"splash_tip_water" = "2 Liter Wasser am Tag halten deine Haut hydratisiert.";
+"splash_tip_moisturize" = "Vergiss nicht, in deiner Abendroutine Feuchtigkeitspflege zu verwenden.";
+"splash_tip_vitamin_c" = "Vitamin-C-Serum hilft, deinen Hautton auszugleichen.";
 "whats_your_name" = "Wie heißen Sie?";
 "lets_get_to_know" = "Lernen wir Sie kennen";
 "please_enter_name" = "Bitte geben Sie Ihren Namen ein.";
