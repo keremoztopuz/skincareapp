@@ -117,6 +117,18 @@ struct HeatmapOverlayView: View {
                     let ovalDistance = sqrt(nx * nx + ny * ny)
                     if ovalDistance >= 1.0 { continue }
                     maskFade = min(1.0, (1.0 - ovalDistance) / 0.12)
+
+                    if conditionName == "Acne" {
+                        let faceX = (Float(px) - Float(fX)) / Float(fW)
+                        let faceY = (Float(py) - Float(fY)) / Float(fH)
+                        let mouthX = (faceX - 0.50) / 0.28
+                        let mouthY = (faceY - 0.70) / 0.13
+                        let mouthDistance = sqrt(mouthX * mouthX + mouthY * mouthY)
+                        if mouthDistance < 1.0 {
+                            let mouthFade = max(0.08, min(1.0, (mouthDistance - 0.55) / 0.45))
+                            maskFade *= mouthFade
+                        }
+                    }
                 }
 
                 let relX: Float
