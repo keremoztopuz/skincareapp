@@ -406,11 +406,13 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
         let crowsRightScore = wrinkleDensity(in: crowsFeetRightRect)
 
         let combined = foreheadScore * 0.50 + crowsLeftScore * 0.25 + crowsRightScore * 0.25
-        let finalScore = min(max(combined * 240, 6), 100)
+        let normalized = min(1.0, max(0, combined))
+        let curved = pow(normalized, 1.45)
+        let finalScore = min(max(curved * 85, 4), 85)
 
-        NSLog("[WRINKLE] face box: %.2f,%.2f %.2fx%.2f | forehead: %.1f crowsL: %.1f crowsR: %.1f → score: %.1f",
+        NSLog("[WRINKLE] face box: %.2f,%.2f %.2fx%.2f | forehead: %.3f crowsL: %.3f crowsR: %.3f combined: %.3f → score: %.1f",
               box.minX, box.minY, box.width, box.height,
-              foreheadScore, crowsLeftScore, crowsRightScore, finalScore)
+              foreheadScore, crowsLeftScore, crowsRightScore, combined, finalScore)
 
         DispatchQueue.main.async {
             self.wrinkleScore = finalScore
