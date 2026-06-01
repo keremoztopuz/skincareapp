@@ -94,6 +94,13 @@ enum AppStrings {
     static let getStarted = String(localized: "get_started")
     static let skip = String(localized: "skip")
 
+    // MARK: - Splash
+    static let splashTipShine = String(localized: "splash_tip_shine")
+    static let splashTipSkinHome = String(localized: "splash_tip_skin_home")
+    static let splashTipWater = String(localized: "splash_tip_water")
+    static let splashTipMoisturize = String(localized: "splash_tip_moisturize")
+    static let splashTipVitaminC = String(localized: "splash_tip_vitamin_c")
+
     // MARK: - Profile Setup
     static let whatsYourName = String(localized: "whats_your_name")
     static let letsGetToKnow = String(localized: "lets_get_to_know")
