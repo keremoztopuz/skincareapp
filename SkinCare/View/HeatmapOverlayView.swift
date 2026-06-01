@@ -110,6 +110,15 @@ struct HeatmapOverlayView: View {
                     if px < fX || px >= fX + fW || py < fY || py >= fY + fH { continue }
                 }
 
+                var maskFade: Float = 1.0
+                if hasFace {
+                    let nx = ((Float(px) - Float(fX)) / Float(fW) - 0.5) / 0.48
+                    let ny = ((Float(py) - Float(fY)) / Float(fH) - 0.5) / 0.54
+                    let ovalDistance = sqrt(nx * nx + ny * ny)
+                    if ovalDistance >= 1.0 { continue }
+                    maskFade = min(1.0, (1.0 - ovalDistance) / 0.12)
+                }
+
                 let relX: Float
                 let relY: Float
                 if hasFace {
@@ -144,7 +153,7 @@ struct HeatmapOverlayView: View {
                     }
 
                     let (r, g, b, a) = heatRGBA(thresholded)
-                    let fadedAlpha = UInt8(Float(a) * edgeFade)
+                    let fadedAlpha = UInt8(Float(a) * edgeFade * maskFade)
                     pixels[pixOffset] = r
                     pixels[pixOffset + 1] = g
                     pixels[pixOffset + 2] = b
