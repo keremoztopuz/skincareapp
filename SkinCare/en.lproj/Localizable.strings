@@ -93,6 +93,13 @@
 "get_started" = "Get Started";
 "skip" = "Skip";
 
+/* Splash */
+"splash_tip_shine" = "Get ready to shine!";
+"splash_tip_skin_home" = "Your skin is your home.";
+"splash_tip_water" = "Drinking 2 liters of water keeps your skin hydrated.";
+"splash_tip_moisturize" = "Don't forget to moisturize in your night routine.";
+"splash_tip_vitamin_c" = "Vitamin C serum helps even out your skin tone.";
+
 /* Profile Setup */
 "whats_your_name" = "What's your name?";
 "lets_get_to_know" = "Let's get to know you";
@@ -133,6 +140,11 @@
 /* Disclaimer */
 "important_notice" = "Important Notice";
 "accept_terms" = "I have read and accept the terms above";
+
+/* Disclaimer Bullet Points */
+"disclaimer_medical" = "This app does not provide medical diagnosis or treatment. The analyses are for informational purposes only and do not replace professional medical advice.";
+"disclaimer_patch_test" = "Before using any recommended product, apply a small amount to a patch of skin and wait 24 hours to check for allergic reactions.";
+"disclaimer_liability" = "We accept no liability for any adverse reactions or outcomes resulting from the use of recommended products. Use all suggestions at your own risk.";
 
 /* Upgrade Sheet */
 "upgrade_to_pro" = "Upgrade to Pro";
