@@ -160,10 +160,6 @@ enum AppStrings {
     static let noProductsFound = String(localized: "no_products_found")
     static let cancel = String(localized: "cancel")
 
-    // MARK: - Heatmap
-    static let lowLabel = String(localized: "low")
-    static let highLabel = String(localized: "high")
-
     // MARK: - Common
     static let ok = String(localized: "ok")
     static let yourPersonalExpert = String(localized: "your_personal_expert")
