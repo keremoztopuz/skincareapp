@@ -77,6 +77,11 @@
 "next" = "Avanti";
 "get_started" = "Inizia";
 "skip" = "Salta";
+"splash_tip_shine" = "Preparati a brillare!";
+"splash_tip_skin_home" = "La tua pelle è la tua casa.";
+"splash_tip_water" = "Bere 2 litri d'acqua mantiene la pelle idratata.";
+"splash_tip_moisturize" = "Non dimenticare di idratare la pelle nella routine serale.";
+"splash_tip_vitamin_c" = "Il siero alla vitamina C aiuta a uniformare il tono della pelle.";
 "whats_your_name" = "Come ti chiami?";
 "lets_get_to_know" = "Conosciamoci";
 "please_enter_name" = "Inserisci il tuo nome.";
