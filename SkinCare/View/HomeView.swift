@@ -36,13 +36,15 @@ struct HomeView: View {
                 mainColor.ignoresSafeArea()
                 
                 ScrollView(.vertical, showsIndicators: false) {
-                    VStack(alignment: .leading, spacing: 32) {
+                    VStack(alignment: .leading, spacing: 28) {
                         
                         // greeting Section
                         VStack(alignment: .leading, spacing: 4) {
                             Text("\(greetingText), \(vm.userName)")
-                                .font(.system(size: 34, weight: .bold))
+                                .font(.system(size: 31, weight: .bold))
                                 .foregroundColor(primaryText)
+                                .lineLimit(2)
+                                .minimumScaleFactor(0.82)
                             
                             Text(NSLocalizedString("lets_take_care", comment: ""))
                                 .font(.system(size: 16, weight: .regular))
@@ -76,12 +78,12 @@ struct HomeView: View {
                             ZStack {
                                 RoundedRectangle(cornerRadius: 25)
                                     .fill(outerColor)
-                                    .frame(height: 230)
+                                    .frame(height: 210)
                                     .shadow(color: Color.black.opacity(0.08), radius: 15, x: 0, y: 8)
                                 
                                 Circle()
                                     .fill(secondaryColor)
-                                    .frame(width: 150, height: 150)
+                                    .frame(width: 142, height: 142)
                                     .overlay {
                                         VStack(spacing: -18) {
                                             LottieView(animation: .named("AI Star loader UI"))
@@ -90,13 +92,15 @@ struct HomeView: View {
                                                     let white = ColorValueProvider(UIColor.white.lottieColorValue)
                                                     animationView.setValueProvider(white, keypath: AnimationKeypath(keypath: "**.Color"))
                                                 }
-                                                .frame(width: 90, height: 90)
+                                                .frame(width: 86, height: 86)
                                                 .padding(.leading, 10)
                                                 .padding(.top, -12)
                                             
                                             Text(NSLocalizedString("skin_analysis", comment: ""))
                                                 .foregroundColor(.white)
-                                                .font(.system(size: 16, weight: .bold))
+                                                .font(.system(size: 15, weight: .bold))
+                                                .lineLimit(1)
+                                                .minimumScaleFactor(0.85)
                                                 .padding(.top, 15)
                                         }
                                     }
@@ -111,15 +115,17 @@ struct HomeView: View {
                                 .font(.system(size: 18, weight: .bold))
                                 .foregroundColor(primaryText)
                             
-                            VStack(spacing: 12) {
-                                HStack(spacing: 12) {
-                                    MetricCard(value: "\(vm.avgOverallScore)", label: "Overall Score")
-                                    MetricCard(value: "\(vm.avgDryness)%", label: "Dryness")
-                                }
-                                HStack(spacing: 12) {
-                                    MetricCard(value: "\(vm.avgOiliness)%", label: "Oiliness")
-                                    MetricCard(value: "\(vm.avgInflammation)%", label: "Inflammation")
-                                }
+                            LazyVGrid(
+                                columns: [
+                                    GridItem(.flexible(), spacing: 12),
+                                    GridItem(.flexible(), spacing: 12)
+                                ],
+                                spacing: 12
+                            ) {
+                                MetricCard(value: "\(vm.avgOverallScore)", label: "Overall Score", icon: "heart.text.square.fill")
+                                MetricCard(value: "\(vm.avgDryness)%", label: "Dryness", icon: "drop.triangle.fill")
+                                MetricCard(value: "\(vm.avgOiliness)%", label: "Oiliness", icon: "sparkles")
+                                MetricCard(value: "\(vm.avgInflammation)%", label: "Inflammation", icon: "flame.fill")
                             }
                         }
                         .padding(.horizontal, 20)
@@ -138,48 +144,62 @@ struct HomeView: View {
                             }
 
                             NavigationLink(destination: RoutineView(selectedTab: $selectedTab)) {
-                                ZStack(alignment: .topLeading) {
-                                    RoundedRectangle(cornerRadius: 25)
-                                        .fill(secondaryColor)
-                                        .frame(maxWidth: .infinity)
-                                        .shadow(color: secondaryColor.opacity(0.3), radius: 15, x: 0, y: 8)
-
-                                    VStack(alignment: .leading, spacing: 12) {
-                                        HStack {
-                                            Text(routineTitle)
-                                                .font(.system(size: 24, weight: .bold))
-                                            Spacer()
-                                            Image(systemName: routineIcon)
-                                                .font(.system(size: 24))
-                                        }
-
-                                        if vm.routineItemCount > 0 {
-                                            Text(String(format: NSLocalizedString("steps_configured_%lld", comment: ""), vm.routineItemCount))
-                                                .font(.system(size: 16, weight: .medium))
-                                                .opacity(0.9)
-
-                                            HStack(spacing: 8) {
-                                                ForEach(vm.routineStepNames, id: \.self) { name in
-                                                    Text(name)
-                                                        .font(.system(size: 14, weight: .semibold))
-                                                        .padding(.horizontal, 12)
-                                                        .padding(.vertical, 8)
-                                                        .background(Color.white.opacity(0.15))
-                                                        .cornerRadius(12)
-                                                }
-                                            }
-                                            .padding(.top, 4)
-                                        } else {
-                                            Text(NSLocalizedString("tap_to_setup_routine", comment: ""))
-                                                .font(.system(size: 16, weight: .medium))
-                                                .multilineTextAlignment(.leading)
-                                                .fixedSize(horizontal: false, vertical: true)
-                                                .opacity(0.9)
-                                        }
+                                VStack(alignment: .leading, spacing: 14) {
+                                    HStack(alignment: .top) {
+                                        Text(routineTitle)
+                                            .font(.system(size: 22, weight: .bold))
+                                            .lineLimit(2)
+                                            .minimumScaleFactor(0.85)
+                                        Spacer(minLength: 16)
+                                        Image(systemName: routineIcon)
+                                            .font(.system(size: 22, weight: .semibold))
+                                            .frame(width: 34, height: 34)
+                                            .background(Color.white.opacity(0.16))
+                                            .clipShape(Circle())
                                     }
-                                    .foregroundColor(.white)
-                                    .padding(24)
+
+                                    if vm.routineItemCount > 0 {
+                                        Text(String(format: NSLocalizedString("steps_configured_%lld", comment: ""), vm.routineItemCount))
+                                            .font(.system(size: 15, weight: .medium))
+                                            .opacity(0.9)
+
+                                        HStack(spacing: 8) {
+                                            ForEach(Array(vm.routineStepNames.prefix(3)), id: \.self) { name in
+                                                Text(name)
+                                                    .font(.system(size: 12, weight: .semibold))
+                                                    .lineLimit(1)
+                                                    .minimumScaleFactor(0.8)
+                                                    .padding(.horizontal, 10)
+                                                    .padding(.vertical, 7)
+                                                    .background(Color.white.opacity(0.16))
+                                                    .clipShape(Capsule())
+                                            }
+
+                                            if vm.routineStepNames.count > 3 {
+                                                Text("+\(vm.routineStepNames.count - 3)")
+                                                    .font(.system(size: 12, weight: .bold))
+                                                    .padding(.horizontal, 10)
+                                                    .padding(.vertical, 7)
+                                                    .background(Color.white.opacity(0.16))
+                                                    .clipShape(Capsule())
+                                            }
+                                        }
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                    } else {
+                                        Text(NSLocalizedString("tap_to_setup_routine", comment: ""))
+                                            .font(.system(size: 15, weight: .medium))
+                                            .multilineTextAlignment(.leading)
+                                            .fixedSize(horizontal: false, vertical: true)
+                                            .opacity(0.9)
+                                    }
                                 }
+                                .foregroundColor(.white)
+                                .padding(22)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .frame(minHeight: 150)
+                                .background(secondaryColor)
+                                .clipShape(RoundedRectangle(cornerRadius: 22))
+                                .shadow(color: secondaryColor.opacity(0.26), radius: 14, x: 0, y: 8)
                             }
                             .buttonStyle(.plain)
                         }
@@ -196,18 +216,9 @@ struct HomeView: View {
                                 ScrollView(.horizontal, showsIndicators: false) {
                                     HStack(spacing: 16) {
                                         ForEach(0..<3, id: \.self) { _ in
-                                            VStack(alignment: .leading, spacing: 12) {
-                                                RoundedRectangle(cornerRadius: 20)
-                                                    .fill(outerColor)
-                                                    .frame(width: 160, height: 160)
-                                                RoundedRectangle(cornerRadius: 8)
-                                                    .fill(outerColor)
-                                                    .frame(width: 120, height: 14)
-                                                RoundedRectangle(cornerRadius: 6)
-                                                    .fill(outerColor.opacity(0.6))
-                                                    .frame(width: 80, height: 12)
-                                            }
-                                            .frame(width: 160)
+                                            RoundedRectangle(cornerRadius: 18)
+                                                .fill(outerColor)
+                                                .frame(width: 172, height: 222)
                                         }
                                     }
                                     .padding(.horizontal, 20)
@@ -238,15 +249,9 @@ struct HomeView: View {
                                 ScrollView(.horizontal, showsIndicators: false) {
                                     HStack(spacing: 16) {
                                         ForEach(0..<2, id: \.self) { _ in
-                                            VStack(alignment: .leading, spacing: 12) {
-                                                RoundedRectangle(cornerRadius: 25)
-                                                    .fill(outerColor)
-                                                    .frame(width: 280, height: 180)
-                                                RoundedRectangle(cornerRadius: 8)
-                                                    .fill(outerColor)
-                                                    .frame(width: 200, height: 14)
-                                            }
-                                            .frame(width: 280)
+                                            RoundedRectangle(cornerRadius: 18)
+                                                .fill(outerColor)
+                                                .frame(width: 282, height: 246)
                                         }
                                     }
                                     .padding(.horizontal, 20)
@@ -285,25 +290,42 @@ struct HomeView: View {
 struct MetricCard: View {
     let value: String
     let label: String
+    let icon: String
     let secondaryColor = Color(red: 0.47, green: 0.11, blue: 0.17)
-    let primaryText = Color(red: 0.1, green: 0.1, blue: 0.2)
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text(value)
-                .font(.system(size: 24, weight: .bold))
-                .foregroundColor(secondaryColor)
-            
-            Text(label)
-                .font(.system(size: 14, weight: .medium))
-                .foregroundColor(.gray)
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .center, spacing: 10) {
+                Image(systemName: icon)
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundColor(secondaryColor)
+                    .frame(width: 30, height: 30)
+                    .background(secondaryColor.opacity(0.10))
+                    .clipShape(Circle())
+
+                Spacer(minLength: 0)
+            }
+
+            VStack(alignment: .leading, spacing: 3) {
+                Text(value)
+                    .font(.system(size: 25, weight: .bold))
+                    .foregroundColor(secondaryColor)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.75)
+
+                Text(label)
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundColor(.gray)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.8)
+            }
         }
-        .padding(.horizontal, 20)
+        .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .frame(height: 90)
+        .frame(height: 118)
         .background(Color.white)
-        .cornerRadius(20)
-        .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 5)
+        .clipShape(RoundedRectangle(cornerRadius: 18))
+        .shadow(color: Color.black.opacity(0.045), radius: 10, x: 0, y: 5)
     }
 }
 
@@ -315,40 +337,44 @@ struct ProductCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             ZStack {
-                RoundedRectangle(cornerRadius: 20)
-                    .fill(Color.white)
-                    .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 5)
-                
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(secondaryColor.opacity(0.06))
+
                 if let urlString = product.imageUrl, let url = URL(string: urlString) {
                     AsyncImage(url: url) { image in
                         image.resizable().scaledToFill()
                     } placeholder: {
                         ProgressView()
                     }
-                    .frame(width: 160, height: 160)
-                    .clipShape(RoundedRectangle(cornerRadius: 20))
+                    .frame(width: 148, height: 132)
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
                 } else {
                     Image(systemName: "face.smiling")
                         .font(.system(size: 40))
                         .foregroundColor(secondaryColor.opacity(0.2))
                 }
             }
-            .frame(width: 160, height: 160)
+            .frame(width: 148, height: 132)
             
             VStack(alignment: .leading, spacing: 4) {
                 Text(product.name)
-                    .font(.system(size: 16, weight: .bold))
+                    .font(.system(size: 15, weight: .bold))
                     .foregroundColor(primaryText)
-                    .lineLimit(1)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.85)
                 
                 Text(product.brand ?? "Unknown Brand")
-                    .font(.system(size: 14, weight: .medium))
+                    .font(.system(size: 13, weight: .medium))
                     .foregroundColor(.gray)
                     .lineLimit(1)
             }
-            .padding(.horizontal, 4)
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .frame(width: 160)
+        .padding(12)
+        .frame(width: 172, height: 222, alignment: .top)
+        .background(Color.white)
+        .clipShape(RoundedRectangle(cornerRadius: 18))
+        .shadow(color: Color.black.opacity(0.045), radius: 10, x: 0, y: 5)
     }
 }
 
@@ -360,9 +386,8 @@ struct ArticleCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             ZStack {
-                RoundedRectangle(cornerRadius: 25)
-                    .fill(Color.white)
-                    .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 5)
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(secondaryColor.opacity(0.06))
                 
                 if let urlString = article.imageUrl, let url = URL(string: urlString) {
                     AsyncImage(url: url) { image in
@@ -370,30 +395,35 @@ struct ArticleCard: View {
                     } placeholder: {
                         ProgressView()
                     }
-                    .frame(width: 280, height: 180)
-                    .clipShape(RoundedRectangle(cornerRadius: 25))
+                    .frame(width: 258, height: 148)
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
                 } else {
                     Image(systemName: "newspaper.fill")
                         .font(.system(size: 40))
                         .foregroundColor(secondaryColor.opacity(0.1))
                 }
             }
-            .frame(width: 280, height: 180)
+            .frame(width: 258, height: 148)
             
             VStack(alignment: .leading, spacing: 4){
                 Text(article.title)
-                    .font(.system(size: 16, weight: .bold))
+                    .font(.system(size: 15, weight: .bold))
                     .foregroundColor(primaryText)
-                    .lineLimit(1)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.85)
                 
                 Text(article.content ?? "")
-                    .font(.system(size: 14, weight: .regular))
+                    .font(.system(size: 13, weight: .regular))
                     .foregroundColor(.gray)
                     .lineLimit(2)
             }
-            .padding(.horizontal, 4)
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .frame(width: 280)
+        .padding(12)
+        .frame(width: 282, height: 246, alignment: .top)
+        .background(Color.white)
+        .clipShape(RoundedRectangle(cornerRadius: 18))
+        .shadow(color: Color.black.opacity(0.045), radius: 10, x: 0, y: 5)
     }
 }
 
