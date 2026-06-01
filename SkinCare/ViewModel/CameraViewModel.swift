@@ -326,52 +326,79 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
         let box = face.boundingBox
         let ctx = CIContext()
 
-        // Forehead: top 15% of face box, inset 15% from sides
+        // Forehead: wider region so we have enough texture to measure on real devices
         let foreheadRect = CGRect(
-            x: (box.minX + box.width * 0.15) * imageSize.width,
-            y: (box.minY + box.height * 0.85) * imageSize.height,
-            width: box.width * 0.70 * imageSize.width,
-            height: box.height * 0.12 * imageSize.height
+            x: (box.minX + box.width * 0.10) * imageSize.width,
+            y: (box.minY + box.height * 0.78) * imageSize.height,
+            width: box.width * 0.80 * imageSize.width,
+            height: box.height * 0.18 * imageSize.height
         ).intersection(imageSize)
 
-        // Crow's feet left: outer left of face at eye level (45-60% up from chin)
+        // Crow's feet left: outer left of face at eye level
         let crowsFeetLeftRect = CGRect(
-            x: box.minX * imageSize.width,
-            y: (box.minY + box.height * 0.45) * imageSize.height,
-            width: box.width * 0.20 * imageSize.width,
-            height: box.height * 0.15 * imageSize.height
+            x: (box.minX - box.width * 0.02) * imageSize.width,
+            y: (box.minY + box.height * 0.40) * imageSize.height,
+            width: box.width * 0.26 * imageSize.width,
+            height: box.height * 0.22 * imageSize.height
         ).intersection(imageSize)
 
         // Crow's feet right: outer right of face at eye level
         let crowsFeetRightRect = CGRect(
-            x: (box.minX + box.width * 0.80) * imageSize.width,
-            y: (box.minY + box.height * 0.45) * imageSize.height,
-            width: box.width * 0.20 * imageSize.width,
-            height: box.height * 0.15 * imageSize.height
+            x: (box.minX + box.width * 0.76) * imageSize.width,
+            y: (box.minY + box.height * 0.40) * imageSize.height,
+            width: box.width * 0.26 * imageSize.width,
+            height: box.height * 0.22 * imageSize.height
         ).intersection(imageSize)
-
-        // Horizontal edge kernel (detects horizontal lines = wrinkles)
-        let horizontalWeights: [CGFloat] = [
-            -1, -2, -1,
-             0,  0,  0,
-             1,  2,  1
-        ]
 
         func wrinkleDensity(in rect: CGRect) -> Double {
             guard !rect.isEmpty else { return 0 }
             let cropped = ciImage.cropped(to: rect)
             let gray = cropped.applyingFilter("CIColorControls", parameters: [
                 kCIInputSaturationKey: 0.0,
-                kCIInputContrastKey: 1.5
+                kCIInputContrastKey: 1.3
             ])
-            let edges = gray.applyingFilter("CIConvolution3X3", parameters: [
-                "inputWeights": CIVector(values: horizontalWeights, count: 9),
-                "inputBias": 0.5
-            ])
-            guard let cgImg = ctx.createCGImage(edges, from: edges.extent) else { return 0 }
-            let edgePresence = cgImg.edgeIntensity
-            let edgeBrightness = cgImg.averageBrightness
-            return min(1.0, edgePresence * 0.7 + edgeBrightness * 0.3)
+            guard let cgImg = ctx.createCGImage(gray, from: gray.extent),
+                  let data = cgImg.dataProvider?.data,
+                  let bytes = CFDataGetBytePtr(data) else { return 0 }
+
+            let width = cgImg.width
+            let height = cgImg.height
+            let byteCount = CFDataGetLength(data)
+            guard width > 1, height > 1, byteCount >= width * height * 4 else { return 0 }
+
+            var luminances = [Double]()
+            luminances.reserveCapacity(width * height)
+            for i in stride(from: 0, to: width * height * 4, by: 4) {
+                let r = Double(bytes[i])
+                let g = Double(bytes[i + 1])
+                let b = Double(bytes[i + 2])
+                luminances.append(((r + g + b) / 3.0) / 255.0)
+            }
+
+            guard !luminances.isEmpty else { return 0 }
+
+            let mean = luminances.reduce(0, +) / Double(luminances.count)
+            let variance = luminances.reduce(0) { $0 + ($1 - mean) * ($1 - mean) } / Double(luminances.count)
+            let stdDev = sqrt(variance)
+
+            var horizontalContrast: Double = 0
+            var horizontalSamples = 0
+            if width > 1 {
+                for row in 0..<height {
+                    let rowStart = row * width
+                    if rowStart + width <= luminances.count {
+                        for col in 1..<width {
+                            let current = luminances[rowStart + col]
+                            let previous = luminances[rowStart + col - 1]
+                            horizontalContrast += abs(current - previous)
+                            horizontalSamples += 1
+                        }
+                    }
+                }
+            }
+
+            let horizontalMean = horizontalSamples > 0 ? horizontalContrast / Double(horizontalSamples) : 0
+            return min(1.0, stdDev * 1.8 + horizontalMean * 3.2)
         }
 
         let foreheadScore = wrinkleDensity(in: foreheadRect)
@@ -379,8 +406,7 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
         let crowsRightScore = wrinkleDensity(in: crowsFeetRightRect)
 
         let combined = foreheadScore * 0.50 + crowsLeftScore * 0.25 + crowsRightScore * 0.25
-        let normalized = pow(max(combined, 0), 0.72)
-        let finalScore = min(normalized * 180, 100)
+        let finalScore = min(max(combined * 240, 6), 100)
 
         NSLog("[WRINKLE] face box: %.2f,%.2f %.2fx%.2f | forehead: %.1f crowsL: %.1f crowsR: %.1f → score: %.1f",
               box.minX, box.minY, box.width, box.height,
