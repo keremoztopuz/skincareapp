@@ -48,7 +48,6 @@ struct DetailView: View {
                     
                     Spacer()
                     
-                    // Right actions (Heart for product, Share/Save for articles)
                     actionButtons
                 }
                 .padding(.horizontal, 20)
@@ -113,11 +112,9 @@ struct DetailView: View {
     private var actionButtons: some View {
         switch type {
         case .product:
-            Button(action: {}) {
-                Image(systemName: "heart")
-                    .font(.system(size: 20))
-                    .foregroundColor(primaryText)
-            }
+            Circle()
+                .fill(Color.clear)
+                .frame(width: 44, height: 44)
         case .news:
             HStack(spacing: 20) {
                 Button(action: {}) {
