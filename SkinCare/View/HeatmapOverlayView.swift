@@ -37,19 +37,32 @@ struct HeatmapOverlayView: View {
                 .padding(.horizontal, 20)
                 .padding(.top, 10)
 
-                ZStack {
-                    Image(uiImage: faceImage)
-                        .resizable()
-                        .scaledToFit()
-                        .clipShape(RoundedRectangle(cornerRadius: 25))
-
-                    if let overlayImage = renderSmoothHeatmap() {
-                        Image(uiImage: overlayImage)
-                            .resizable()
-                            .scaledToFit()
-                            .clipShape(RoundedRectangle(cornerRadius: 25))
+                Image(uiImage: faceImage)
+                    .resizable()
+                    .scaledToFit()
+                    .clipShape(RoundedRectangle(cornerRadius: 25))
+                    .overlay {
+                        if let overlayImage = renderSmoothHeatmap() {
+                            Image(uiImage: overlayImage)
+                                .resizable()
+                                .scaledToFit()
+                                .clipShape(RoundedRectangle(cornerRadius: 25))
+                        }
                     }
-                }
+                    .overlay {
+                        GeometryReader { proxy in
+                            if let borderRect = overlayBorderRect(in: proxy.size) {
+                                RoundedRectangle(cornerRadius: borderRect.cornerRadius)
+                                    .strokeBorder(secondaryColor.opacity(0.9), lineWidth: 2)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: borderRect.cornerRadius)
+                                            .stroke(Color.white.opacity(0.75), lineWidth: 5)
+                                    )
+                                    .frame(width: borderRect.rect.width, height: borderRect.rect.height)
+                                    .position(x: borderRect.rect.midX, y: borderRect.rect.midY)
+                            }
+                        }
+                    }
                 .frame(maxWidth: .infinity)
                 .padding(.horizontal, 20)
 
@@ -84,6 +97,36 @@ struct HeatmapOverlayView: View {
                 Spacer()
             }
         }
+    }
+
+    private func overlayBorderRect(in containerSize: CGSize) -> (rect: CGRect, cornerRadius: CGFloat)? {
+        let imageSize = faceImage.size
+        guard imageSize.width > 0, imageSize.height > 0, containerSize.width > 0, containerSize.height > 0 else {
+            return nil
+        }
+
+        let scale = min(containerSize.width / imageSize.width, containerSize.height / imageSize.height)
+        let displayedSize = CGSize(width: imageSize.width * scale, height: imageSize.height * scale)
+        let imageOrigin = CGPoint(
+            x: (containerSize.width - displayedSize.width) / 2,
+            y: (containerSize.height - displayedSize.height) / 2
+        )
+
+        let normalizedRect: CGRect
+        if faceRect.width > 0, faceRect.height > 0 {
+            normalizedRect = faceRect
+        } else {
+            normalizedRect = CGRect(x: 0, y: 0, width: 1, height: 1)
+        }
+
+        let rect = CGRect(
+            x: imageOrigin.x + normalizedRect.minX * displayedSize.width,
+            y: imageOrigin.y + normalizedRect.minY * displayedSize.height,
+            width: normalizedRect.width * displayedSize.width,
+            height: normalizedRect.height * displayedSize.height
+        )
+
+        return (rect, min(rect.width, rect.height) * 0.10)
     }
 
     private func renderSmoothHeatmap() -> UIImage? {
