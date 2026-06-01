@@ -130,7 +130,7 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
                 return
             }
 
-            let (croppedImage, _) = await withCheckedContinuation { continuation in
+            let (croppedImage, normalizedFaceRect) = await withCheckedContinuation { continuation in
                 detectFaceAndCrop(normalizedImage) { cropped, faceNormRect in
                     continuation.resume(returning: (cropped, faceNormRect))
                 }
@@ -156,8 +156,8 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
             }
 
             await MainActor.run {
-                self.capturedImage = imageToAnalyze
-                self.faceRect = .zero
+                self.capturedImage = normalizedImage
+                self.faceRect = normalizedFaceRect
                 self.buildRecord()
             }
         }
@@ -195,13 +195,10 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
                 height: box.height * height
             )
 
-            let paddingW = rect.width * 0.08
-            let paddingH = rect.height * 0.15
-            let expanded = rect.insetBy(dx: -paddingW, dy: -paddingH)
             let imageBounds = CGRect(x: 0, y: 0, width: width, height: height)
-            let paddedRect = expanded.intersection(imageBounds)
+            let faceRect = rect.intersection(imageBounds)
 
-            if !paddedRect.isEmpty, let faceImage = cgImage.cropping(to: paddedRect) {
+            if !faceRect.isEmpty, let faceImage = cgImage.cropping(to: faceRect) {
                 completion(UIImage(cgImage: faceImage), normalizedFaceRect)
             } else {
                 completion(nil, .zero)
