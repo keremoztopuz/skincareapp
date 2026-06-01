@@ -79,9 +79,9 @@ struct SubscriptionView: View {
                     VStack(spacing: 12) {
                             planCard(
                                 plan: .free,
-                                title: "Free",
+                                title: AppStrings.free,
                                 price: "$0",
-                                period: "/month",
+                                period: AppStrings.perMonth,
                                 features: [
                                     ("sparkles", NSLocalizedString("5_analysis_per_month", comment: "")),
                                     ("face.smiling", NSLocalizedString("basic_insights", comment: "")),
@@ -95,9 +95,9 @@ struct SubscriptionView: View {
 
                             planCard(
                                 plan: .pro,
-                                title: "Pro",
+                                title: AppStrings.pro,
                                 price: "$4.99",
-                                period: "/month",
+                                period: AppStrings.perMonth,
                                 features: [
                                     ("infinity", NSLocalizedString("unlimited_analysis", comment: "")),
                                     ("face.smiling.inverse", NSLocalizedString("all_conditions_detected", comment: "")),
@@ -179,11 +179,11 @@ struct SubscriptionView: View {
                     .padding(.bottom, 16)
                 }
             }
-            .alert("Purchase Error", isPresented: Binding(
+            .alert(AppStrings.purchaseError, isPresented: Binding(
                 get: { purchaseError != nil },
                 set: { if !$0 { purchaseError = nil } }
             )) {
-                Button("OK", role: .cancel) {}
+                Button(AppStrings.ok, role: .cancel) {}
             } message: {
                 Text(purchaseError ?? "")
             }
@@ -297,7 +297,7 @@ struct SubscriptionView: View {
             if let error = error {
                 DispatchQueue.main.async {
                     isPurchasing = false
-                    purchaseError = "Products could not be loaded: \(error.localizedDescription)"
+                    purchaseError = String(format: NSLocalizedString("purchase_error_products_not_loaded_%@", comment: ""), error.localizedDescription)
                 }
                 return
             }
@@ -305,7 +305,7 @@ struct SubscriptionView: View {
             guard let package = offerings?.current?.monthly ?? offerings?.current?.availablePackages.first else {
                 DispatchQueue.main.async {
                     isPurchasing = false
-                    purchaseError = "Subscription package not found. Please try again later."
+                    purchaseError = NSLocalizedString("purchase_error_package_not_found", comment: "")
                 }
                 return
             }
@@ -315,7 +315,7 @@ struct SubscriptionView: View {
                     isPurchasing = false
                     if userCancelled { return }
                     if let error = error {
-                        purchaseError = "Purchase failed: \(error.localizedDescription)"
+                        purchaseError = String(format: NSLocalizedString("purchase_error_failed_%@", comment: ""), error.localizedDescription)
                         return
                     }
 
@@ -335,7 +335,7 @@ struct SubscriptionView: View {
             DispatchQueue.main.async {
                 isPurchasing = false
                 if let error = error {
-                    purchaseError = "Restore failed: \(error.localizedDescription)"
+                    purchaseError = String(format: NSLocalizedString("purchase_error_restore_failed_%@", comment: ""), error.localizedDescription)
                     return
                 }
                 if info?.entitlements["pro"]?.isActive == true {

@@ -10,7 +10,7 @@ import SwiftUI
 
 struct AnalysisView: View {
     var body: some View {
-        Text("Home")
+        Text(AppStrings.tabHome)
             
     }
 }

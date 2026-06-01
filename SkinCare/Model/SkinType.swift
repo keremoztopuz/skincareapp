@@ -17,13 +17,17 @@ enum SkinType: String, CaseIterable {
         }
     }
 
+    var localizedTitle: String {
+        AppStrings.localizedSkinType(rawValue)
+    }
+
     var description: String {
         switch self {
-        case .normal: return "No major concerns."
-        case .dry: return "Feels tight, may flake."
-        case .oily: return "Shiny, feels greasy."
-        case .combination: return "Oily T-zone, dry cheeks."
-        case .sensitive: return "Reacts easily to products."
+        case .normal: return String(localized: "skin_type_desc_normal")
+        case .dry: return String(localized: "skin_type_desc_dry")
+        case .oily: return String(localized: "skin_type_desc_oily")
+        case .combination: return String(localized: "skin_type_desc_combination")
+        case .sensitive: return String(localized: "skin_type_desc_sensitive")
         }
     }
 }

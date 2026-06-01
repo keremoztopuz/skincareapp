@@ -145,7 +145,7 @@ struct RoutineView: View {
                     .foregroundColor(secondaryColor)
                 Spacer()
                 if item != nil {
-                    Text("Step \(step.order + 1)")
+                    Text(String(format: NSLocalizedString("step_number_%lld", comment: ""), Int(step.order) + 1))
                         .font(.system(size: 12, weight: .medium))
                         .foregroundColor(.gray)
                 }
@@ -189,7 +189,7 @@ struct RoutineView: View {
             }
 
             VStack(alignment: .leading, spacing: 4) {
-                Text(item.productName ?? "Unknown Product")
+                Text(item.productName ?? AppStrings.unknownProduct)
                     .font(.system(size: 16, weight: .semibold))
                     .foregroundColor(primaryText)
                     .lineLimit(1)
@@ -242,7 +242,7 @@ struct RoutineView: View {
             HStack(spacing: 10) {
                 Image(systemName: "plus.circle.fill")
                     .font(.system(size: 20))
-                Text("Add \(step.label)")
+                Text(String(format: NSLocalizedString("add_product_type_%@", comment: ""), step.label))
                     .font(.system(size: 15, weight: .medium))
             }
             .foregroundColor(secondaryColor.opacity(0.6))
@@ -267,7 +267,7 @@ struct RoutineView: View {
                     .font(.system(size: 16, weight: .bold))
                     .foregroundColor(primaryText)
                 Spacer()
-                Text("\(vm.pendingSuggestions.count) products")
+                Text(String(format: NSLocalizedString("products_count_%lld", comment: ""), vm.pendingSuggestions.count))
                     .font(.system(size: 13, weight: .medium))
                     .foregroundColor(.gray)
             }
@@ -328,7 +328,7 @@ struct RoutineView: View {
                 .font(.system(size: 12, weight: .semibold))
                 .foregroundColor(primaryText)
                 .lineLimit(1)
-            Text(suggestion.routineTime?.capitalized ?? "")
+            Text(AppStrings.localizedRoutineTime(suggestion.routineTime))
                 .font(.system(size: 11))
                 .foregroundColor(.gray)
         }
@@ -454,7 +454,7 @@ struct ProductPickerSheet: View {
                     }
                 }
             }
-            .navigationTitle("Choose \(productType.replacingOccurrences(of: "_", with: " ").capitalized)")
+            .navigationTitle(String(format: NSLocalizedString("choose_product_type_%@", comment: ""), AppStrings.localizedProductType(productType)))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {

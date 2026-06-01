@@ -40,7 +40,7 @@ struct RecentsView: View {
                                     HStack(spacing: 6) {
                                         Image(systemName: isCompareMode ? "xmark" : "arrow.left.arrow.right")
                                             .font(.system(size: 13, weight: .semibold))
-                                        Text(isCompareMode ? "Cancel" : "Compare")
+                                        Text(isCompareMode ? AppStrings.cancel : AppStrings.compare)
                                             .font(.system(size: 14, weight: .semibold))
                                     }
                                     .foregroundColor(secondaryColor)
@@ -69,7 +69,7 @@ struct RecentsView: View {
                             } label: {
                                 HStack {
                                     Image(systemName: "calendar").font(.system(size: 16))
-                                    Text(vm.selectedFilter).font(.system(size: 16, weight: .medium))
+                                    Text(filterTitle(vm.selectedFilter)).font(.system(size: 16, weight: .medium))
                                     Spacer()
                                     Image(systemName: "chevron.down").font(.system(size: 14))
                                 }
@@ -128,7 +128,7 @@ struct RecentsView: View {
                                                             .foregroundColor(isSelected ? secondaryColor : Color.gray.opacity(0.4))
                                                             .animation(.spring(response: 0.2), value: isSelected)
                                                     } else {
-                                                        Text(record.condition ?? "Unknown")
+                                                        Text(AppStrings.localizedCondition(record.condition))
                                                             .font(.system(size: 13, weight: .semibold))
                                                             .foregroundColor(secondaryColor)
                                                             .padding(.horizontal, 12)
@@ -147,9 +147,9 @@ struct RecentsView: View {
                                                         .foregroundColor(.gray)
                                                 }
 
-                                                ScoreBar(label: "Dryness",      value: record.drynessScore,      color: secondaryColor)
-                                                ScoreBar(label: "Inflammation", value: record.inflammationScore, color: secondaryColor)
-                                                ScoreBar(label: "Oiliness",     value: record.oilinessScore,     color: secondaryColor)
+                                                ScoreBar(label: AppStrings.dryness,      value: record.drynessScore,      color: secondaryColor)
+                                                ScoreBar(label: AppStrings.inflammation, value: record.inflammationScore, color: secondaryColor)
+                                                ScoreBar(label: AppStrings.oiliness,     value: record.oilinessScore,     color: secondaryColor)
                                             }
                                         }
                                         .padding(20)
@@ -198,7 +198,7 @@ struct RecentsView: View {
                                                             .font(.system(size: 14))
                                                             .foregroundColor(.gray)
                                                         Spacer()
-                                                        Text(record.condition ?? "Unknown")
+                                                        Text(AppStrings.localizedCondition(record.condition))
                                                             .font(.system(size: 13, weight: .semibold))
                                                             .foregroundColor(secondaryColor)
                                                             .padding(.horizontal, 12)
@@ -216,9 +216,9 @@ struct RecentsView: View {
                                                             .foregroundColor(.gray)
                                                     }
 
-                                                    ScoreBar(label: "Dryness",      value: record.drynessScore,      color: secondaryColor)
-                                                    ScoreBar(label: "Inflammation", value: record.inflammationScore, color: secondaryColor)
-                                                    ScoreBar(label: "Oiliness",     value: record.oilinessScore,     color: secondaryColor)
+                                                    ScoreBar(label: AppStrings.dryness,      value: record.drynessScore,      color: secondaryColor)
+                                                    ScoreBar(label: AppStrings.inflammation, value: record.inflammationScore, color: secondaryColor)
+                                                    ScoreBar(label: AppStrings.oiliness,     value: record.oilinessScore,     color: secondaryColor)
                                                 }
                                             }
                                             .padding(20)
@@ -328,6 +328,14 @@ struct RecentsView: View {
             } else if compareRecords.count < 2 {
                 compareRecords.append(record)
             }
+        }
+    }
+
+    private func filterTitle(_ filter: String) -> String {
+        switch filter {
+        case "This Week": return AppStrings.thisWeek
+        case "This Month": return AppStrings.thisMonth
+        default: return AppStrings.allTime
         }
     }
 

@@ -37,7 +37,7 @@ struct SearchView: View {
                         .foregroundColor(secondaryColor)
                         .font(.system(size: 18, weight: .bold))
                     
-                    TextField("Search Products", text: $vm.searchText)
+                    TextField(NSLocalizedString("search_products", comment: ""), text: $vm.searchText)
                         .font(.system(size: 16))
                 }
                 .padding(.vertical, 16)
@@ -99,7 +99,7 @@ struct SearchProductCard: View {
                     .foregroundColor(primaryText)
                     .lineLimit(1)
                 
-                Text(product.brand ?? "Unknown Brand")
+                Text(product.brand ?? AppStrings.unknownBrand)
                     .font(.system(size: 12, weight: .bold))
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)

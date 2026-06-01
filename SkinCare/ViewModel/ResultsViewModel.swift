@@ -27,7 +27,7 @@ class ResultsViewModel: ObservableObject {
     @MainActor
     func generateRecommendations() async {
         guard let condition = record?.condition else {
-            recommendation = ["Keep your skin hydrated and protected."]
+            recommendation = [String(localized: "recommendation_keep_hydrated")]
             // Default products if no condition
             return
         }
@@ -35,13 +35,16 @@ class ResultsViewModel: ObservableObject {
         isLoading = true
         
         // simple text recommendation logic (could also be in Supabase)
-        switch condition {
-        case "Acne":
-            recommendation = ["Use salicylic acid cleanser."]
-        case "Redness":
-            recommendation = ["Use soothing products with Centella.", "Avoid extreme temperatures."]
+        switch condition.lowercased() {
+        case "acne":
+            recommendation = [String(localized: "recommendation_salicylic_cleanser")]
+        case "redness", "eczema":
+            recommendation = [
+                String(localized: "recommendation_centella"),
+                String(localized: "recommendation_avoid_extreme_temperatures")
+            ]
         default:
-            recommendation = ["Consult a dermatologist for a tailored routine."]
+            recommendation = [String(localized: "recommendation_consult_dermatologist")]
         }
         
         do {
@@ -51,7 +54,7 @@ class ResultsViewModel: ObservableObject {
         }
 
         if let record = self.record {
-            let skinType = LocalPersistenceManager.shared.fetchUserProfile()?.skinType ?? "Normal"
+            let skinType = LocalPersistenceManager.shared.fetchUserProfile()?.skinType ?? SkinType.normal.rawValue
             let suggestions = await RoutineEngine.shared.generateRoutine(from: record, skinType: skinType)
             if !suggestions.isEmpty {
                 LocalPersistenceManager.shared.saveSuggestions(suggestions)

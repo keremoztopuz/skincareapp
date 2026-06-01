@@ -91,11 +91,11 @@ struct CameraGuideView: View {
                         .frame(height: 166)
                         
                         VStack(alignment: .leading, spacing: 16) {
-                            BulletRow(text: "Position your face within the oval frame", icon: "checkmark.circle.fill", color: secondaryColor)
-                            BulletRow(text: "Ensure good lighting from the front", icon: "checkmark.circle.fill", color: secondaryColor)
-                            BulletRow(text: "Keep your face straight and centered", icon: "checkmark.circle.fill", color: secondaryColor)
-                            BulletRow(text: "Hold your phone steady", icon: "checkmark.circle.fill", color: secondaryColor)
-                            BulletRow(text: "Remove glasses and accessories", icon: "checkmark.circle.fill", color: secondaryColor)
+                            BulletRow(text: NSLocalizedString("guide_do_position_face", comment: ""), icon: "checkmark.circle.fill", color: secondaryColor)
+                            BulletRow(text: NSLocalizedString("guide_do_good_lighting", comment: ""), icon: "checkmark.circle.fill", color: secondaryColor)
+                            BulletRow(text: NSLocalizedString("guide_do_center_face", comment: ""), icon: "checkmark.circle.fill", color: secondaryColor)
+                            BulletRow(text: NSLocalizedString("guide_do_hold_steady", comment: ""), icon: "checkmark.circle.fill", color: secondaryColor)
+                            BulletRow(text: NSLocalizedString("guide_do_remove_accessories", comment: ""), icon: "checkmark.circle.fill", color: secondaryColor)
                         }
                         .padding(.top, 8)
                     }
@@ -142,11 +142,11 @@ struct CameraGuideView: View {
                         }
                         .frame(height: 166)
                         VStack(alignment: .leading, spacing: 17) {
-                            BulletRow(text: "Don't move during the scan", icon: "xmark.circle.fill", color: secondaryColor)
-                            BulletRow(text: "Don't wear heavy makeup", icon: "xmark.circle.fill", color: secondaryColor)
-                            BulletRow(text: "Avoid shadows on your face", icon: "xmark.circle.fill", color: secondaryColor)
-                            BulletRow(text: "Don't tilt your head", icon: "xmark.circle.fill", color: secondaryColor)
-                            BulletRow(text: "Don't use filters or effects", icon: "xmark.circle.fill", color: secondaryColor)
+                            BulletRow(text: NSLocalizedString("guide_dont_move", comment: ""), icon: "xmark.circle.fill", color: secondaryColor)
+                            BulletRow(text: NSLocalizedString("guide_dont_makeup", comment: ""), icon: "xmark.circle.fill", color: secondaryColor)
+                            BulletRow(text: NSLocalizedString("guide_dont_shadows", comment: ""), icon: "xmark.circle.fill", color: secondaryColor)
+                            BulletRow(text: NSLocalizedString("guide_dont_tilt", comment: ""), icon: "xmark.circle.fill", color: secondaryColor)
+                            BulletRow(text: NSLocalizedString("guide_dont_filters", comment: ""), icon: "xmark.circle.fill", color: secondaryColor)
                         }
                         .padding(.top, 8)
                     }

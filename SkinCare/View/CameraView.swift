@@ -38,8 +38,8 @@ struct CameraView: View {
                         Image(systemName: "camera.badge.clock")
                             .font(.system(size: 13))
                         Text(subscriptionManager.scansRemaining == 0
-                             ? "Monthly scanning limit has expired."
-                             : "\(subscriptionManager.scansRemaining) scans left.")
+                             ? AppStrings.monthlyScanLimitExpired
+                             : String(format: AppStrings.scansLeft, subscriptionManager.scansRemaining))
                             .font(.system(size: 13, weight: .medium))
                     }
                     .foregroundColor(subscriptionManager.scansRemaining == 0 ? .red : secondaryColor)
@@ -238,7 +238,7 @@ struct CameraView: View {
                         Image(systemName: vm.isAnalyzing ? "hourglass" : "viewfinder")
                             .font(.system(size: 20, weight: .bold))
 
-                        Text(vm.isAnalyzing ? "Analyzing..." : "Start Analysis")
+                        Text(vm.isAnalyzing ? AppStrings.analyzing : AppStrings.startAnalysis)
                             .font(.system(size: 18, weight: .bold))
                     }
                     .foregroundColor(.white)
@@ -258,9 +258,9 @@ struct CameraView: View {
             .padding(.horizontal, 24)
         }
         
-        .alert("Scan Limit Reached", isPresented: $showQuotaAlert) {
-            Button("Go Pro") { showUpgrade = true }
-            Button("OK", role: .cancel) {}
+        .alert(AppStrings.scanLimitReached, isPresented: $showQuotaAlert) {
+            Button(AppStrings.goPro) { showUpgrade = true }
+            Button(AppStrings.ok, role: .cancel) {}
         } message: {
             Text(String(format: NSLocalizedString("free_scans_used", comment: ""), SubscriptionManager.shared.freeMonthlyLimit))
         }

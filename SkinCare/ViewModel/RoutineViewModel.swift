@@ -85,17 +85,17 @@ class RoutineViewModel: ObservableObject {
     var currentSteps: [RoutineStep] {
         if selectedRoutineTime == "morning" {
             return [
-                RoutineStep(order: 0, label: "Cleanser", icon: "drop.fill", productTypes: ["cleanser"]),
-                RoutineStep(order: 1, label: "Serum", icon: "flask.fill", productTypes: ["serum"]),
-                RoutineStep(order: 3, label: "Moisturizer", icon: "humidity.fill", productTypes: ["moisturizer"]),
-                RoutineStep(order: 4, label: "Sunscreen", icon: "sun.max.fill", productTypes: ["sunscreen"])
+                RoutineStep(order: 0, label: AppStrings.localizedProductType("cleanser"), icon: "drop.fill", productTypes: ["cleanser"]),
+                RoutineStep(order: 1, label: AppStrings.localizedProductType("serum"), icon: "flask.fill", productTypes: ["serum"]),
+                RoutineStep(order: 3, label: AppStrings.localizedProductType("moisturizer"), icon: "humidity.fill", productTypes: ["moisturizer"]),
+                RoutineStep(order: 4, label: AppStrings.localizedProductType("sunscreen"), icon: "sun.max.fill", productTypes: ["sunscreen"])
             ]
         } else {
             return [
-                RoutineStep(order: 0, label: "Cleanser", icon: "drop.fill", productTypes: ["cleanser"]),
-                RoutineStep(order: 1, label: "Treatment", icon: "cross.vial.fill", productTypes: ["treatment"]),
-                RoutineStep(order: 2, label: "Eye Care", icon: "eye.fill", productTypes: ["eye_cream", "eye_serum"]),
-                RoutineStep(order: 3, label: "Moisturizer", icon: "humidity.fill", productTypes: ["moisturizer"])
+                RoutineStep(order: 0, label: AppStrings.localizedProductType("cleanser"), icon: "drop.fill", productTypes: ["cleanser"]),
+                RoutineStep(order: 1, label: AppStrings.localizedProductType("treatment"), icon: "cross.vial.fill", productTypes: ["treatment"]),
+                RoutineStep(order: 2, label: AppStrings.localizedProductType("eye_cream"), icon: "eye.fill", productTypes: ["eye_cream", "eye_serum"]),
+                RoutineStep(order: 3, label: AppStrings.localizedProductType("moisturizer"), icon: "humidity.fill", productTypes: ["moisturizer"])
             ]
         }
     }

@@ -86,18 +86,18 @@ struct ResultView: View {
                         
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: 16) {
-                                ResultBar(title: "Acne",    score: record?.acneScore   ?? 0, icon: "face.dashed", color: secondaryColor)
-                                ResultBar(title: "Redness", score: record?.eczemaScore ?? 0, icon: "drop.fill",   color: secondaryColor)
+                                ResultBar(title: AppStrings.acne,    score: record?.acneScore   ?? 0, icon: "face.dashed", color: secondaryColor)
+                                ResultBar(title: AppStrings.redness, score: record?.eczemaScore ?? 0, icon: "drop.fill",   color: secondaryColor)
                                 if isPremium {
-                                    ResultBar(title: "Wrinkles",      score: record?.wrinkleScore      ?? 0, icon: "sun.max.fill",       color: secondaryColor)
-                                    ResultBar(title: "Eyebags",       score: record?.eyebagScore       ?? 0, icon: "eye.fill",           color: secondaryColor)
-                                    ResultBar(title: "Pigmentation",  score: record?.pigmentationScore ?? 0, icon: "circle.hexagongrid",  color: secondaryColor)
-                                    ResultBar(title: "Hydration",     score: record?.hydrationScore    ?? 0, icon: "drop.degreesign",    color: secondaryColor)
+                                    ResultBar(title: AppStrings.wrinkles,     score: record?.wrinkleScore      ?? 0, icon: "sun.max.fill",       color: secondaryColor)
+                                    ResultBar(title: AppStrings.eyebags,      score: record?.eyebagScore       ?? 0, icon: "eye.fill",           color: secondaryColor)
+                                    ResultBar(title: AppStrings.pigmentation, score: record?.pigmentationScore ?? 0, icon: "circle.hexagongrid",  color: secondaryColor)
+                                    ResultBar(title: AppStrings.hydration,    score: record?.hydrationScore    ?? 0, icon: "drop.degreesign",    color: secondaryColor)
                                 } else {
-                                    Button { showUpgrade = true } label: { lockedBar(title: "Wrinkles") }.buttonStyle(.plain)
-                                    Button { showUpgrade = true } label: { lockedBar(title: "Eyebags") }.buttonStyle(.plain)
-                                    Button { showUpgrade = true } label: { lockedBar(title: "Pigmentation") }.buttonStyle(.plain)
-                                    Button { showUpgrade = true } label: { lockedBar(title: "Hydration") }.buttonStyle(.plain)
+                                    Button { showUpgrade = true } label: { lockedBar(title: AppStrings.wrinkles) }.buttonStyle(.plain)
+                                    Button { showUpgrade = true } label: { lockedBar(title: AppStrings.eyebags) }.buttonStyle(.plain)
+                                    Button { showUpgrade = true } label: { lockedBar(title: AppStrings.pigmentation) }.buttonStyle(.plain)
+                                    Button { showUpgrade = true } label: { lockedBar(title: AppStrings.hydration) }.buttonStyle(.plain)
                                 }
                             }
                             .padding(.horizontal, 20)
@@ -161,7 +161,7 @@ struct ResultView: View {
                             HStack(spacing: 12) {
                                 Image(systemName: routineCreated ? "checkmark.circle.fill" : "calendar.badge.plus")
                                     .font(.system(size: 20))
-                                Text(routineCreated ? "Routine Created!" : "Create a Routine")
+                                Text(routineCreated ? AppStrings.routineCreated : AppStrings.createRoutine)
                                     .font(.system(size: 16, weight: .bold))
                             }
                             .foregroundColor(.white)
@@ -277,7 +277,7 @@ struct ResultView: View {
                 Text("—")
                     .font(.system(size: 28, weight: .bold))
                     .foregroundColor(.gray.opacity(0.4))
-                Text("Pro")
+                Text(AppStrings.pro)
                     .font(.system(size: 12, weight: .bold))
                     .foregroundColor(secondaryColor)
                     .padding(.horizontal, 6)

@@ -54,7 +54,7 @@ class HomeViewModel: ObservableObject {
             self.products = p
             self.articles = a
         } catch {
-            self.errorMessage = "Internet connection required for products and articles."
+            self.errorMessage = AppStrings.internetConnectionRequired
             print("Supabase error: \(error)")
         }
 
@@ -85,7 +85,7 @@ class HomeViewModel: ObservableObject {
         let timeKey = hour < 18 ? "morning" : "evening"
         let items = LocalPersistenceManager.shared.fetchRoutineItems(for: timeKey)
         routineStepNames = items.sorted(by: { $0.stepOrder < $1.stepOrder }).compactMap {
-            $0.productType?.replacingOccurrences(of: "_", with: " ").capitalized
+            $0.productType.map(AppStrings.localizedProductType)
         }
         routineItemCount = items.count
         hasPendingSuggestions = !LocalPersistenceManager.shared.fetchPendingSuggestions().isEmpty

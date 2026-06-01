@@ -33,20 +33,20 @@ struct CompareView: View {
         let wrinkleDiff = record1.wrinkleScore - record2.wrinkleScore
         var parts: [String] = []
         if overallDiff > 5 {
-            parts.append("Overall skin score is improved \(Int(overallDiff)) points.")
+            parts.append(String(format: NSLocalizedString("compare_insight_overall_improved", comment: ""), Int(overallDiff)))
         } else if overallDiff < -5 {
-            parts.append("Overall skin score is decreased \(Int(abs(overallDiff))) points.")
+            parts.append(String(format: NSLocalizedString("compare_insight_overall_decreased", comment: ""), Int(abs(overallDiff))))
         }
         if acneDiff < -5 {
-            parts.append("Acne score decreased. Doing well.")
+            parts.append(NSLocalizedString("compare_insight_acne_decreased", comment: ""))
         } else if acneDiff > 5 {
-            parts.append("Acne score increased, pay attention to your skincare routine.")
+            parts.append(NSLocalizedString("compare_insight_acne_increased", comment: ""))
         }
         if wrinkleDiff < -5 {
-            parts.append("Wrinkles score decreased.")
+            parts.append(NSLocalizedString("compare_insight_wrinkles_decreased", comment: ""))
         }
         return parts.isEmpty
-            ? "There is no significant change between the two analyses. Continue with regular screening."
+            ? NSLocalizedString("compare_insight_no_significant_change", comment: "")
             : parts.joined(separator: " ")
     }
 
@@ -106,7 +106,7 @@ struct CompareView: View {
 
                     // MARK: Overall Score
                     metricRow(
-                        label: "Overall Score",
+                        label: AppStrings.overallScore,
                         val1: record1.overallScore,
                         val2: record2.overallScore,
                         unit: "",
@@ -131,15 +131,15 @@ struct CompareView: View {
 
                     // MARK: Detail rows with progress bars
                     VStack(spacing: 10) {
-                        detailRow(label: "Acne",         val1: record1.acneScore,         val2: record2.acneScore,         higherIsBetter: false)
-                        detailRow(label: "Redness",      val1: record1.eczemaScore,       val2: record2.eczemaScore,       higherIsBetter: false)
-                        detailRow(label: "Pigmentation", val1: record1.pigmentationScore, val2: record2.pigmentationScore, higherIsBetter: false)
-                        detailRow(label: "Hydration",    val1: record1.hydrationScore,    val2: record2.hydrationScore,    higherIsBetter: true)
-                        detailRow(label: "Wrinkles",     val1: record1.wrinkleScore,      val2: record2.wrinkleScore,      higherIsBetter: false)
-                        detailRow(label: "Eye Bags",     val1: record1.eyebagScore,       val2: record2.eyebagScore,       higherIsBetter: false)
-                        detailRow(label: "Dryness",      val1: record1.drynessScore,      val2: record2.drynessScore,      higherIsBetter: false)
-                        detailRow(label: "Inflammation", val1: record1.inflammationScore, val2: record2.inflammationScore, higherIsBetter: false)
-                        detailRow(label: "Oiliness",     val1: record1.oilinessScore,     val2: record2.oilinessScore,     higherIsBetter: false)
+                        detailRow(label: AppStrings.acne,         val1: record1.acneScore,         val2: record2.acneScore,         higherIsBetter: false)
+                        detailRow(label: AppStrings.redness,      val1: record1.eczemaScore,       val2: record2.eczemaScore,       higherIsBetter: false)
+                        detailRow(label: AppStrings.pigmentation, val1: record1.pigmentationScore, val2: record2.pigmentationScore, higherIsBetter: false)
+                        detailRow(label: AppStrings.hydration,    val1: record1.hydrationScore,    val2: record2.hydrationScore,    higherIsBetter: true)
+                        detailRow(label: AppStrings.wrinkles,     val1: record1.wrinkleScore,      val2: record2.wrinkleScore,      higherIsBetter: false)
+                        detailRow(label: AppStrings.eyeBags,      val1: record1.eyebagScore,       val2: record2.eyebagScore,       higherIsBetter: false)
+                        detailRow(label: AppStrings.dryness,      val1: record1.drynessScore,      val2: record2.drynessScore,      higherIsBetter: false)
+                        detailRow(label: AppStrings.inflammation, val1: record1.inflammationScore, val2: record2.inflammationScore, higherIsBetter: false)
+                        detailRow(label: AppStrings.oiliness,     val1: record1.oilinessScore,     val2: record2.oilinessScore,     higherIsBetter: false)
                     }
                     .padding(.horizontal, 20)
 
@@ -321,4 +321,3 @@ struct CompareViewPreviewWrapper: View {
 }
 
 #Preview { CompareViewPreviewWrapper() }
-

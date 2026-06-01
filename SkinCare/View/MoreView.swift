@@ -67,13 +67,13 @@ struct MoreView: View {
                             .padding(.horizontal, 20)
                         
                         VStack(spacing: 12) {
-                            Button { showEditProfile = true } label: { InfoCard(label: "Full Name", value: vm.userName) }
+                            Button { showEditProfile = true } label: { InfoCard(label: AppStrings.fullName, value: vm.userName) }
                                 .buttonStyle(.plain)
-                            Button { showEditProfile = true } label: { InfoCard(label: "Age", value: vm.userAge) }
+                            Button { showEditProfile = true } label: { InfoCard(label: AppStrings.age, value: vm.userAge) }
                                 .buttonStyle(.plain)
-                            Button { showEditProfile = true } label: { InfoCard(label: "Gender", value: vm.userGender) }
+                            Button { showEditProfile = true } label: { InfoCard(label: AppStrings.gender, value: vm.userGender) }
                                 .buttonStyle(.plain)
-                            Button { showEditProfile = true } label: { InfoCard(label: "Skin Type", value: vm.userSkinType) }
+                            Button { showEditProfile = true } label: { InfoCard(label: AppStrings.skinType, value: vm.userSkinType) }
                                 .buttonStyle(.plain)
                         }
                     }
@@ -111,10 +111,10 @@ struct MoreView: View {
                                 .background(Color.white.opacity(0.3))
 
                             VStack(alignment: .leading, spacing: 10) {
-                                ActiveFeatureRow(text: "Unlimited skin analyses")
-                                ActiveFeatureRow(text: "Advanced AI insights")
-                                ActiveFeatureRow(text: "Personalized recommendations")
-                                ActiveFeatureRow(text: "Full history & progress tracking")
+                                ActiveFeatureRow(text: AppStrings.unlimitedSkinAnalyses)
+                                ActiveFeatureRow(text: AppStrings.advancedAIInsights)
+                                ActiveFeatureRow(text: AppStrings.personalizedRecommendations)
+                                ActiveFeatureRow(text: AppStrings.fullHistoryProgressTracking)
                             }
                         }
                         .padding(24)
@@ -152,10 +152,10 @@ struct MoreView: View {
                             }
 
                             VStack(alignment: .leading, spacing: 10) {
-                                PremiumFeatureRow(text: "Unlimited skin analyses")
-                                PremiumFeatureRow(text: "Advanced AI insights")
-                                PremiumFeatureRow(text: "Personalized recommendations")
-                                PremiumFeatureRow(text: "Full history & progress tracking")
+                                PremiumFeatureRow(text: AppStrings.unlimitedSkinAnalyses)
+                                PremiumFeatureRow(text: AppStrings.advancedAIInsights)
+                                PremiumFeatureRow(text: AppStrings.personalizedRecommendations)
+                                PremiumFeatureRow(text: AppStrings.fullHistoryProgressTracking)
                             }
 
                             Button(action: { showUpgrade = true }) {
@@ -207,23 +207,23 @@ struct ProfileEditSheet: View {
                 mainColor.ignoresSafeArea()
                 ScrollView {
                     VStack(spacing: 16) {
-                        editField(label: "Full Name",  text: $name)
-                        editField(label: "Age Range",  text: $age)
-                        editField(label: "Gender",     text: $gender)
-                        editField(label: "Skin Type",  text: $skinType)
+                        editField(label: AppStrings.fullName,  text: $name)
+                        editField(label: AppStrings.ageRange,  text: $age)
+                        editField(label: AppStrings.gender,    text: $gender)
+                        editField(label: AppStrings.skinType,  text: $skinType)
                     }
                     .padding(20)
                 }
             }
-            .navigationTitle("Edit Profile")
+            .navigationTitle(AppStrings.editProfile)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
+                    Button(AppStrings.cancel) { dismiss() }
                         .foregroundColor(secondaryColor)
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
+                    Button(AppStrings.save) {
                         LocalPersistenceManager.shared.saveUserProfile(
                             name: name, skinType: skinType,
                             ageRange: age, gender: gender, knownIssues: ""

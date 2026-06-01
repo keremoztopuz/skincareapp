@@ -369,7 +369,9 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
                 "inputBias": 0.5
             ])
             guard let cgImg = ctx.createCGImage(edges, from: edges.extent) else { return 0 }
-            return cgImg.edgeIntensity
+            let edgePresence = cgImg.edgeIntensity
+            let edgeBrightness = cgImg.averageBrightness
+            return min(1.0, edgePresence * 0.7 + edgeBrightness * 0.3)
         }
 
         let foreheadScore = wrinkleDensity(in: foreheadRect)
@@ -377,7 +379,8 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
         let crowsRightScore = wrinkleDensity(in: crowsFeetRightRect)
 
         let combined = foreheadScore * 0.50 + crowsLeftScore * 0.25 + crowsRightScore * 0.25
-        let finalScore = min(combined * 250, 100)
+        let normalized = pow(max(combined, 0), 0.72)
+        let finalScore = min(normalized * 180, 100)
 
         NSLog("[WRINKLE] face box: %.2f,%.2f %.2fx%.2f | forehead: %.1f crowsL: %.1f crowsR: %.1f → score: %.1f",
               box.minX, box.minY, box.width, box.height,
@@ -394,29 +397,29 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
         let box = face.boundingBox
         let ctx = CIContext()
 
-        // Under-eye: 52-60% from chin (just below eye level ~60%)
-        let underEyeY = (box.minY + box.height * 0.52) * imageSize.height
+        // Under-eye: slightly wider band below the eye line to capture shadows and puffiness
+        let underEyeY = (box.minY + box.height * 0.47) * imageSize.height
         let leftEyeRect = CGRect(
-            x: (box.minX + box.width * 0.12) * imageSize.width,
+            x: (box.minX + box.width * 0.08) * imageSize.width,
             y: underEyeY,
-            width: box.width * 0.28 * imageSize.width,
-            height: box.height * 0.08 * imageSize.height
+            width: box.width * 0.32 * imageSize.width,
+            height: box.height * 0.12 * imageSize.height
         ).intersection(imageSize)
 
         let rightEyeRect = CGRect(
             x: (box.minX + box.width * 0.60) * imageSize.width,
             y: underEyeY,
-            width: box.width * 0.28 * imageSize.width,
-            height: box.height * 0.08 * imageSize.height
+            width: box.width * 0.32 * imageSize.width,
+            height: box.height * 0.12 * imageSize.height
         ).intersection(imageSize)
 
-        // Cheek reference: 38-45% from chin (mid-cheek area)
-        let cheekY = (box.minY + box.height * 0.38) * imageSize.height
+        // Cheek reference: a little lower and broader for a more stable comparison
+        let cheekY = (box.minY + box.height * 0.34) * imageSize.height
         let cheekRect = CGRect(
-            x: (box.minX + box.width * 0.20) * imageSize.width,
+            x: (box.minX + box.width * 0.16) * imageSize.width,
             y: cheekY,
-            width: box.width * 0.60 * imageSize.width,
-            height: box.height * 0.08 * imageSize.height
+            width: box.width * 0.68 * imageSize.width,
+            height: box.height * 0.10 * imageSize.height
         ).intersection(imageSize)
 
         func regionBrightness(_ rect: CGRect) -> (luminance: Double, texture: Double) {
@@ -441,12 +444,12 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
 
         // Darkness relative to cheek (skin-tone independent)
         let darknessDiff = max(0, cheek.luminance - avgEyeLum)
-        let darknessScore = darknessDiff * 300
+        let darknessScore = sqrt(darknessDiff) * 220
 
         // Texture under eyes indicates puffiness/bags
-        let textureScore = avgEyeTex * 200
+        let textureScore = sqrt(avgEyeTex) * 140
 
-        let finalScore = min(darknessScore * 0.65 + textureScore * 0.35, 100)
+        let finalScore = min(darknessScore * 0.7 + textureScore * 0.3, 100)
 
         NSLog("[EYEBAG] eyeLum: %.3f cheekLum: %.3f diff: %.3f eyeTex: %.3f → darkness: %.1f texture: %.1f final: %.1f",
               avgEyeLum, cheek.luminance, darknessDiff, avgEyeTex, darknessScore, textureScore, finalScore)
@@ -688,7 +691,7 @@ extension CGImage {
             let g = Double(bytes[i+1]) / 255.0
             let b = Double(bytes[i+2]) / 255.0
             let val = (r + g + b) / 3.0
-            if val > 0.15 { aboveThreshold += 1 }
+            if val > 0.08 { aboveThreshold += 1 }
             count += 1
         }
         return count > 0 ? Double(aboveThreshold) / Double(count) : 0

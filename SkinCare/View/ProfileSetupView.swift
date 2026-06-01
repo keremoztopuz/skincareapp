@@ -49,7 +49,7 @@ struct ProfileSetupView: View {
                                 .font(.system(size: 16))
                                 .foregroundColor(.gray)
                             
-                            TextField("Enter your name", text: $vm.name)
+                            TextField(NSLocalizedString("enter_your_name", comment: ""), text: $vm.name)
                                 .padding(.vertical, 12)
                                 .padding(.horizontal, 15)
                                 .background(Color.white)
@@ -155,7 +155,7 @@ struct ProfileSetupView: View {
                     { option in
                         Button(action: { gender = option
                         }) {
-                            Text(option.rawValue)
+                            Text(option.localizedTitle)
                                 .font(.system(size: 16, weight: .medium))
                                 .foregroundColor(gender == option ? .white : Color(red: 0.1, green: 0.1, blue: 0.2))
                                 .frame(maxWidth: .infinity)
@@ -203,7 +203,7 @@ struct ProfileSetupView: View {
                         Button(action: { skinType = option
                         }) {
                             VStack(spacing: 4) {
-                                Text(option.rawValue)
+                                Text(option.localizedTitle)
                                     .font(.system(size: 16, weight: .medium))
 
                                 Text(option.description)

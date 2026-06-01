@@ -61,7 +61,7 @@ struct HomeView: View {
                                 Text(error)
                                     .font(.system(size: 14))
                                     .foregroundColor(.gray)
-                                Button("Try Again") {
+                                Button(AppStrings.tryAgain) {
                                     Task { await vm.fetchAllCloudData() }
                                 }
                                 .font(.system(size: 14, weight: .bold))
@@ -122,10 +122,10 @@ struct HomeView: View {
                                 ],
                                 spacing: 12
                             ) {
-                                MetricCard(value: "\(vm.avgOverallScore)", label: "Overall Score", icon: "heart.text.square.fill")
-                                MetricCard(value: "\(vm.avgDryness)%", label: "Dryness", icon: "drop.triangle.fill")
-                                MetricCard(value: "\(vm.avgOiliness)%", label: "Oiliness", icon: "sparkles")
-                                MetricCard(value: "\(vm.avgInflammation)%", label: "Inflammation", icon: "flame.fill")
+                                MetricCard(value: "\(vm.avgOverallScore)", label: AppStrings.overallScore, icon: "heart.text.square.fill")
+                                MetricCard(value: "\(vm.avgDryness)%", label: AppStrings.dryness, icon: "drop.triangle.fill")
+                                MetricCard(value: "\(vm.avgOiliness)%", label: AppStrings.oiliness, icon: "sparkles")
+                                MetricCard(value: "\(vm.avgInflammation)%", label: AppStrings.inflammation, icon: "flame.fill")
                             }
                         }
                         .padding(.horizontal, 20)
@@ -363,7 +363,7 @@ struct ProductCard: View {
                     .lineLimit(2)
                     .minimumScaleFactor(0.85)
                 
-                Text(product.brand ?? "Unknown Brand")
+                Text(product.brand ?? AppStrings.unknownBrand)
                     .font(.system(size: 13, weight: .medium))
                     .foregroundColor(.gray)
                     .lineLimit(1)

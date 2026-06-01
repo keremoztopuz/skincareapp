@@ -35,6 +35,11 @@ enum AppStrings {
     static let readyToScan = String(localized: "ready_to_scan")
     static let enableCameraDescription = String(localized: "enable_camera_description")
     static let enableCamera = String(localized: "enable_camera")
+    static let scansLeft = String(localized: "scans_left")
+    static let monthlyScanLimitExpired = String(localized: "monthly_scan_limit_expired")
+    static let analyzing = String(localized: "analyzing")
+    static let startAnalysis = String(localized: "start_analysis")
+    static let scanLimitReached = String(localized: "scan_limit_reached")
 
     // MARK: - Recents
     static let recentAnalysis = String(localized: "recent_analysis")
@@ -166,8 +171,108 @@ enum AppStrings {
     static let dismiss = String(localized: "dismiss")
     static let noProductsFound = String(localized: "no_products_found")
     static let cancel = String(localized: "cancel")
+    static let routineCreated = String(localized: "routine_created")
+    static let createRoutine = String(localized: "create_routine")
+    static let productCount = String(localized: "products_count_%lld")
 
     // MARK: - Common
     static let ok = String(localized: "ok")
+    static let pro = String(localized: "pro_plan")
+    static let free = String(localized: "free_plan")
+    static let perMonth = String(localized: "per_month")
     static let yourPersonalExpert = String(localized: "your_personal_expert")
+    static let save = String(localized: "save")
+    static let unknown = String(localized: "unknown")
+    static let unknownBrand = String(localized: "unknown_brand")
+    static let unknownProduct = String(localized: "unknown_product")
+    static let compare = String(localized: "compare")
+    static let tryAgain = String(localized: "try_again")
+    static let internetConnectionRequired = String(localized: "internet_connection_required")
+    static let productDetails = String(localized: "product_details")
+    static let article = String(localized: "article")
+    static let loadingFullDetails = String(localized: "loading_full_details")
+    static let noProductDescription = String(localized: "no_product_description")
+    static let editProfile = String(localized: "edit_profile")
+    static let fullName = String(localized: "full_name")
+    static let age = String(localized: "age")
+    static let ageRange = String(localized: "age_range")
+    static let gender = String(localized: "gender")
+    static let skinType = String(localized: "skin_type")
+    static let overallScore = String(localized: "overall_score")
+    static let acne = String(localized: "condition_acne")
+    static let redness = String(localized: "condition_redness")
+    static let pigmentation = String(localized: "condition_pigmentation")
+    static let hydration = String(localized: "condition_hydration")
+    static let wrinkles = String(localized: "condition_wrinkles")
+    static let eyebags = String(localized: "condition_eyebags")
+    static let eyeBags = String(localized: "condition_eye_bags")
+    static let dryness = String(localized: "metric_dryness")
+    static let inflammation = String(localized: "metric_inflammation")
+    static let oiliness = String(localized: "metric_oiliness")
+    static let unlimitedSkinAnalyses = String(localized: "feature_unlimited_skin_analyses")
+    static let advancedAIInsights = String(localized: "feature_advanced_ai_insights")
+    static let personalizedRecommendations = String(localized: "feature_personalized_recommendations")
+    static let fullHistoryProgressTracking = String(localized: "feature_full_history_progress_tracking")
+    static let skinTypeNormal = String(localized: "skin_type_normal")
+    static let skinTypeDry = String(localized: "skin_type_dry")
+    static let skinTypeOily = String(localized: "skin_type_oily")
+    static let skinTypeCombination = String(localized: "skin_type_combination")
+    static let skinTypeSensitive = String(localized: "skin_type_sensitive")
+    static let genderMale = String(localized: "gender_male")
+    static let genderFemale = String(localized: "gender_female")
+    static let genderPreferNotToSay = String(localized: "gender_prefer_not_to_say")
+
+    static func localizedCondition(_ condition: String?) -> String {
+        switch condition?.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() {
+        case "acne": return acne
+        case "redness", "eczema": return redness
+        case "pigmentation": return pigmentation
+        case "hydration": return hydration
+        case "wrinkles", "wrinkle": return wrinkles
+        case "eyebags", "eye_bags", "eye bags": return eyebags
+        case "healthy": return String(localized: "condition_healthy")
+        default: return condition?.isEmpty == false ? condition! : unknown
+        }
+    }
+
+    static func localizedProductType(_ productType: String) -> String {
+        switch productType.lowercased() {
+        case "cleanser": return String(localized: "product_type_cleanser")
+        case "serum": return String(localized: "product_type_serum")
+        case "treatment": return String(localized: "product_type_treatment")
+        case "eye_cream": return String(localized: "product_type_eye_cream")
+        case "eye_serum": return String(localized: "product_type_eye_serum")
+        case "moisturizer": return String(localized: "product_type_moisturizer")
+        case "sunscreen": return String(localized: "product_type_sunscreen")
+        default: return productType.replacingOccurrences(of: "_", with: " ").capitalized
+        }
+    }
+
+    static func localizedRoutineTime(_ routineTime: String?) -> String {
+        switch routineTime?.lowercased() {
+        case "morning": return morning
+        case "evening": return evening
+        default: return routineTime ?? unknown
+        }
+    }
+
+    static func localizedSkinType(_ skinType: String) -> String {
+        switch skinType.lowercased() {
+        case "normal": return skinTypeNormal
+        case "dry": return skinTypeDry
+        case "oily": return skinTypeOily
+        case "combination": return skinTypeCombination
+        case "sensitive": return skinTypeSensitive
+        default: return skinType
+        }
+    }
+
+    static func localizedGender(_ gender: String) -> String {
+        switch gender.lowercased() {
+        case "male": return genderMale
+        case "female": return genderFemale
+        case "prefer not to say", "other": return genderPreferNotToSay
+        default: return gender
+        }
+    }
 }

@@ -59,7 +59,7 @@ struct DetailView: View {
                         if isLoadingFullDetail {
                             VStack {
                                 Spacer()
-                                ProgressView("Loading full details...")
+                                ProgressView(AppStrings.loadingFullDetails)
                                     .padding(.top, 100)
                                 Spacer()
                             }
@@ -103,8 +103,8 @@ struct DetailView: View {
     
     private var navigationTitle: String {
         switch type {
-        case .product: return "Product Details"
-        case .news: return "Article"
+        case .product: return AppStrings.productDetails
+        case .news: return AppStrings.article
         }
     }
     
@@ -164,7 +164,7 @@ struct ProductDetailContent: View {
             }
             
             VStack(alignment: .leading, spacing: 8) {
-                Text(product.brand ?? "Unknown Brand")
+                Text(product.brand ?? AppStrings.unknownBrand)
                     .font(.system(size: 14, weight: .medium))
                     .foregroundColor(.gray)
                 
@@ -180,7 +180,7 @@ struct ProductDetailContent: View {
                     .font(.system(size: 18, weight: .bold))
                     .foregroundColor(primaryText)
                 
-                Text(product.description ?? "No description available for this product.")
+                Text(product.description ?? AppStrings.noProductDescription)
                     .font(.system(size: 16))
                     .foregroundColor(.gray)
                     .lineSpacing(4)
@@ -228,7 +228,7 @@ struct ArticleDetailContent: View {
                     .clipShape(RoundedRectangle(cornerRadius: 25))
                 }
 
-                Text(article.articleType ?? "Article")
+                Text(article.articleType ?? AppStrings.article)
                     .font(.system(size: 12, weight: .bold))
                     .padding(.horizontal, 12)
                     .padding(.vertical, 6)
@@ -258,7 +258,7 @@ struct ArticleDetailContent: View {
             .foregroundColor(.gray)
             
             if let readTime = article.readTime {
-                Text("\(readTime) min read")
+                Text(String(format: NSLocalizedString("min_read", comment: ""), readTime))
                     .font(.system(size: 12, weight: .bold))
                     .padding(.horizontal, 10)
                     .padding(.vertical, 4)

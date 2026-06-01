@@ -21,17 +21,17 @@ enum SkinCondition: String, Codable, CaseIterable, Identifiable{
     var recommendation: String {
         switch self {
         case .acne:
-            return "Use cleansers containing salicylic acid. Prefer non-comedogenic moisturizers."
+            return String(localized: "condition_recommendation_acne")
         case .redness:
-            return "Use soothing products containing Centella or Niacinamide. Avoid harsh scrubs and extreme temperatures."
+            return String(localized: "condition_recommendation_redness")
         case .pigmentation:
-            return "Use products containing Vitamin C, Niacinamide, or Alpha Arbutin. Always apply SPF 50+ sunscreen."
+            return String(localized: "condition_recommendation_pigmentation")
         case .wrinkles:
-            return "Use products containing retinol and peptides. Protect your skin from the sun and drink plenty of water."
+            return String(localized: "condition_recommendation_wrinkles")
         case .eyebags:
-            return "Apply cold compresses and prefer under-eye creams containing caffeine. Pay attention to your sleep pattern."
+            return String(localized: "condition_recommendation_eyebags")
         case .hydration:
-            return "Use hyaluronic acid serums and ceramide-rich moisturizers. Drink plenty of water throughout the day."
+            return String(localized: "condition_recommendation_hydration")
         }
     }
 }

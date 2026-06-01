@@ -181,3 +181,118 @@
 /* Common */
 "ok" = "OK";
 "your_personal_expert" = "Your personal AI assisted skincare expert";
+"pro_plan" = "Pro";
+"free_plan" = "Free";
+"per_month" = "/month";
+
+/* Localization Sweep */
+"save" = "Save";
+"unknown" = "Unknown";
+"unknown_brand" = "Unknown Brand";
+"unknown_product" = "Unknown Product";
+"compare" = "Compare";
+"try_again" = "Try Again";
+"internet_connection_required" = "Internet connection required for products and articles.";
+"product_details" = "Product Details";
+"article" = "Article";
+"loading_full_details" = "Loading full details...";
+"no_product_description" = "No description available for this product.";
+"edit_profile" = "Edit Profile";
+"full_name" = "Full Name";
+"age" = "Age";
+"age_range" = "Age Range";
+"gender" = "Gender";
+"skin_type" = "Skin Type";
+"overall_score" = "Overall Score";
+"enter_your_name" = "Enter your name";
+"search_products" = "Search Products";
+"scans_left" = "%lld scans left.";
+"monthly_scan_limit_expired" = "Monthly scanning limit has expired.";
+"analyzing" = "Analyzing...";
+"start_analysis" = "Start Analysis";
+"scan_limit_reached" = "Scan Limit Reached";
+"routine_created" = "Routine Created!";
+"create_routine" = "Create a Routine";
+
+/* Conditions and Metrics */
+"condition_acne" = "Acne";
+"condition_redness" = "Redness";
+"condition_pigmentation" = "Pigmentation";
+"condition_hydration" = "Hydration";
+"condition_wrinkles" = "Wrinkles";
+"condition_eyebags" = "Eyebags";
+"condition_eye_bags" = "Eye Bags";
+"condition_healthy" = "Healthy";
+"metric_dryness" = "Dryness";
+"metric_inflammation" = "Inflammation";
+"metric_oiliness" = "Oiliness";
+"condition_recommendation_acne" = "Use cleansers containing salicylic acid. Prefer non-comedogenic moisturizers.";
+"condition_recommendation_redness" = "Use soothing products containing Centella or Niacinamide. Avoid harsh scrubs and extreme temperatures.";
+"condition_recommendation_pigmentation" = "Use products containing Vitamin C, Niacinamide, or Alpha Arbutin. Always apply SPF 50+ sunscreen.";
+"condition_recommendation_wrinkles" = "Use products containing retinol and peptides. Protect your skin from the sun and drink plenty of water.";
+"condition_recommendation_eyebags" = "Apply cold compresses and prefer under-eye creams containing caffeine. Pay attention to your sleep pattern.";
+"condition_recommendation_hydration" = "Use hyaluronic acid serums and ceramide-rich moisturizers. Drink plenty of water throughout the day.";
+
+/* Skin Profile */
+"gender_male" = "Male";
+"gender_female" = "Female";
+"gender_prefer_not_to_say" = "Prefer not to say";
+"skin_type_normal" = "Normal";
+"skin_type_dry" = "Dry";
+"skin_type_oily" = "Oily";
+"skin_type_combination" = "Combination";
+"skin_type_sensitive" = "Sensitive";
+"skin_type_desc_normal" = "No major concerns.";
+"skin_type_desc_dry" = "Feels tight, may flake.";
+"skin_type_desc_oily" = "Shiny, feels greasy.";
+"skin_type_desc_combination" = "Oily T-zone, dry cheeks.";
+"skin_type_desc_sensitive" = "Reacts easily to products.";
+
+/* Premium Features */
+"feature_unlimited_skin_analyses" = "Unlimited skin analyses";
+"feature_advanced_ai_insights" = "Advanced AI insights";
+"feature_personalized_recommendations" = "Personalized recommendations";
+"feature_full_history_progress_tracking" = "Full history and progress tracking";
+
+/* Compare Insights */
+"compare_insight_overall_improved" = "Your overall skin score improved by %lld points.";
+"compare_insight_overall_decreased" = "Your overall skin score decreased by %lld points.";
+"compare_insight_acne_decreased" = "Acne signs appear lower than before.";
+"compare_insight_acne_increased" = "Acne signs appear higher than before.";
+"compare_insight_wrinkles_decreased" = "Wrinkle signs appear lower than before.";
+"compare_insight_no_significant_change" = "No significant change detected between these analyses.";
+
+/* Camera Guide Bullets */
+"guide_do_position_face" = "Position your face clearly inside the frame.";
+"guide_do_good_lighting" = "Use bright, even lighting.";
+"guide_do_center_face" = "Keep your face centered.";
+"guide_do_hold_steady" = "Hold the camera steady.";
+"guide_do_remove_accessories" = "Remove glasses, hats, and face coverings.";
+"guide_dont_move" = "Do not move during the scan.";
+"guide_dont_makeup" = "Avoid heavy makeup before scanning.";
+"guide_dont_shadows" = "Avoid strong shadows on your face.";
+"guide_dont_tilt" = "Do not tilt your head too much.";
+"guide_dont_filters" = "Do not use filters or edited photos.";
+
+/* Routine */
+"step_number_%lld" = "Step %lld";
+"add_product_type_%@" = "Add %@";
+"choose_product_type_%@" = "Choose %@";
+"product_type_cleanser" = "Cleanser";
+"product_type_serum" = "Serum";
+"product_type_treatment" = "Treatment";
+"product_type_eye_cream" = "Eye Care";
+"product_type_eye_serum" = "Eye Serum";
+"product_type_moisturizer" = "Moisturizer";
+"product_type_sunscreen" = "Sunscreen";
+
+/* Recommendations and Purchase Errors */
+"recommendation_keep_hydrated" = "Keep your skin hydrated and protected.";
+"recommendation_salicylic_cleanser" = "Use salicylic acid cleanser.";
+"recommendation_centella" = "Use soothing products with Centella.";
+"recommendation_avoid_extreme_temperatures" = "Avoid extreme temperatures.";
+"recommendation_consult_dermatologist" = "Consult a dermatologist for a tailored routine.";
+"purchase_error_products_not_loaded_%@" = "Products could not be loaded: %@";
+"purchase_error_package_not_found" = "Subscription package not found. Please try again later.";
+"purchase_error_failed_%@" = "Purchase failed: %@";
+"purchase_error_restore_failed_%@" = "Restore failed: %@";
