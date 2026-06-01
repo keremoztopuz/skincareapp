@@ -77,6 +77,11 @@
 "next" = "İleri";
 "get_started" = "Başlayın";
 "skip" = "Atla";
+"splash_tip_shine" = "Parlamaya hazır olun!";
+"splash_tip_skin_home" = "Cildiniz sizin evinizdir.";
+"splash_tip_water" = "Günde 2 litre su içmek cildinizin nemli kalmasına yardımcı olur.";
+"splash_tip_moisturize" = "Gece rutininizde nemlendirmeyi unutmayın.";
+"splash_tip_vitamin_c" = "C vitamini serumu cilt tonunuzu eşitlemeye yardımcı olur.";
 "whats_your_name" = "Adınız nedir?";
 "lets_get_to_know" = "Sizi tanıyalım";
 "please_enter_name" = "Lütfen adınızı girin.";
@@ -106,6 +111,12 @@
 "donts" = "Yapılmaması Gerekenler";
 "important_notice" = "Önemli Uyarı";
 "accept_terms" = "Yukarıdaki koşulları okudum ve kabul ediyorum";
+
+/* Disclaimer Bullet Points */
+"disclaimer_medical" = "Bu uygulama tıbbi teşhis veya tedavi sağlamaz. Analizler yalnızca bilgilendirme amaçlıdır ve profesyonel tıbbi tavsiyenin yerini tutmaz.";
+"disclaimer_patch_test" = "Önerilen herhangi bir ürünü kullanmadan önce, cildinizin küçük bir bölgesine uygulayın ve alerjik reaksiyon olup olmadığını kontrol etmek için 24 saat bekleyin.";
+"disclaimer_liability" = "Önerilen ürünlerin kullanımından kaynaklanan herhangi bir olumsuz reaksiyon veya sonuç için sorumluluk kabul etmiyoruz. Tüm önerileri kendi sorumluluğunuzda kullanın.";
+
 "upgrade_to_pro" = "Pro'ya Yükselt";
 "unlock_full_capabilities" = "Tam cilt analizi özelliklerini açın";
 "price_monthly" = "$4,99 / ay  ·  İstediğiniz zaman iptal edin";
