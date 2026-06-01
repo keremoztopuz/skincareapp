@@ -19,50 +19,28 @@ struct ResultView: View {
     
     let record: AnalysisRecord?
     let isFromRecents: Bool
-    let heatmaps: [String: [[Float]]]
-    let faceRect: CGRect
     @State private var showRecommendations = false
     @State private var selectedProduct: Product? = nil
     @State private var showProductDetail = false
     @State private var showUpgrade = false
     @State private var showRoutine = false
     @State private var routineCreated = false
-    @State private var showHeatmap = false
-    @State private var selectedHeatmapCondition: String = ""
 
     private var isPremium: Bool { SubscriptionManager.shared.isPremium }
 
-    init(record: AnalysisRecord?, isFromRecents: Bool, heatmaps: [String: [[Float]]] = [:], faceRect: CGRect = .zero, onDismiss: (() -> Void)? = nil) {
+    init(record: AnalysisRecord?, isFromRecents: Bool, onDismiss: (() -> Void)? = nil) {
         self.record = record
         self.isFromRecents = isFromRecents
-        self.heatmaps = heatmaps
-        self.faceRect = faceRect
         self.onDismiss = onDismiss
         self._vm = StateObject(wrappedValue: ResultsViewModel(record: record))
     }
     
     var body: some View {
-        ZStack {
+        ZStack(alignment: .topLeading) {
             mainColor.ignoresSafeArea()
             
             ScrollView(.vertical, showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 32) {
-
-                    // MARK: - Back Button
-                    HStack {
-                        Button(action: closeResult) {
-                            Image(systemName: "arrow.left")
-                                .font(.system(size: 16, weight: .bold))
-                                .foregroundColor(.white)
-                                .padding(12)
-                                .background(secondaryColor)
-                                .clipShape(Circle())
-                                .shadow(color: secondaryColor.opacity(0.3), radius: 5, x: 0, y: 3)
-                        }
-                        Spacer()
-                    }
-                    .padding(.horizontal, 20)
-                    .padding(.top, 10)
 
                     // MARK: - Scanned Image Section
                     VStack(alignment: .leading, spacing: 14) {
@@ -108,8 +86,8 @@ struct ResultView: View {
                         
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: 16) {
-                                resultBarButton(title: "Acne",    score: record?.acneScore   ?? 0, icon: "face.dashed", heatmapKey: "Acne")
-                                resultBarButton(title: "Redness", score: record?.eczemaScore ?? 0, icon: "drop.fill",   heatmapKey: "Redness")
+                                ResultBar(title: "Acne",    score: record?.acneScore   ?? 0, icon: "face.dashed", color: secondaryColor)
+                                ResultBar(title: "Redness", score: record?.eczemaScore ?? 0, icon: "drop.fill",   color: secondaryColor)
                                 if isPremium {
                                     ResultBar(title: "Wrinkles",      score: record?.wrinkleScore      ?? 0, icon: "sun.max.fill",       color: secondaryColor)
                                     ResultBar(title: "Eyebags",       score: record?.eyebagScore       ?? 0, icon: "eye.fill",           color: secondaryColor)
@@ -201,7 +179,23 @@ struct ResultView: View {
                         Color.clear.frame(height: 20)
                     }
                 }
+                .padding(.top, 70)
             }
+
+            Button(action: closeResult) {
+                Image(systemName: "arrow.left")
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundColor(.white)
+                    .frame(width: 44, height: 44)
+                    .background(secondaryColor)
+                    .clipShape(Circle())
+                    .shadow(color: secondaryColor.opacity(0.3), radius: 5, x: 0, y: 3)
+            }
+            .buttonStyle(.plain)
+            .contentShape(Circle())
+            .padding(.leading, 20)
+            .padding(.top, 10)
+            .zIndex(10)
         }
         .navigationBarBackButtonHidden(true)
         .sheet(isPresented: $showUpgrade) { UpgradeSheetView() }
@@ -217,45 +211,11 @@ struct ResultView: View {
                 RoutineView(selectedTab: .constant(0))
             }
         }
-        .sheet(isPresented: $showHeatmap) {
-            if let faceData = record?.imageData,
-               let faceImage = UIImage(data: faceData),
-               let grid = heatmaps[selectedHeatmapCondition] {
-                HeatmapOverlayView(faceImage: faceImage, heatmap: grid, conditionName: selectedHeatmapCondition, faceRect: faceRect)
-            }
-        }
     }
 
     private func closeResult() {
+        onDismiss?()
         dismiss()
-        DispatchQueue.main.async {
-            onDismiss?()
-        }
-    }
-
-    @ViewBuilder
-    private func resultBarButton(title: String, score: Double, icon: String, heatmapKey: String) -> some View {
-        let hasHeatmap = heatmaps[heatmapKey] != nil
-        Button {
-            if hasHeatmap {
-                selectedHeatmapCondition = heatmapKey
-                showHeatmap = true
-            }
-        } label: {
-            ZStack(alignment: .topTrailing) {
-                ResultBar(title: title, score: score, icon: icon, color: secondaryColor)
-                if hasHeatmap {
-                    Image(systemName: "viewfinder")
-                        .font(.system(size: 12, weight: .bold))
-                        .foregroundColor(.white)
-                        .padding(6)
-                        .background(secondaryColor)
-                        .clipShape(Circle())
-                        .offset(x: -8, y: 8)
-                }
-            }
-        }
-        .buttonStyle(.plain)
     }
 
     private func createRoutineFromProducts() {
