@@ -28,12 +28,13 @@
 "face_analysis" = "Face Analysis";
 "position_face" = "Position your face within the oval frame";
 "camera_access_required" = "Camera Access Required";
-"camera_access_description" = "To analyze your skin, we need access to your camera. Your photos never leave your device.";
+"camera_access_description" = "To analyze your skin, we need access to your camera. Face data is processed securely to provide insights.";
 "open_settings" = "Open Settings";
 "ready_to_scan" = "Ready to Scan?";
 "enable_camera_description" = "Enable camera access to start your skin analysis journey.";
 "enable_camera" = "Enable Camera";
 "free_scans_used" = "You've used your %lld free monthly scans. Go Pro for unlimited analysis.";
+"cloud_analysis_disclosure" = "Advanced metrics (wrinkles, eyebags, etc.) are processed securely via Google Gemini AI.";
 
 /* Recents */
 "recent_analysis" = "Recent Analysis";
@@ -81,11 +82,11 @@
 
 /* Onboarding */
 "onboarding_title_1" = "Welcome to SkinCare AI";
-"onboarding_desc_1" = "Your personal dermatological assistant powered by advanced AI technology.";
+"onboarding_desc_1" = "Your personal dermatological assistant powered by advanced hybrid AI technology.";
 "onboarding_title_2" = "AI-Powered Skin Analysis";
-"onboarding_desc_2" = "Analyze your skin in seconds with your camera. Get instant insights.";
-"onboarding_title_3" = "Data Stays On Device";
-"onboarding_desc_3" = "Your face data never leaves your device. We prioritize your privacy.";
+"onboarding_desc_2" = "Analyze your skin in seconds. We combine on-device ML with cloud-based vision models for deep insights.";
+"onboarding_title_3" = "Secure & Private";
+"onboarding_desc_3" = "Your profile and history stay on your device. Face crops are processed securely for real-time analysis.";
 "onboarding_title_4" = "Track Your Progress";
 "onboarding_desc_4" = "Save every analysis and see how you improve over time.";
 "back" = "Back";
@@ -220,9 +221,11 @@
 "condition_pigmentation" = "Pigmentation";
 "condition_hydration" = "Hydration";
 "condition_wrinkles" = "Wrinkles";
-"condition_eyebags" = "Eyebags";
+"condition_eyebags" = "Eye Bags";
 "condition_eye_bags" = "Eye Bags";
+"condition_psoriasis" = "Psoriasis";
 "condition_healthy" = "Healthy";
+
 "metric_dryness" = "Dryness";
 "metric_inflammation" = "Inflammation";
 "metric_oiliness" = "Oiliness";

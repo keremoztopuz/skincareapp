@@ -253,7 +253,14 @@ struct CameraView: View {
                     .shadow(color: secondaryColor.opacity(vm.isPermissionGranted ? 0.3 : 0), radius: 10, x: 0, y: 5)
                 }
                 .disabled(vm.isAnalyzing || !vm.isPermissionGranted)
-                .padding(.bottom, 30)
+                .padding(.bottom, 12)
+                
+                Text(AppStrings.cloudAnalysisDisclosure)
+                    .font(.system(size: 11, weight: .regular))
+                    .foregroundColor(.gray.opacity(0.8))
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 20)
+                    .padding(.bottom, 20)
             }
             .padding(.horizontal, 24)
         }

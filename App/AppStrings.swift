@@ -38,6 +38,7 @@ enum AppStrings {
     static let scansLeft = String(localized: "scans_left")
     static let monthlyScanLimitExpired = String(localized: "monthly_scan_limit_expired")
     static let analyzing = String(localized: "analyzing")
+    static let cloudAnalysisDisclosure = String(localized: "cloud_analysis_disclosure")
     static let startAnalysis = String(localized: "start_analysis")
     static let scanLimitReached = String(localized: "scan_limit_reached")
 
@@ -201,6 +202,7 @@ enum AppStrings {
     static let overallScore = String(localized: "overall_score")
     static let acne = String(localized: "condition_acne")
     static let redness = String(localized: "condition_redness")
+    static let psoriasis = String(localized: "condition_psoriasis")
     static let pigmentation = String(localized: "condition_pigmentation")
     static let hydration = String(localized: "condition_hydration")
     static let wrinkles = String(localized: "condition_wrinkles")
@@ -226,6 +228,7 @@ enum AppStrings {
         switch condition?.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() {
         case "acne": return acne
         case "redness", "eczema": return redness
+        case "psoriasis": return psoriasis
         case "pigmentation": return pigmentation
         case "hydration": return hydration
         case "wrinkles", "wrinkle": return wrinkles

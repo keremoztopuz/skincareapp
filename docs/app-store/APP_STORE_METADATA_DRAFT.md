@@ -18,17 +18,17 @@ Understand visible skin concerns, track your progress, and build a simple skinca
 
 SkinCare helps you review visible skin concerns, track your analysis history, and organize a personal skincare routine.
 
-Use your iPhone camera to run an on-device skin analysis for visible concerns such as acne, redness, wrinkles, under-eye appearance, pigmentation, and hydration-related signals. Your scan history stays on your device, so you can compare changes over time and follow your progress.
+Use your iPhone camera to run a powerful skin analysis for visible concerns such as acne, redness, wrinkles, under-eye appearance, pigmentation, and hydration-related signals. Your scan history stays on your device, so you can compare changes over time and follow your progress.
 
-The app also includes product discovery, skincare articles, and routine suggestions powered by curated content.
+Our hybrid AI engine combines local on-device machine learning with advanced cloud-based vision models (Google Gemini) to provide deep insights into your skin health while maintaining high privacy standards.
 
 Key features:
-- On-device skin analysis
+- Advanced skin analysis (Acne, Redness, Wrinkles, Eyebags, etc.)
+- Hybrid AI: Securely processed insights with Google Gemini
 - Local scan history and progress tracking
 - Personalized routine builder
 - Product and article discovery
-- Free monthly scans with optional Pro subscription
-- Privacy-focused design: face images are not uploaded for analysis
+- Privacy-focused: scan history remains local to your device
 
 Important: SkinCare does not provide medical diagnosis, treatment, or professional medical advice. Results are for informational and cosmetic tracking purposes only. Consult a qualified healthcare professional for medical concerns.
 
@@ -57,18 +57,11 @@ https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
 
 ## Review Notes
 
-SkinCare performs face and skin analysis on device. Captured face images are not uploaded to our servers for analysis.
+SkinCare uses a hybrid analysis engine. Face detection and basic condition analysis (acne, redness) are performed on-device using CoreML. Advanced cosmetic metrics (wrinkles, eyebags, hydration, pigmentation) are processed via Google Gemini API. Face crops are transmitted securely for real-time analysis and are not stored permanently by our services.
 
 Supabase is used only to fetch skincare articles, product catalog data, and routine recommendation content. User face images and biometric data are not sent to Supabase.
 
 The app includes a clear medical disclaimer during onboarding. The app does not claim to diagnose or treat medical conditions.
-
-Subscription testing:
-- Pro entitlement name: `pro`
-- Monthly product ID: `skincare_pro_monthly`
-- Restore Purchases is available on the subscription screen.
-
-If the reviewer needs access beyond the free scan limit, use a sandbox subscription purchase or ask us through App Review notes.
 
 ## App Privacy Draft
 
@@ -76,22 +69,19 @@ Confirm these answers against the final implementation before submitting.
 
 Data collected by the app:
 - User profile data: name, age range, gender, skin type, known issues. Stored on device.
-- Photos or videos: camera image used for local analysis and local scan history. Not uploaded for analysis.
+- Photos or videos: camera image used for analysis. Basic analysis is local; advanced metrics are processed via Google Gemini (Cloud AI).
 - Purchase data: handled by Apple and RevenueCat for subscription status.
 - Product interaction/routine data: routine selections and analysis history stored on device.
 
 Data linked to the user:
 - Purchases may be linked by Apple/RevenueCat.
-- Local profile and scan history remain on device unless future sync is added.
+- Local profile and scan history remain on device.
 
 Tracking:
-- No third-party advertising tracking should be enabled.
-
-Data used for tracking:
-- None, unless future analytics/ads are added.
+- No third-party advertising tracking.
 
 Sensitive data:
-- Face/skin images are processed locally. Treat as sensitive in the privacy answer and description.
+- Face/skin images are used for analysis. Advanced analysis requires secure cloud processing via Gemini.
 
 ## Subscription Metadata
 

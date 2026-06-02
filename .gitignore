@@ -28,6 +28,7 @@ Build/
 *.secret
 secrets/
 SkinCare/Model/SupabaseConfig.swift
+SkinCare/Model/GeminiConfig.swift
 
 # Temporary files
 *.tmp

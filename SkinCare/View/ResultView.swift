@@ -88,6 +88,7 @@ struct ResultView: View {
                             HStack(spacing: 16) {
                                 ResultBar(title: AppStrings.acne,    score: record?.acneScore   ?? 0, icon: "face.dashed", color: secondaryColor)
                                 ResultBar(title: AppStrings.redness, score: record?.eczemaScore ?? 0, icon: "drop.fill",   color: secondaryColor)
+                                ResultBar(title: AppStrings.psoriasis, score: record?.psoriasisScore ?? 0, icon: "bandage.fill", color: secondaryColor)
                                 if isPremium {
                                     ResultBar(title: AppStrings.wrinkles,     score: record?.wrinkleScore      ?? 0, icon: "sun.max.fill",       color: secondaryColor)
                                     ResultBar(title: AppStrings.eyebags,      score: record?.eyebagScore       ?? 0, icon: "eye.fill",           color: secondaryColor)

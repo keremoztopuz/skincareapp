@@ -20,7 +20,7 @@ struct ContentView: View {
         case .splash:
             SplashView()
         case .loading:
-            SplashView(loadingMessage: "Saving your data on your device...")
+            SplashView(loadingMessage: "Preparing your profile...")
         case .subscription:
             SubscriptionView()
         }

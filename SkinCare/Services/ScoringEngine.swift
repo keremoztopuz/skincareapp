@@ -17,7 +17,7 @@ struct SkinScore {
 
 class ScoringEngine {
 
-    func calculateScore(acne: Double, redness: Double, pigmentation: Double, hydration: Double, skinType: String) -> SkinScore {
+    func calculateScore(acne: Double, redness: Double, psoriasis: Double, pigmentation: Double, hydration: Double, skinType: String) -> SkinScore {
         let oilinessBase: Double
         switch skinType{
             case "oily": oilinessBase = 70.0
@@ -26,7 +26,7 @@ class ScoringEngine {
             default: oilinessBase = 35.0
         }
 
-        let oilinessScore = min(oilinessBase + acne * 25.0, 100.0)
+        let oilinessScore = min(oilinessBase + acne * 25.0 + psoriasis * 10.0, 100.0)
 
         let drynessBase: Double
         switch skinType {
@@ -37,7 +37,7 @@ class ScoringEngine {
         }
 
         let hydrationPenalty = max(0, (1.0 - hydration)) * 30.0
-        let drynessScore = min(drynessBase + redness * 35.0 + hydrationPenalty, 100.0)
+        let drynessScore = min(drynessBase + redness * 35.0 + psoriasis * 15.0 + hydrationPenalty, 100.0)
 
         let inflammationBase: Double
         switch skinType {
@@ -48,11 +48,11 @@ class ScoringEngine {
             default: inflammationBase = 35.0
         }
 
-        let inflammationScore = min(inflammationBase + acne * 45.0 + redness * 35.0 + pigmentation * 15.0, 100.0)
+        let inflammationScore = min(inflammationBase + acne * 45.0 + redness * 35.0 + psoriasis * 40.0 + pigmentation * 15.0, 100.0)
 
         let overallScore = max(0.0, min(hydration * 30.0 + 50.0 - inflammationScore * 0.30 - drynessScore * 0.10 - oilinessScore * 0.10 - pigmentation * 10.0, 100.0))
 
-        let scores = ["acne": acne, "redness": redness, "pigmentation": pigmentation]
+        let scores = ["acne": acne, "redness": redness, "psoriasis": psoriasis, "pigmentation": pigmentation]
         let top = scores.max(by: { $0.value < $1.value })
         let dominantCondition = (top?.value ?? 0) > 0.25 ? (top?.key ?? "") : ""
 

@@ -7,6 +7,7 @@ private func mockRecord(ctx: NSManagedObjectContext, overall: Double, acne: Doub
     r.overallScore      = overall
     r.acneScore         = acne
     r.eczemaScore       = redness
+    r.psoriasisScore    = 5
     r.pigmentationScore = 30
     r.hydrationScore    = 65
     r.wrinkleScore      = 20
@@ -133,6 +134,7 @@ struct CompareView: View {
                     VStack(spacing: 10) {
                         detailRow(label: AppStrings.acne,         val1: record1.acneScore,         val2: record2.acneScore,         higherIsBetter: false)
                         detailRow(label: AppStrings.redness,      val1: record1.eczemaScore,       val2: record2.eczemaScore,       higherIsBetter: false)
+                        detailRow(label: AppStrings.psoriasis,   val1: record1.psoriasisScore,    val2: record2.psoriasisScore,    higherIsBetter: false)
                         detailRow(label: AppStrings.pigmentation, val1: record1.pigmentationScore, val2: record2.pigmentationScore, higherIsBetter: false)
                         detailRow(label: AppStrings.hydration,    val1: record1.hydrationScore,    val2: record2.hydrationScore,    higherIsBetter: true)
                         detailRow(label: AppStrings.wrinkles,     val1: record1.wrinkleScore,      val2: record2.wrinkleScore,      higherIsBetter: false)

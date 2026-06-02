@@ -71,6 +71,11 @@ struct DisclaimerView: View {
                             icon: "hand.raised.fill",
                             text: NSLocalizedString("disclaimer_liability", comment: "")
                         )
+
+                        DisclaimerItem(
+                            icon: "cloud.fill",
+                            text: NSLocalizedString("cloud_analysis_disclosure", comment: "")
+                        )
                     }
                     .padding(.horizontal, 8)
                 }

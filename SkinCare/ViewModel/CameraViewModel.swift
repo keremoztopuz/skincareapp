@@ -20,6 +20,7 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
 
     @Published var currentAcneScore: Double = 0
     @Published var currentRednessScore: Double = 0
+    @Published var currentPsoriasisScore: Double = 0
 
     @Published var wrinkleScore: Double = 0
     @Published var eyebagScore: Double = 0
@@ -58,13 +59,12 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
     }
 
     func setupSession() {
-        session.beginConfiguration()
-
-        guard let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front) else
-        {
+        guard let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front) else {
             print("no front camera")
             return
         }
+
+        session.beginConfiguration()
         do {
             let input = try AVCaptureDeviceInput(device: device)
             if session.canAddInput(input) {
@@ -82,13 +82,16 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
                 }
                 device.unlockForConfiguration()
             }
-
-            session.commitConfiguration()
-            DispatchQueue.global(qos: .background).async {
-                self.session.startRunning()
-            }
         } catch {
             print("camera setup error: \(error.localizedDescription)")
+        }
+        
+        session.commitConfiguration()
+        
+        DispatchQueue.global(qos: .background).async {
+            if !self.session.isRunning {
+                self.session.startRunning()
+            }
         }
     }
 
@@ -96,6 +99,14 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
         DispatchQueue.main.async {
             self.capturedImage = nil
             self.analysisRecord = nil
+            self.detectedCondition = nil
+            self.currentAcneScore = 0
+            self.currentRednessScore = 0
+            self.currentPsoriasisScore = 0
+            self.wrinkleScore = 0
+            self.eyebagScore = 0
+            self.pigmentationScore = 0
+            self.hydrationScore = 0
             self.isAnalyzing = true
         }
         let settings = AVCapturePhotoSettings()
@@ -136,17 +147,8 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
 
             let imageToAnalyze = croppedImage ?? normalizedImage
 
-            let group = DispatchGroup()
-            group.enter()
-            self.analyzeWithCoreML(imageToAnalyze, group: group)
-            group.enter()
-            self.analyzeWithVision(imageToAnalyze, group: group)
-
-            await withCheckedContinuation { continuation in
-                group.notify(queue: .global()) {
-                    continuation.resume()
-                }
-            }
+            self.analyzeWithCoreML(imageToAnalyze)
+            await self.analyzeSecondaryConditions(imageToAnalyze)
 
             let elapsed = Date().timeIntervalSince(startTime)
             if elapsed < 3.0 {
@@ -206,14 +208,13 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
         try? handler.perform([request])
     }
 
-    func analyzeWithCoreML(_ image: UIImage, group: DispatchGroup) {
+    func analyzeWithCoreML(_ image: UIImage) {
         let inputSize = 384
         let mean: [Float] = [0.5942, 0.4433, 0.3871]
         let std: [Float]  = [0.2427, 0.2027, 0.1930]
 
         guard let resized = image.resizedForML(to: inputSize),
               let cgImage = resized.cgImage else {
-            group.leave()
             return
         }
 
@@ -223,13 +224,11 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
                                   bitsPerComponent: 8, bytesPerRow: inputSize * 4,
                                   space: colorSpace,
                                   bitmapInfo: CGImageAlphaInfo.noneSkipLast.rawValue) else {
-            group.leave()
             return
         }
         ctx.draw(cgImage, in: CGRect(x: 0, y: 0, width: inputSize, height: inputSize))
 
         guard let tensor = try? MLMultiArray(shape: [1, 3, inputSize, inputSize] as [NSNumber], dataType: .float32) else {
-            group.leave()
             return
         }
 
@@ -247,19 +246,16 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
             guard let modelURL = Bundle.main.url(forResource: "skin_disease", withExtension: "mlmodelc")
                     ?? Bundle.main.url(forResource: "skin_disease", withExtension: "mlpackage") else {
                 NSLog("ML model file not found in bundle")
-                group.leave()
                 return
             }
             mlModel = try MLModel(contentsOf: modelURL, configuration: MLModelConfiguration())
         } catch {
             NSLog("ML model could not be loaded: %@", error.localizedDescription)
-            group.leave()
             return
         }
 
         let provider = try? MLDictionaryFeatureProvider(dictionary: ["image": MLFeatureValue(multiArray: tensor)])
         guard let provider = provider else {
-            group.leave()
             return
         }
 
@@ -267,31 +263,63 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
         do { output = try mlModel.prediction(from: provider) }
         catch {
             NSLog("ML prediction error: %@", error.localizedDescription)
-            group.leave()
             return
         }
 
         guard let scores = output.featureValue(for: "scores")?.multiArrayValue else {
             NSLog("ML output 'scores' not found")
-            group.leave()
             return
         }
 
         func sigmoid(_ x: Double) -> Double { 1.0 / (1.0 + exp(-x)) * 100 }
-        let acneLogit   = Double(truncating: scores[[0, 0] as [NSNumber]])
+        
+        func processedScore(_ logit: Double) -> Double {
+            let s = sigmoid(logit)
+            return s < 8 ? 0 : s
+        }
+
+        let acneLogit    = Double(truncating: scores[[0, 0] as [NSNumber]])
         let rednessLogit = Double(truncating: scores[[0, 1] as [NSNumber]])
+        let psoriasisLogit = Double(truncating: scores[[0, 2] as [NSNumber]])
 
-        let acne    = sigmoid(acneLogit)
-        let redness = sigmoid(rednessLogit)
+        let acne     = processedScore(acneLogit)
+        let redness  = processedScore(rednessLogit)
+        let psoriasis = processedScore(psoriasisLogit)
 
-        let condition = ["Acne": acne, "Redness": redness]
+        let condition = ["Acne": acne, "Redness": redness, "Psoriasis": psoriasis]
         let top = condition.max(by: { $0.value < $1.value })
 
         DispatchQueue.main.async {
-            self.currentAcneScore    = acne
-            self.currentRednessScore = redness
+            self.currentAcneScore     = acne
+            self.currentRednessScore  = redness
+            self.currentPsoriasisScore = psoriasis
             self.detectedCondition = (top?.value ?? 0) > 40 ? top?.key : "Healthy"
-            group.leave()
+        }
+    }
+
+    func analyzeSecondaryConditions(_ image: UIImage) async {
+        do {
+            let result = try await GeminiVLMService.shared.analyzeFace(image)
+            await MainActor.run {
+                self.wrinkleScore = result.wrinkles.score
+                self.eyebagScore = result.eyebags.score
+                self.pigmentationScore = result.pigmentation.score
+                self.hydrationScore = result.hydration.score
+            }
+        } catch {
+            NSLog("VLM error: %@", error.localizedDescription)
+            await legacySecondaryConditions(image)
+        }
+    }
+
+    private func legacySecondaryConditions(_ image: UIImage) async {
+        await withCheckedContinuation { continuation in
+            let group = DispatchGroup()
+            group.enter()
+            self.analyzeWithVision(image, group: group)
+            group.notify(queue: .global()) {
+                continuation.resume()
+            }
         }
     }
 
@@ -628,6 +656,7 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
         let skinScores = engine.calculateScore(
             acne: currentAcneScore / 100,
             redness: currentRednessScore / 100,
+            psoriasis: currentPsoriasisScore / 100,
             pigmentation: pigmentationScore / 100,
             hydration: hydrationScore / 100,
             skinType: skinType
@@ -650,6 +679,7 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
             userFeedback: false,
             acneScore: currentAcneScore,
             eczemaScore: currentRednessScore,
+            psoriasisScore: currentPsoriasisScore,
             imageData: imageData
         )
 
@@ -662,6 +692,14 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
         DispatchQueue.main.async {
             self.capturedImage = nil
             self.analysisRecord = nil
+            self.detectedCondition = nil
+            self.currentAcneScore = 0
+            self.currentRednessScore = 0
+            self.currentPsoriasisScore = 0
+            self.wrinkleScore = 0
+            self.eyebagScore = 0
+            self.pigmentationScore = 0
+            self.hydrationScore = 0
             self.isAnalyzing = false
         }
         if !session.isRunning {

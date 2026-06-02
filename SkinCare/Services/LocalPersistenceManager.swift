@@ -40,7 +40,7 @@ class LocalPersistenceManager {
     }
     // Analysis Records
     @discardableResult
-    func saveAnalysisRecord(condition: String, confidence: Double, wrinkleScore: Double, eyebagScore: Double, pigmentationScore: Double, hydrationScore: Double, date: Date, drynessScore: Double, inflammationScore: Double, oilinessScore: Double, overallScore: Double, userFeedback: Bool, acneScore: Double, eczemaScore: Double, imageData: Data?) -> AnalysisRecord {
+    func saveAnalysisRecord(condition: String, confidence: Double, wrinkleScore: Double, eyebagScore: Double, pigmentationScore: Double, hydrationScore: Double, date: Date, drynessScore: Double, inflammationScore: Double, oilinessScore: Double, overallScore: Double, userFeedback: Bool, acneScore: Double, eczemaScore: Double, psoriasisScore: Double, imageData: Data?) -> AnalysisRecord {
         let record = AnalysisRecord(context: context)
         record.condition = condition
         record.confidence = confidence
@@ -52,6 +52,7 @@ class LocalPersistenceManager {
         record.userFeedback = userFeedback
         record.acneScore = acneScore
         record.eczemaScore = eczemaScore
+        record.psoriasisScore = psoriasisScore
         record.pigmentationScore = pigmentationScore
         record.hydrationScore = hydrationScore
         record.wrinkleScore = wrinkleScore

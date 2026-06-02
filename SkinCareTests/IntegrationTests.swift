@@ -34,7 +34,7 @@ internal import CoreData
 
 @Test @MainActor func testAnalysisScoringAndRecentsIntegration() {
     let engine = ScoringEngine()
-    let score = engine.calculateScore(acne: 0.7, redness: 0.3, psoriasis: 0.0, benLezyon: 0.0, healthy: 0.2, skinType: "oily")
+    let score = engine.calculateScore(acne: 0.7, redness: 0.3, psoriasis: 0.0, pigmentation: 0.0, hydration: 0.2, skinType: "oily")
 
     let olderDate = Date().addingTimeInterval(-86400 * 3)
     let newerDate = Date()
@@ -53,6 +53,8 @@ internal import CoreData
         acneScore: 0.7,
         eczemaScore: 0.0,
         psoriasisScore: 0.0,
+        pigmentationScore: 0.0,
+        hydrationScore: 0.0,
         imageData: nil
     )
 

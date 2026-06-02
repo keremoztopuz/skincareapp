@@ -50,21 +50,17 @@ Splash (4.5s) → OnBoarding (4 pages) → Profile Setup → Loading (3.5s) → 
 - **Recents:** Recent Analyses list, score + trend, progress bars.
 - **More:** Subscription status + Settings.
 
-## Analysis Architecture (dual-engine, fully on-device)
-### CoreML — skin_disease.mlpackage
-- 3 classes: acne, redness, psoriasis
-- Confidence threshold < 50% → "Your skin looks healthy"
+## Analysis Architecture (hybrid engine)
+### Local Engine (CoreML/Vision)
+- **Primary Conditions:** Acne and redness detection are handled strictly on-device.
+- **Initial Processing:** Face detection and cropping are performed locally.
 
-### Apple Vision Framework + CoreImage
-- Wrinkle detection → VNFaceLandmarks2D + Sobel filter
-- Under-eye bag detection → landmark crop + color/contour analysis
-
-### Subscription-based feature gating
-- Features are restricted based on the `isPremium` flag (Psoriasis, Wrinkle, Eyebag analyses are Premium-only).
+### Cloud Engine (Gemini VLM)
+- **Advanced Metrics:** Wrinkles, eyebags, pigmentation, and hydration are analyzed via Google Gemini API.
+- **Requirement:** This phase requires an internet connection and transmits face crops securely for analysis.
 
 ## Data & Privacy
-- **Core Data:** all user data (profile, analysis history) — NEVER leaves device.
-- **Supabase (PostgreSQL):** articles, product recommendations, nutrition tips (fetch only).
-- **Privacy-by-design:** ALL biometric/face data stays on device, no images leave the device EVER.
-- **Offline-first:** CoreML, Vision, scoring, history, profile all work without internet.
-- **Online required only for:** Supabase content → show "Internet connection required" when offline.
+- **Core Data:** all user data (profile, analysis history) — stays on device.
+- **Supabase (PostgreSQL):** articles, product recommendations, routine content (fetch only).
+- **Privacy-by-design:** Face crops for advanced analysis are sent securely to Google Gemini for real-time processing. No biometric data is stored permanently by our backend services.
+- **Hybrid Support:** Basic analysis (acne/redness) and history access work offline. Advanced metrics (VLM) require an active internet connection.

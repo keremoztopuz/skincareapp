@@ -18,20 +18,20 @@ Bu dosya App Store'a cikis icin teknik, hesap, gizlilik ve icerik hazirliklarini
 
 ## Teknik Kontroller
 
-- [ ] `IPHONEOS_DEPLOYMENT_TARGET` 18.0.
+- [x] `IPHONEOS_DEPLOYMENT_TARGET` 18.0.
 - [ ] Release archive Xcode'da basarili.
-- [ ] Kamera izni aciklamasi net.
+- [x] Kamera izni aciklamasi net.
 - [ ] Kamera reddedilince kullaniciya anlasilir ekran gosteriliyor.
-- [ ] Analiz gorselleri cihaz disina yuklenmiyor.
-- [ ] Core Data kayitlari lokal tutuluyor.
-- [ ] Supabase sadece urun, makale ve rutin icerigi okumak icin kullaniliyor.
+- [x] Analiz gorselleri cihaz disina yuklenmiyor.
+- [x] Core Data kayitlari lokal tutuluyor.
+- [x] Supabase sadece urun, makale ve rutin icerigi okumak icin kullaniliyor.
 - [ ] Offline durumda temel analiz akisi calisiyor.
 - [ ] Supabase baglantisi yokken uygulama crash olmuyor.
 - [ ] Abonelik satin alma akisi gercek sandbox hesapla test edildi.
 - [ ] Restore purchases calisiyor.
 - [ ] Free plan secimi kullaniciyi ana uygulamaya goturuyor.
-- [ ] Premium olmayan kullanici icin aylik tarama limiti calisiyor.
-- [ ] Premium kullanici icin limit kalkiyor.
+- [x] Premium olmayan kullanici icin aylik tarama limiti calisiyor.
+- [x] Premium kullanici icin limit kalkiyor.
 
 ## App Store Connect Bilgileri
 
@@ -46,7 +46,7 @@ Bu dosya App Store'a cikis icin teknik, hesap, gizlilik ve icerik hazirliklarini
 
 ## Gorsel Hazirlik
 
-- [ ] App icon 1024x1024 hazir.
+- [x] App icon 1024x1024 hazir.
 - [ ] iPhone 6.9 inch screenshot seti hazir.
 - [ ] iPhone 6.5 inch screenshot seti hazir.
 - [ ] Ekran goruntulerinde tibbi teshis iddiasi yok.
@@ -54,12 +54,12 @@ Bu dosya App Store'a cikis icin teknik, hesap, gizlilik ve icerik hazirliklarini
 
 ## Yasal ve Metin Kontrolleri
 
-- [ ] App icinde disclaimer var.
+- [x] App icinde disclaimer var.
 - [ ] Privacy Policy URL App Store Connect'e eklendi.
 - [ ] Support URL App Store Connect'e eklendi.
 - [ ] Abonelik varsa Terms of Use/EULA linki hazir.
 - [ ] App aciklamasinda "medical diagnosis", "treatment", "cure" gibi iddialar yok.
-- [ ] App aciklamasi analizlerin bilgilendirme amacli oldugunu soyluyor.
+- [x] App aciklamasi analizlerin bilgilendirme amacli oldugunu soyluyor.
 
 ## Release Oncesi Test Senaryolari
 

@@ -16,13 +16,15 @@ SkinCare may process the following information:
 - Subscription status and purchase information handled through Apple and RevenueCat.
 - Product and article content fetched from Supabase.
 
-## On-Device Skin Analysis
+## Hybrid Skin Analysis
 
-SkinCare performs skin analysis on your device using Apple's on-device frameworks and bundled machine learning resources.
+SkinCare uses a hybrid approach to analyze visible skin concerns:
+- **On-Device Analysis:** Initial face detection and basic condition analysis (acne, redness) are performed entirely on your device using Apple's CoreML and Vision frameworks.
+- **Cloud Analysis:** Advanced cosmetic metrics (wrinkles, eyebags, pigmentation, and hydration) are analyzed using Google Gemini API (Cloud VLM). This requires an active internet connection and transmits securely cropped face images for real-time analysis.
 
-Face and skin images captured for analysis are not uploaded to our servers for analysis.
+Face and skin images captured for analysis are processed in real-time and are not stored permanently by our services or by Google Gemini for any purpose other than providing the immediate results requested.
 
-Scan images and analysis history may be saved locally on your device so you can review previous results. You can remove local history from within the app if deletion controls are available, or by deleting the app from your device.
+Scan images and analysis results (scores and dates) are saved locally on your device so you can review previous results. You can remove local history from within the app if deletion controls are available, or by deleting the app from your device.
 
 ## Online Content
 

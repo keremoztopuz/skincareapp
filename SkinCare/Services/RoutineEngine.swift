@@ -80,6 +80,7 @@ class RoutineEngine {
 
         if record.acneScore > 0.25 { conditions.append(("acne", record.acneScore)) }
         if record.eczemaScore > 0.25 { conditions.append(("redness", record.eczemaScore)) }
+        if record.psoriasisScore > 0.25 { conditions.append(("psoriasis", record.psoriasisScore)) }
         if record.pigmentationScore > 0.25 { conditions.append(("pigmentation", record.pigmentationScore)) }
         if record.wrinkleScore > 0.20 { conditions.append(("wrinkles", record.wrinkleScore)) }
         if record.eyebagScore > 0.20 { conditions.append(("eyebags", record.eyebagScore)) }
