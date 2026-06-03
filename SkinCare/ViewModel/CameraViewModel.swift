@@ -266,8 +266,12 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
             return
         }
 
-        guard let scores = output.featureValue(for: "scores")?.multiArrayValue else {
-            NSLog("ML output 'scores' not found")
+        let outputNames = output.featureNames
+        let scores = output.featureValue(for: "scores")?.multiArrayValue
+            ?? outputNames.compactMap { output.featureValue(for: $0)?.multiArrayValue }.first
+
+        guard let scores else {
+            NSLog("ML multi-array output not found")
             return
         }
 
@@ -279,20 +283,32 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
         }
 
         let acneLogit    = Double(truncating: scores[[0, 0] as [NSNumber]])
-        let rednessLogit = Double(truncating: scores[[0, 1] as [NSNumber]])
+        let eczemaLogit = Double(truncating: scores[[0, 1] as [NSNumber]])
         let psoriasisLogit = Double(truncating: scores[[0, 2] as [NSNumber]])
+        let eyeBagsLogit = Double(truncating: scores[[0, 3] as [NSNumber]])
+        let wrinklesLogit = Double(truncating: scores[[0, 4] as [NSNumber]])
 
         let acne     = processedScore(acneLogit)
-        let redness  = processedScore(rednessLogit)
+        let eczema  = processedScore(eczemaLogit)
         let psoriasis = processedScore(psoriasisLogit)
+        let eyeBags = processedScore(eyeBagsLogit)
+        let wrinkles = processedScore(wrinklesLogit)
 
-        let condition = ["Acne": acne, "Redness": redness, "Psoriasis": psoriasis]
+        let condition = [
+            "Acne": acne,
+            "Redness": eczema,
+            "Psoriasis": psoriasis,
+            "Eye_Bags": eyeBags,
+            "Wrinkles": wrinkles
+        ]
         let top = condition.max(by: { $0.value < $1.value })
 
         DispatchQueue.main.async {
             self.currentAcneScore     = acne
-            self.currentRednessScore  = redness
+            self.currentRednessScore  = eczema
             self.currentPsoriasisScore = psoriasis
+            self.eyebagScore = eyeBags
+            self.wrinkleScore = wrinkles
             self.detectedCondition = (top?.value ?? 0) > 40 ? top?.key : "Healthy"
         }
     }
