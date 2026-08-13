@@ -278,28 +278,23 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
         func sigmoid(_ x: Double) -> Double { 1.0 / (1.0 + exp(-x)) * 100 }
         
         func processedScore(_ logit: Double) -> Double {
-            let s = sigmoid(logit)
-            return s < 8 ? 0 : s
+            let temperature = 1.8
+            let score = sigmoid(logit / temperature)
+            return min(max(score, 1), 99)
         }
 
         let acneLogit    = Double(truncating: scores[[0, 0] as [NSNumber]])
         let eczemaLogit = Double(truncating: scores[[0, 1] as [NSNumber]])
         let psoriasisLogit = Double(truncating: scores[[0, 2] as [NSNumber]])
-        let eyeBagsLogit = Double(truncating: scores[[0, 3] as [NSNumber]])
-        let wrinklesLogit = Double(truncating: scores[[0, 4] as [NSNumber]])
 
         let acne     = processedScore(acneLogit)
         let eczema  = processedScore(eczemaLogit)
         let psoriasis = processedScore(psoriasisLogit)
-        let eyeBags = processedScore(eyeBagsLogit)
-        let wrinkles = processedScore(wrinklesLogit)
 
         let condition = [
             "Acne": acne,
             "Redness": eczema,
-            "Psoriasis": psoriasis,
-            "Eye_Bags": eyeBags,
-            "Wrinkles": wrinkles
+            "Psoriasis": psoriasis
         ]
         let top = condition.max(by: { $0.value < $1.value })
 
@@ -307,9 +302,7 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
             self.currentAcneScore     = acne
             self.currentRednessScore  = eczema
             self.currentPsoriasisScore = psoriasis
-            self.eyebagScore = eyeBags
-            self.wrinkleScore = wrinkles
-            self.detectedCondition = (top?.value ?? 0) > 40 ? top?.key : "Healthy"
+            self.detectedCondition = (top?.value ?? 0) > 35 ? top?.key : "Healthy"
         }
     }
 

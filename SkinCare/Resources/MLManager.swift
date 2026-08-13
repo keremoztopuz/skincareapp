@@ -11,7 +11,7 @@ import UIKit
 class MLManager {
 // MARK: Model Loading
     private var model : MLModel?
-    private let classLabels: [SkinCondition] = [.acne, .redness, .psoriasis, .eyeBags, .wrinkles]
+    private let classLabels: [SkinCondition] = [.acne, .redness, .psoriasis]
     
     init() {
         do {

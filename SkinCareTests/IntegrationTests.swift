@@ -44,6 +44,8 @@ internal import CoreData
         confidence: 0.7,
         wrinkleScore: 0.0,
         eyebagScore: 0.0,
+        pigmentationScore: 0.0,
+        hydrationScore: 0.2,
         date: olderDate,
         drynessScore: score.drynessScore,
         inflammationScore: score.inflammationScore,
@@ -53,18 +55,18 @@ internal import CoreData
         acneScore: 0.7,
         eczemaScore: 0.0,
         psoriasisScore: 0.0,
-        pigmentationScore: 0.0,
-        hydrationScore: 0.0,
         imageData: nil
     )
 
-    let score2 = engine.calculateScore(acne: 0.1, redness: 0.0, psoriasis: 0.0, benLezyon: 0.0, healthy: 0.8, skinType: "oily")
+    let score2 = engine.calculateScore(acne: 0.1, redness: 0.0, psoriasis: 0.0, pigmentation: 0.0, hydration: 0.8, skinType: "oily")
 
     LocalPersistenceManager.shared.saveAnalysisRecord(
         condition: "Healthy",
         confidence: 0.8,
         wrinkleScore: 0.0,
         eyebagScore: 0.0,
+        pigmentationScore: 0.0,
+        hydrationScore: 0.8,
         date: newerDate,
         drynessScore: score2.drynessScore,
         inflammationScore: score2.inflammationScore,
