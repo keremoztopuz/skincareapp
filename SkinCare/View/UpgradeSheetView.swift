@@ -6,44 +6,31 @@ struct UpgradeSheetView: View {
     @StateObject private var manager = SubscriptionManager.shared
     @State private var isPurchasing = false
     @State private var showSuccess = false
-
-    let mainColor      = Color(red: 1.0, green: 0.97, blue: 0.97)
-    let secondaryColor = Color(red: 0.47, green: 0.11, blue: 0.17)
-    let outerColor     = Color(red: 1.0,  green: 0.87, blue: 0.87)
-    let primaryText    = Color(red: 0.1,  green: 0.1,  blue: 0.2)
+    @State private var purchaseError: String?
+    @State private var priceText: String?
 
     var body: some View {
         ZStack {
-            mainColor.ignoresSafeArea()
+            Color.brandBackground.ignoresSafeArea()
 
             VStack(spacing: 0) {
 
                 // MARK: Drag handle
-                RoundedRectangle(cornerRadius: 3)
+                RoundedRectangle(cornerRadius: Radius.small)
                     .fill(Color.gray.opacity(0.3))
                     .frame(width: 40, height: 4)
                     .padding(.top, 14)
                     .padding(.bottom, 24)
 
                 // MARK: Icon
-                ZStack {
-                    Circle()
-                        .fill(outerColor)
-                        .frame(width: 110, height: 110)
-                    Circle()
-                        .fill(secondaryColor)
-                        .frame(width: 76, height: 76)
-                    Image(systemName: "crown.fill")
-                        .font(.system(size: 32))
-                        .foregroundColor(.white)
-                }
-                .padding(.bottom, 20)
+                BrandCircleIcon(systemImage: "crown.fill", size: 110)
+                    .padding(.bottom, 20)
 
                 // MARK: Title
                 VStack(spacing: 8) {
                     Text(NSLocalizedString("upgrade_to_pro", comment: ""))
                         .font(.system(size: 28, weight: .bold))
-                        .foregroundColor(primaryText)
+                        .foregroundColor(.brandText)
                     Text(NSLocalizedString("unlock_full_capabilities", comment: ""))
                         .font(.system(size: 15))
                         .foregroundColor(.gray)
@@ -54,40 +41,44 @@ struct UpgradeSheetView: View {
 
                 // MARK: Feature list
                 VStack(spacing: 0) {
-                    featureRow(icon: "infinity",             text: "Unlimited monthly scans",                 isFree: false)
+                    featureRow(icon: "infinity", text: NSLocalizedString("upgrade_feature_unlimited_scans", comment: ""), isFree: false)
                     Divider().padding(.horizontal, 20)
-                    featureRow(icon: "waveform.path.ecg",   text: "Full analysis: Wrinkles, Eye Bags, Pigmentation, Hydration", isFree: false)
+                    featureRow(icon: "waveform.path.ecg", text: NSLocalizedString("upgrade_feature_full_analysis", comment: ""), isFree: false)
                     Divider().padding(.horizontal, 20)
-                    featureRow(icon: "clock.arrow.circlepath", text: "Full history — all past scans",         isFree: false)
+                    featureRow(icon: "clock.arrow.circlepath", text: NSLocalizedString("upgrade_feature_full_history", comment: ""), isFree: false)
                     Divider().padding(.horizontal, 20)
-                    featureRow(icon: "sparkles",             text: "Unlimited AI product recommendations",   isFree: false)
+                    featureRow(icon: "bag.fill", text: NSLocalizedString("upgrade_feature_unlimited_recommendations", comment: ""), isFree: false)
                 }
                 .background(Color.white)
-                .cornerRadius(16)
-                .shadow(color: Color.black.opacity(0.05), radius: 8, x: 0, y: 4)
+                .cornerRadius(Radius.card)
+                .cardShadow()
                 .padding(.horizontal, 20)
                 .padding(.bottom, 12)
 
                 // MARK: Free tier reminder
                 VStack(spacing: 0) {
-                    featureRow(icon: "checkmark.circle", text: "5 scans / month",              isFree: true)
+                    featureRow(icon: "camera.viewfinder", text: NSLocalizedString("free_feature_5_scans", comment: ""), isFree: true)
                     Divider().padding(.horizontal, 20)
-                    featureRow(icon: "checkmark.circle", text: "Acne & Redness only",            isFree: true)
+                    featureRow(icon: "face.dashed", text: NSLocalizedString("free_feature_conditions", comment: ""), isFree: true)
                     Divider().padding(.horizontal, 20)
-                    featureRow(icon: "checkmark.circle", text: "Last 5 analyses visible",       isFree: true)
+                    featureRow(icon: "clock", text: NSLocalizedString("free_feature_last_5", comment: ""), isFree: true)
                 }
                 .background(Color.white.opacity(0.6))
-                .cornerRadius(16)
-                .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.gray.opacity(0.12), lineWidth: 1))
+                .cornerRadius(Radius.card)
+                .overlay(RoundedRectangle(cornerRadius: Radius.card).stroke(Color.gray.opacity(0.12), lineWidth: 1))
                 .padding(.horizontal, 20)
 
                 Spacer()
 
-                // MARK: Price badge
-                Text(NSLocalizedString("price_monthly", comment: ""))
-                    .font(.system(size: 13))
-                    .foregroundColor(.gray)
-                    .padding(.bottom, 12)
+                // MARK: Price and renewal disclosure
+                if let price = priceText {
+                    Text(String(format: NSLocalizedString("price_monthly_%@", comment: ""), price))
+                        .font(.system(size: 13))
+                        .foregroundColor(.gray)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 24)
+                        .padding(.bottom, 12)
+                }
 
                 // MARK: Buy button
                 Button {
@@ -102,31 +93,46 @@ struct UpgradeSheetView: View {
                             Image(systemName: "crown.fill")
                                 .font(.system(size: 17))
                             Text(NSLocalizedString("upgrade_now", comment: ""))
-                                .font(.system(size: 17, weight: .bold))
                         }
                     }
-                    .foregroundColor(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 18)
-                    .background(secondaryColor)
-                    .cornerRadius(16)
-                    .shadow(color: secondaryColor.opacity(0.3), radius: 10, x: 0, y: 5)
                 }
+                .buttonStyle(PrimaryButtonStyle())
                 .disabled(isPurchasing)
                 .padding(.horizontal, 20)
 
-                // MARK: Continue free
+                // MARK: Restore + continue free
+                Button {
+                    restore()
+                } label: {
+                    Text(NSLocalizedString("restore_purchases", comment: ""))
+                        .font(.system(size: 13, weight: .medium))
+                        .foregroundColor(.gray.opacity(0.7))
+                        .padding(.top, 12)
+                }
+                .disabled(isPurchasing)
+
                 Button {
                     dismiss()
                 } label: {
                     Text(NSLocalizedString("continue_with_free_plan", comment: ""))
                         .font(.system(size: 15))
                         .foregroundColor(.gray)
-                        .padding(.vertical, 14)
+                        .padding(.vertical, 10)
                 }
+
+                LegalFooter()
 
                 Color.clear.frame(height: 8)
             }
+        }
+        .onAppear { loadPrice() }
+        .alert(AppStrings.purchaseError, isPresented: Binding(
+            get: { purchaseError != nil },
+            set: { if !$0 { purchaseError = nil } }
+        )) {
+            Button(AppStrings.ok, role: .cancel) {}
+        } message: {
+            Text(purchaseError ?? "")
         }
         .overlay {
             if showSuccess {
@@ -140,17 +146,12 @@ struct UpgradeSheetView: View {
         HStack(spacing: 14) {
             Image(systemName: icon)
                 .font(.system(size: 16))
-                .foregroundColor(isFree ? Color.gray.opacity(0.5) : secondaryColor)
+                .foregroundColor(isFree ? Color.gray.opacity(0.5) : .brandPrimary)
                 .frame(width: 22)
             Text(text)
                 .font(.system(size: 14, weight: isFree ? .regular : .medium))
-                .foregroundColor(isFree ? .gray : primaryText)
+                .foregroundColor(isFree ? .gray : .brandText)
             Spacer()
-            if !isFree {
-                Image(systemName: "checkmark")
-                    .font(.system(size: 12, weight: .bold))
-                    .foregroundColor(secondaryColor)
-            }
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 14)
@@ -165,7 +166,7 @@ struct UpgradeSheetView: View {
                     Circle().fill(Color.white).frame(width: 80, height: 80)
                     Image(systemName: "checkmark.circle.fill")
                         .font(.system(size: 52))
-                        .foregroundColor(Color(red: 0.1, green: 0.6, blue: 0.3))
+                        .foregroundColor(.brandPositive)
                 }
                 Text(NSLocalizedString("welcome_to_pro", comment: ""))
                     .font(.system(size: 22, weight: .bold))
@@ -177,32 +178,77 @@ struct UpgradeSheetView: View {
         }
     }
 
+    // MARK: - Localized price
+    private func loadPrice() {
+        Purchases.shared.getOfferings { offerings, _ in
+            guard let package = offerings?.current?.monthly ?? offerings?.current?.availablePackages.first else { return }
+            DispatchQueue.main.async {
+                priceText = package.storeProduct.localizedPriceString
+            }
+        }
+    }
+
     // MARK: - Purchase logic
     private func purchase() {
         isPurchasing = true
+        purchaseError = nil
 
         Purchases.shared.getOfferings { offerings, error in
-            if let package = offerings?.current?.monthly {
-                Purchases.shared.purchase(package: package) { transaction, info, error, userCancelled in
-                    DispatchQueue.main.async {
-                        if userCancelled { isPurchasing = false; return }
-                        if error != nil { isPurchasing = false; return }
+            if let error = error {
+                DispatchQueue.main.async {
+                    isPurchasing = false
+                    purchaseError = String(format: NSLocalizedString("purchase_error_products_not_loaded_%@", comment: ""), error.localizedDescription)
+                }
+                return
+            }
 
-                        let entitled = info?.entitlements["pro"]?.isActive == true
-                        if entitled || transaction != nil {
-                            SubscriptionManager.shared.isPremium = true
-                            isPurchasing = false
-                            withAnimation { showSuccess = true }
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.8) {
-                                dismiss()
-                            }
-                        } else {
-                            isPurchasing = false
+            guard let package = offerings?.current?.monthly ?? offerings?.current?.availablePackages.first else {
+                DispatchQueue.main.async {
+                    isPurchasing = false
+                    purchaseError = NSLocalizedString("purchase_error_package_not_found", comment: "")
+                }
+                return
+            }
+
+            Purchases.shared.purchase(package: package) { transaction, info, error, userCancelled in
+                DispatchQueue.main.async {
+                    isPurchasing = false
+                    if userCancelled { return }
+                    if let error = error {
+                        purchaseError = String(format: NSLocalizedString("purchase_error_failed_%@", comment: ""), error.localizedDescription)
+                        return
+                    }
+
+                    let entitled = info?.entitlements["pro"]?.isActive == true
+                    if entitled || transaction != nil {
+                        SubscriptionManager.shared.isPremium = true
+                        withAnimation { showSuccess = true }
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.8) {
+                            dismiss()
                         }
                     }
                 }
-            } else {
+            }
+        }
+    }
+
+    private func restore() {
+        isPurchasing = true
+        purchaseError = nil
+        Purchases.shared.restorePurchases { info, error in
+            DispatchQueue.main.async {
                 isPurchasing = false
+                if let error = error {
+                    purchaseError = String(format: NSLocalizedString("purchase_error_restore_failed_%@", comment: ""), error.localizedDescription)
+                    return
+                }
+                if info?.entitlements["pro"]?.isActive == true {
+                    SubscriptionManager.shared.isPremium = true
+                    withAnimation { showSuccess = true }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.8) {
+                        dismiss()
+                    }
+                }
             }
         }
     }
