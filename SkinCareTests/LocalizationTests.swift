@@ -13,7 +13,7 @@ private let supportedLanguages = ["en", "tr", "de", "fr", "it", "es"]
 
 private func localizationKeys(for language: String) throws -> Set<String> {
     let path = try #require(
-        Bundle.main.path(forResource: "Localizable", ofType: "strings", forLocalization: language),
+        Bundle.main.path(forResource: "Localizable", ofType: "strings", inDirectory: nil, forLocalization: language),
         "Localizable.strings missing for \(language)"
     )
     let dictionary = try #require(
@@ -38,7 +38,7 @@ private func localizationKeys(for language: String) throws -> Set<String> {
 
 @Test func testLocalizedValuesAreNotEmpty() throws {
     for language in supportedLanguages {
-        let path = try #require(Bundle.main.path(forResource: "Localizable", ofType: "strings", forLocalization: language))
+        let path = try #require(Bundle.main.path(forResource: "Localizable", ofType: "strings", inDirectory: nil, forLocalization: language))
         let dictionary = try #require(NSDictionary(contentsOfFile: path) as? [String: String])
         let emptyKeys = dictionary.filter { $0.value.isEmpty }.keys.sorted()
         #expect(emptyKeys.isEmpty, "\(language) has empty values for: \(emptyKeys)")
