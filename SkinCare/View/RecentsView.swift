@@ -10,14 +10,10 @@ struct RecentsView: View {
     @State private var showCompare = false
     @State private var showUpgrade = false
 
-    let mainColor      = Color(red: 1.0, green: 0.97, blue: 0.97)
-    let secondaryColor = Color(red: 0.47, green: 0.11, blue: 0.17)
-    let primaryText    = Color(red: 0.1,  green: 0.1,  blue: 0.2)
-
     var body: some View {
         NavigationStack {
             ZStack(alignment: .bottom) {
-                mainColor.ignoresSafeArea()
+                Color.brandBackground.ignoresSafeArea()
 
                 ScrollView(.vertical, showsIndicators: false) {
                     VStack(alignment: .leading, spacing: 16) {
@@ -29,7 +25,7 @@ struct RecentsView: View {
                             HStack {
                                 Text(NSLocalizedString("recent_analysis", comment: ""))
                                     .font(.system(size: 28, weight: .bold))
-                                    .foregroundColor(primaryText)
+                                    .foregroundColor(.brandText)
                                 Spacer()
                                 Button {
                                     withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
@@ -43,11 +39,11 @@ struct RecentsView: View {
                                         Text(isCompareMode ? AppStrings.cancel : AppStrings.compare)
                                             .font(.system(size: 14, weight: .semibold))
                                     }
-                                    .foregroundColor(secondaryColor)
+                                    .foregroundColor(.brandPrimary)
                                     .padding(.horizontal, 14)
                                     .padding(.vertical, 8)
-                                    .background(Color(red: 1.0, green: 0.87, blue: 0.87))
-                                    .cornerRadius(20)
+                                    .background(Color.brandBlush)
+                                    .cornerRadius(Radius.card)
                                 }
                             }
                             .padding(.horizontal, 20)
@@ -73,12 +69,12 @@ struct RecentsView: View {
                                     Spacer()
                                     Image(systemName: "chevron.down").font(.system(size: 14))
                                 }
-                                .foregroundColor(primaryText)
+                                .foregroundColor(.brandText)
                                 .padding(.horizontal, 16)
                                 .padding(.vertical, 12)
                                 .background(Color.white)
-                                .cornerRadius(12)
-                                .shadow(color: Color.black.opacity(0.04), radius: 4, x: 0, y: 2)
+                                .cornerRadius(Radius.card)
+                                .cardShadow()
                             }
                             .padding(.horizontal, 20)
 
@@ -98,71 +94,7 @@ struct RecentsView: View {
                                             showDetail = true
                                         }
                                     } label: {
-                                        HStack(alignment: .top, spacing: 14) {
-                                            if let data = record.imageData, let uiImage = UIImage(data: data) {
-                                                Image(uiImage: uiImage)
-                                                    .resizable()
-                                                    .scaledToFill()
-                                                    .frame(width: 120, height: 220)
-                                                    .clipShape(RoundedRectangle(cornerRadius: 12))
-                                            } else {
-                                                RoundedRectangle(cornerRadius: 12)
-                                                    .fill(Color(red: 1.0, green: 0.87, blue: 0.87))
-                                                    .frame(width: 120, height: 200)
-                                                    .overlay(
-                                                        Image(systemName: "person.crop.rectangle")
-                                                            .font(.system(size: 24))
-                                                            .foregroundColor(secondaryColor.opacity(0.6))
-                                                    )
-                                            }
-
-                                            VStack(alignment: .leading, spacing: 14) {
-                                                HStack {
-                                                    Text(record.date ?? Date(), style: .date)
-                                                        .font(.system(size: 14))
-                                                        .foregroundColor(.gray)
-                                                    Spacer()
-                                                    if isCompareMode {
-                                                        Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-                                                            .font(.system(size: 22))
-                                                            .foregroundColor(isSelected ? secondaryColor : Color.gray.opacity(0.4))
-                                                            .animation(.spring(response: 0.2), value: isSelected)
-                                                    } else {
-                                                        Text(AppStrings.localizedCondition(record.condition))
-                                                            .font(.system(size: 13, weight: .semibold))
-                                                            .foregroundColor(secondaryColor)
-                                                            .padding(.horizontal, 12)
-                                                            .padding(.vertical, 5)
-                                                            .background(Color(red: 1.0, green: 0.87, blue: 0.87))
-                                                            .cornerRadius(10)
-                                                    }
-                                                }
-
-                                                HStack(alignment: .firstTextBaseline, spacing: 4) {
-                                                    Text("\(Int(record.overallScore))")
-                                                        .font(.system(size: 36, weight: .bold))
-                                                        .foregroundColor(primaryText)
-                                                    Text("/ 100")
-                                                        .font(.system(size: 16))
-                                                        .foregroundColor(.gray)
-                                                }
-
-                                                ScoreBar(label: AppStrings.dryness,      value: record.drynessScore,      color: secondaryColor)
-                                                ScoreBar(label: AppStrings.inflammation, value: record.inflammationScore, color: secondaryColor)
-                                                ScoreBar(label: AppStrings.oiliness,     value: record.oilinessScore,     color: secondaryColor)
-                                            }
-                                        }
-                                        .padding(20)
-                                        .background(
-                                            RoundedRectangle(cornerRadius: 16)
-                                                .fill(Color.white)
-                                                .overlay(
-                                                    RoundedRectangle(cornerRadius: 16)
-                                                        .stroke(isSelected ? secondaryColor : Color.clear, lineWidth: 2)
-                                                )
-                                        )
-                                        .shadow(color: Color.black.opacity(isSelected ? 0.1 : 0.06), radius: 8, x: 0, y: 4)
-                                        .padding(.horizontal, 20)
+                                        RecordCard(record: record, isCompareMode: isCompareMode, isSelected: isSelected)
                                     }
                                     .buttonStyle(.plain)
                                     .animation(.spring(response: 0.2), value: isSelected)
@@ -174,60 +106,7 @@ struct RecentsView: View {
                                 ZStack {
                                     VStack(spacing: 12) {
                                         ForEach(vm.lockedRecords, id: \.self) { record in
-                                            HStack(alignment: .top, spacing: 14) {
-                                                if let data = record.imageData, let uiImage = UIImage(data: data) {
-                                                    Image(uiImage: uiImage)
-                                                        .resizable()
-                                                        .scaledToFill()
-                                                        .frame(width: 120, height: 220)
-                                                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                                                } else {
-                                                    RoundedRectangle(cornerRadius: 12)
-                                                        .fill(Color(red: 1.0, green: 0.87, blue: 0.87))
-                                                        .frame(width: 120, height: 200)
-                                                        .overlay(
-                                                            Image(systemName: "person.crop.rectangle")
-                                                                .font(.system(size: 24))
-                                                                .foregroundColor(secondaryColor.opacity(0.6))
-                                                        )
-                                                }
-
-                                                VStack(alignment: .leading, spacing: 14) {
-                                                    HStack {
-                                                        Text(record.date ?? Date(), style: .date)
-                                                            .font(.system(size: 14))
-                                                            .foregroundColor(.gray)
-                                                        Spacer()
-                                                        Text(AppStrings.localizedCondition(record.condition))
-                                                            .font(.system(size: 13, weight: .semibold))
-                                                            .foregroundColor(secondaryColor)
-                                                            .padding(.horizontal, 12)
-                                                            .padding(.vertical, 5)
-                                                            .background(Color(red: 1.0, green: 0.87, blue: 0.87))
-                                                            .cornerRadius(10)
-                                                    }
-
-                                                    HStack(alignment: .firstTextBaseline, spacing: 4) {
-                                                        Text("\(Int(record.overallScore))")
-                                                            .font(.system(size: 36, weight: .bold))
-                                                            .foregroundColor(primaryText)
-                                                        Text("/ 100")
-                                                            .font(.system(size: 16))
-                                                            .foregroundColor(.gray)
-                                                    }
-
-                                                    ScoreBar(label: AppStrings.dryness,      value: record.drynessScore,      color: secondaryColor)
-                                                    ScoreBar(label: AppStrings.inflammation, value: record.inflammationScore, color: secondaryColor)
-                                                    ScoreBar(label: AppStrings.oiliness,     value: record.oilinessScore,     color: secondaryColor)
-                                                }
-                                            }
-                                            .padding(20)
-                                            .background(
-                                                RoundedRectangle(cornerRadius: 16)
-                                                    .fill(Color.white)
-                                            )
-                                            .shadow(color: Color.black.opacity(0.06), radius: 8, x: 0, y: 4)
-                                            .padding(.horizontal, 20)
+                                            RecordCard(record: record)
                                         }
                                     }
                                     .blur(radius: 8)
@@ -236,16 +115,17 @@ struct RecentsView: View {
                                     VStack(spacing: 14) {
                                         ZStack {
                                             Circle()
-                                                .fill(Color(red: 1.0, green: 0.87, blue: 0.87))
+                                                .fill(Color.brandBlush)
                                                 .frame(width: 72, height: 72)
                                             Image(systemName: "lock.fill")
                                                 .font(.system(size: 26))
-                                                .foregroundColor(secondaryColor)
+                                                .foregroundColor(.brandPrimary)
                                         }
+                                        .accessibilityHidden(true)
 
                                         Text(NSLocalizedString("see_all_analyses", comment: ""))
                                             .font(.system(size: 20, weight: .bold))
-                                            .foregroundColor(primaryText)
+                                            .foregroundColor(.brandText)
 
                                         Text(NSLocalizedString("go_pro_history", comment: ""))
                                             .font(.system(size: 14))
@@ -264,9 +144,8 @@ struct RecentsView: View {
                                             .foregroundColor(.white)
                                             .padding(.horizontal, 32)
                                             .padding(.vertical, 14)
-                                            .background(secondaryColor)
-                                            .cornerRadius(14)
-                                            .shadow(color: secondaryColor.opacity(0.3), radius: 8, x: 0, y: 4)
+                                            .background(Color.brandPrimary)
+                                            .cornerRadius(Radius.card)
                                         }
                                     }
                                     .padding(.vertical, 40)
@@ -287,18 +166,12 @@ struct RecentsView: View {
                             showCompare = true
                         } label: {
                             Text(NSLocalizedString("compare_2", comment: ""))
-                                .font(.system(size: 17, weight: .bold))
-                                .foregroundColor(.white)
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, 18)
-                                .background(secondaryColor)
-                                .cornerRadius(16)
-                                .shadow(color: secondaryColor.opacity(0.3), radius: 10, x: 0, y: 5)
                         }
+                        .buttonStyle(PrimaryButtonStyle())
                         .padding(.horizontal, 20)
                         .padding(.vertical, 14)
                     }
-                    .background(mainColor.shadow(.drop(color: .black.opacity(0.07), radius: 8, y: -4)))
+                    .background(Color.brandBackground.shadow(.drop(color: .black.opacity(0.07), radius: 8, y: -4)))
                     .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
             }
@@ -339,57 +212,16 @@ struct RecentsView: View {
         }
     }
 
-    struct ScoreBar: View {
-        let label: String
-        let value: Double
-        let color: Color
-
-        var body: some View {
-            VStack(alignment: .leading, spacing: 4) {
-                HStack {
-                    Text(label)
-                        .font(.system(size: 14))
-                        .foregroundColor(.gray)
-                    Spacer()
-                    Text("\(Int(value))%")
-                        .font(.system(size: 14, weight: .medium))
-                        .foregroundColor(Color(red: 0.1, green: 0.1, blue: 0.2))
-                }
-                GeometryReader { geo in
-                    ZStack(alignment: .leading) {
-                        RoundedRectangle(cornerRadius: 4)
-                            .fill(color.opacity(0.15))
-                            .frame(height: 6)
-                        RoundedRectangle(cornerRadius: 4)
-                            .fill(color)
-                            .frame(width: geo.size.width * (value / 100), height: 6)
-                    }
-                }
-                .frame(height: 6)
-            }
-        }
-    }
 }
 
 struct EmptyStateView: View {
     var onScanTap: () -> Void = {}
-    let secondaryColor = Color(red: 0.47, green: 0.11, blue: 0.17)
 
     var body: some View {
         VStack(spacing: 24) {
             Spacer()
 
-            ZStack {
-                Circle()
-                    .fill(Color(red: 1.0, green: 0.87, blue: 0.87))
-                    .frame(width: 160, height: 160)
-                Circle()
-                    .fill(secondaryColor)
-                    .frame(width: 110, height: 110)
-                Image(systemName: "camera")
-                    .font(.system(size: 40))
-                    .foregroundColor(.white)
-            }
+            BrandCircleIcon(systemImage: "camera", size: 160)
 
             VStack(spacing: 10) {
                 Text(NSLocalizedString("no_analysis_yet", comment: ""))
@@ -408,8 +240,8 @@ struct EmptyStateView: View {
                 .foregroundColor(.white)
                 .padding(.horizontal, 36)
                 .padding(.vertical, 16)
-                .background(secondaryColor)
-                .cornerRadius(16)
+                .background(Color.brandPrimary)
+                .cornerRadius(Radius.card)
             }
             Spacer()
             Spacer()
@@ -428,7 +260,6 @@ struct SwipeToDeleteContainer<Content: View>: View {
     @State private var showDeleteButton = false
 
     private let deleteWidth: CGFloat = 80
-    private let secondaryColor = Color(red: 0.47, green: 0.11, blue: 0.17)
 
     init(onDelete: @escaping () -> Void, disabled: Bool = false, @ViewBuilder content: () -> Content) {
         self.onDelete = onDelete
@@ -450,8 +281,8 @@ struct SwipeToDeleteContainer<Content: View>: View {
                 .foregroundColor(.white)
                 .frame(width: deleteWidth)
                 .frame(maxHeight: .infinity)
-                .background(secondaryColor)
-                .cornerRadius(16)
+                .background(Color.brandPrimary)
+                .cornerRadius(Radius.card)
             }
             .padding(.trailing, 20)
             .opacity(showDeleteButton ? 1 : 0)
