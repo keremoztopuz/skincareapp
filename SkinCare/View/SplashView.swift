@@ -41,13 +41,13 @@ struct SplashView: View {
 
                     // App name
                     Text("SkinCareAI")
-                        .font(.system(size: 28, weight: .bold))
+                        .font(.scaled(size: 28, weight: .bold))
                         .foregroundColor(.brandPrimary)
                         .padding(.top, 12)
                         .scaleEffect(titleScale)
                     
                     Text(NSLocalizedString("your_personal_expert", comment: ""))
-                        .font(.system(size: 14))
+                        .font(.scaled(size: 14))
                         .foregroundColor(.gray)
                         .multilineTextAlignment(.center)
                         .padding(.top, 1)
@@ -58,14 +58,14 @@ struct SplashView: View {
                     Spacer()
                     if let message = loadingMessage {
                         Text(message)
-                            .font(.system(size: 16, weight: .medium))
+                            .font(.scaled(size: 16, weight: .medium))
                             .foregroundColor(.gray)
                             .padding(.bottom, 32)
                             .scaleEffect(titleScale)
                     }
                     // Tip
                     Text(currentTip)
-                        .font(.system(size: 14))
+                        .font(.scaled(size: 14))
                         .foregroundColor(.gray)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 40)
