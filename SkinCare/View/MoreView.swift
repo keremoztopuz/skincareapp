@@ -170,20 +170,73 @@ struct MoreView: View {
 struct ProfileEditSheet: View {
     @Environment(\.dismiss) var dismiss
     @State private var name: String = ""
-    @State private var age: String = ""
-    @State private var gender: String = ""
-    @State private var skinType: String = ""
+    @State private var age: Int = 25
+    @State private var gender: Gender? = nil
+    @State private var skinType: SkinType? = nil
 
     var body: some View {
         NavigationStack {
             ZStack {
                 Color.brandBackground.ignoresSafeArea()
                 ScrollView {
-                    VStack(spacing: 16) {
-                        editField(label: AppStrings.fullName,  text: $name)
-                        editField(label: AppStrings.ageRange,  text: $age)
-                        editField(label: AppStrings.gender,    text: $gender)
-                        editField(label: AppStrings.skinType,  text: $skinType)
+                    VStack(alignment: .leading, spacing: 24) {
+                        VStack(alignment: .leading, spacing: 6) {
+                            fieldLabel(AppStrings.fullName)
+                            TextField(AppStrings.fullName, text: $name)
+                                .font(.system(size: 16))
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 14)
+                                .background(Color.white)
+                                .cornerRadius(Radius.card)
+                                .cardShadow()
+                        }
+
+                        VStack(alignment: .leading, spacing: 6) {
+                            fieldLabel(AppStrings.age)
+                            HStack(spacing: 16) {
+                                Slider(
+                                    value: Binding(
+                                        get: { Double(age) },
+                                        set: { age = Int($0) }
+                                    ),
+                                    in: 13...80,
+                                    step: 1
+                                )
+                                .tint(Color.brandPrimary)
+
+                                Text("\(age)")
+                                    .font(.system(size: 18, weight: .bold))
+                                    .foregroundColor(.brandText)
+                                    .frame(minWidth: 34)
+                            }
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 14)
+                            .background(Color.white)
+                            .cornerRadius(Radius.card)
+                            .cardShadow()
+                        }
+
+                        VStack(alignment: .leading, spacing: 6) {
+                            fieldLabel(AppStrings.gender)
+                            VStack(spacing: 10) {
+                                ForEach(Gender.allCases, id: \.self) { option in
+                                    selectionRow(title: option.localizedTitle, isSelected: gender == option) {
+                                        gender = option
+                                    }
+                                }
+                            }
+                        }
+
+                        VStack(alignment: .leading, spacing: 6) {
+                            fieldLabel(AppStrings.skinType)
+                            VStack(spacing: 10) {
+                                ForEach(SkinType.allCases, id: \.self) { option in
+                                    selectionRow(title: option.localizedTitle, isSelected: skinType == option) {
+                                        skinType = option
+                                    }
+                                }
+                            }
+                        }
                     }
                     .padding(20)
                 }
@@ -197,9 +250,14 @@ struct ProfileEditSheet: View {
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button(AppStrings.save) {
+                        // Same contract as ProfileSetupViewModel.completeProfile():
+                        // enum raw values keep ScoringEngine and RoutineEngine lookups intact.
                         LocalPersistenceManager.shared.saveUserProfile(
-                            name: name, skinType: skinType,
-                            ageRange: age, gender: gender, knownIssues: ""
+                            name: name,
+                            skinType: skinType?.rawValue ?? "Normal",
+                            ageRange: String(age),
+                            gender: gender?.rawValue ?? "Prefer not to say",
+                            knownIssues: ""
                         )
                         dismiss()
                     }
@@ -210,27 +268,40 @@ struct ProfileEditSheet: View {
         }
         .onAppear {
             let profile = LocalPersistenceManager.shared.fetchUserProfile()
-            name     = profile?.name      ?? ""
-            age      = profile?.ageRange  ?? ""
-            gender   = profile?.gender    ?? ""
-            skinType = profile?.skinType  ?? ""
+            name     = profile?.name ?? ""
+            age      = profile?.ageRange.flatMap(Int.init) ?? 25
+            gender   = profile?.gender.flatMap(Gender.init(rawValue:))
+            skinType = profile?.skinType.flatMap(SkinType.init(rawValue:))
         }
     }
 
     @ViewBuilder
-    private func editField(label: String, text: Binding<String>) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text(label)
-                .font(.system(size: 13, weight: .medium))
-                .foregroundColor(.gray)
-            TextField(label, text: text)
-                .font(.system(size: 16))
-                .padding(.horizontal, 16)
-                .padding(.vertical, 14)
-                .background(Color.white)
-                .cornerRadius(Radius.card)
-                .cardShadow()
+    private func fieldLabel(_ text: String) -> some View {
+        Text(text)
+            .font(.system(size: 13, weight: .medium))
+            .foregroundColor(.gray)
+    }
+
+    @ViewBuilder
+    private func selectionRow(title: String, isSelected: Bool, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack {
+                Text(title)
+                    .font(.system(size: 16, weight: .semibold))
+                Spacer()
+                if isSelected {
+                    Image(systemName: "checkmark")
+                        .font(.system(size: 14, weight: .bold))
+                }
+            }
+            .foregroundColor(isSelected ? .white : .brandText)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 14)
+            .background(isSelected ? Color.brandPrimary : Color.white)
+            .cornerRadius(Radius.card)
+            .cardShadow()
         }
+        .buttonStyle(.plain)
     }
 }
 
