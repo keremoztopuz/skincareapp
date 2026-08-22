@@ -20,7 +20,6 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
 
     @Published var currentAcneScore: Double = 0
     @Published var currentRednessScore: Double = 0
-    @Published var currentPsoriasisScore: Double = 0
 
     @Published var wrinkleScore: Double = 0
     @Published var eyebagScore: Double = 0
@@ -103,7 +102,6 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
             self.detectedCondition = nil
             self.currentAcneScore = 0
             self.currentRednessScore = 0
-            self.currentPsoriasisScore = 0
             self.wrinkleScore = 0
             self.eyebagScore = 0
             self.pigmentationScore = 0
@@ -301,23 +299,19 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
 
         let acneLogit    = Double(truncating: scores[[0, 0] as [NSNumber]])
         let eczemaLogit = Double(truncating: scores[[0, 1] as [NSNumber]])
-        let psoriasisLogit = Double(truncating: scores[[0, 2] as [NSNumber]])
 
         let acne     = processedScore(acneLogit)
         let eczema  = processedScore(eczemaLogit)
-        let psoriasis = processedScore(psoriasisLogit)
 
         let condition = [
             "Acne": acne,
-            "Redness": eczema,
-            "Psoriasis": psoriasis
+            "Redness": eczema
         ]
         let top = condition.max(by: { $0.value < $1.value })
 
         DispatchQueue.main.async {
             self.currentAcneScore     = acne
             self.currentRednessScore  = eczema
-            self.currentPsoriasisScore = psoriasis
             // processedScore centers at 50 for a zero logit, so 60 demands
             // genuinely positive evidence before naming a condition.
             self.detectedCondition = (top?.value ?? 0) >= 60 ? top?.key : "Healthy"
@@ -683,7 +677,6 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
         let skinScores = engine.calculateScore(
             acne: currentAcneScore / 100,
             redness: currentRednessScore / 100,
-            psoriasis: currentPsoriasisScore / 100,
             pigmentation: pigmentationScore / 100,
             hydration: hydrationScore / 100,
             wrinkles: wrinkleScore / 100,
@@ -695,7 +688,7 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
 
         let record = LocalPersistenceManager.shared.saveAnalysisRecord(
             condition: detectedCondition ?? "Healthy",
-            confidence: max(currentAcneScore, currentRednessScore, currentPsoriasisScore) / 100.0,
+            confidence: max(currentAcneScore, currentRednessScore) / 100.0,
             wrinkleScore: wrinkleScore,
             eyebagScore: eyebagScore,
             pigmentationScore: pigmentationScore,
@@ -708,7 +701,6 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
             userFeedback: false,
             acneScore: currentAcneScore,
             eczemaScore: currentRednessScore,
-            psoriasisScore: currentPsoriasisScore,
             imageData: imageData
         )
 
@@ -725,7 +717,6 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
             self.errorMessage = nil
             self.currentAcneScore = 0
             self.currentRednessScore = 0
-            self.currentPsoriasisScore = 0
             self.wrinkleScore = 0
             self.eyebagScore = 0
             self.pigmentationScore = 0
