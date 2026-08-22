@@ -21,7 +21,7 @@ struct LegalFooter: View {
             Text("·")
             Link(NSLocalizedString("privacy_policy", comment: ""), destination: LegalURLs.privacy)
         }
-        .font(.system(size: 12))
+        .font(.scaled(size: 12))
         .foregroundColor(.gray)
     }
 }
