@@ -52,7 +52,6 @@
 "unlock_premium" = "Premium'u Aç";
 "start_free_trial" = "3 Günlük Ücretsiz Denemeyi Başlat";
 "continue_with_free" = "Ücretsiz Devam Et";
-"then_price_monthly" = "Sonra aylık $4,99. İstediğiniz zaman iptal edin.";
 "no_thanks_free" = "Hayır, ücretsiz devam et";
 "restore_purchases" = "Satın Alımları Geri Yükle";
 "free_trial_included" = "3 günlük ücretsiz deneme dahil";
@@ -120,7 +119,6 @@
 
 "upgrade_to_pro" = "Pro'ya Yükselt";
 "unlock_full_capabilities" = "Tam cilt analizi özelliklerini açın";
-"price_monthly" = "$4,99 / ay  ·  İstediğiniz zaman iptal edin";
 "continue_with_free_plan" = "Ücretsiz Plan ile Devam Et";
 "welcome_to_pro" = "Pro'ya Hoş Geldiniz!";
 "all_features_now_unlocked" = "Tüm özellikler artık açık.";
@@ -252,3 +250,24 @@
 "purchase_error_package_not_found" = "Abonelik paketi bulunamadı. Lütfen daha sonra tekrar deneyin.";
 "purchase_error_failed_%@" = "Satın alma başarısız oldu: %@";
 "purchase_error_restore_failed_%@" = "Geri yükleme başarısız oldu: %@";
+
+/* UI polish and compliance additions */
+"preparing_profile" = "Profiliniz hazırlanıyor...";
+"search_no_products" = "Ürünler yüklenemedi. Bağlantınızı kontrol edip tekrar deneyin.";
+"search_no_results" = "Aramanızla eşleşen ürün bulunamadı.";
+"price_free" = "Ücretsiz";
+"then_price_monthly_%@" = "Sonrasında aylık %@. İptal edilene kadar otomatik yenilenir.";
+"price_monthly_%@" = "Aylık %@. Ayarlar'dan iptal edilene kadar otomatik yenilenir.";
+"upgrade_feature_unlimited_scans" = "Sınırsız aylık tarama";
+"upgrade_feature_full_analysis" = "Tam analiz: kırışıklık, göz altı torbası, pigmentasyon, nem";
+"upgrade_feature_full_history" = "Tüm geçmiş taramalara erişim";
+"upgrade_feature_unlimited_recommendations" = "Sınırsız ürün önerisi";
+"free_feature_5_scans" = "Ayda 5 tarama";
+"free_feature_conditions" = "Akne ve kızarıklık tespiti";
+"free_feature_last_5" = "Son 5 analiz görünür";
+"terms_of_use" = "Kullanım Koşulları";
+"privacy_policy" = "Gizlilik Politikası";
+"results_not_medical_advice" = "Sonuçlar yalnızca bilgilendirme amaçlıdır ve tıbbi tanı değildir. Cildinizle ilgili endişeleriniz için bir dermatoloğa danışın.";
+"analysis_failed_title" = "Analiz Başarısız";
+"analysis_error_photo" = "Fotoğraf işlenemedi. Lütfen tekrar deneyin.";
+"analysis_error_model" = "Analiz tamamlanamadı. Lütfen tekrar deneyin.";
