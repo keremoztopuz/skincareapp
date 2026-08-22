@@ -100,7 +100,16 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
         }
     }
 
+    func stopSession() {
+        DispatchQueue.global(qos: .background).async {
+            if self.session.isRunning {
+                self.session.stopRunning()
+            }
+        }
+    }
+
     func capturePhoto() {
+        guard session.isRunning else { return }
         DispatchQueue.main.async {
             self.capturedImage = nil
             self.analysisRecord = nil
