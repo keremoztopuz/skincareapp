@@ -36,13 +36,13 @@ struct HomeView: View {
                         // greeting Section
                         VStack(alignment: .leading, spacing: 4) {
                             Text("\(greetingText), \(vm.userName)")
-                                .font(.system(size: 31, weight: .bold))
+                                .font(.scaled(size: 31, weight: .bold))
                                 .foregroundColor(.brandText)
                                 .lineLimit(2)
                                 .minimumScaleFactor(0.82)
                             
                             Text(NSLocalizedString("lets_take_care", comment: ""))
-                                .font(.system(size: 16, weight: .regular))
+                                .font(.scaled(size: 16, weight: .regular))
                                 .foregroundColor(.gray)
                         }
                         .padding(.horizontal, 20)
@@ -51,16 +51,16 @@ struct HomeView: View {
                         if let error = vm.errorMessage {
                             VStack(spacing: 12) {
                                 Image(systemName: "wifi.slash")
-                                    .font(.system(size: 24))
+                                    .font(.scaled(size: 24))
                                     .foregroundColor(.gray)
                                     .accessibilityHidden(true)
                                 Text(error)
-                                    .font(.system(size: 14))
+                                    .font(.scaled(size: 14))
                                     .foregroundColor(.gray)
                                 Button(AppStrings.tryAgain) {
                                     Task { await vm.fetchAllCloudData() }
                                 }
-                                .font(.system(size: 14, weight: .bold))
+                                .font(.scaled(size: 14, weight: .bold))
                                 .foregroundColor(.brandPrimary)
                             }
                             .frame(maxWidth: .infinity)
@@ -82,13 +82,13 @@ struct HomeView: View {
                                     .overlay {
                                         VStack(spacing: 10) {
                                             Image(systemName: "sparkles")
-                                                .font(.system(size: 44, weight: .medium))
+                                                .font(.scaled(size: 44, weight: .medium))
                                                 .foregroundColor(.white)
                                                 .accessibilityHidden(true)
 
                                             Text(NSLocalizedString("skin_analysis", comment: ""))
                                                 .foregroundColor(.white)
-                                                .font(.system(size: 15, weight: .bold))
+                                                .font(.scaled(size: 15, weight: .bold))
                                                 .lineLimit(1)
                                                 .minimumScaleFactor(0.85)
                                         }
@@ -101,7 +101,7 @@ struct HomeView: View {
                         // skin health grid
                         VStack(alignment: .leading, spacing: 16) {
                             Text(NSLocalizedString("your_skin_health_avg", comment: ""))
-                                .font(.system(size: 18, weight: .bold))
+                                .font(.scaled(size: 18, weight: .bold))
                                 .foregroundColor(.brandText)
 
                             LazyVGrid(
@@ -123,7 +123,7 @@ struct HomeView: View {
                         if vm.scoreTrend.count >= 2 {
                             VStack(alignment: .leading, spacing: 16) {
                                 Text(NSLocalizedString("score_trend", comment: ""))
-                                    .font(.system(size: 18, weight: .bold))
+                                    .font(.scaled(size: 18, weight: .bold))
                                     .foregroundColor(.brandText)
 
                                 Chart(vm.scoreTrend) { point in
@@ -146,7 +146,7 @@ struct HomeView: View {
                                 .chartXAxis {
                                     AxisMarks(values: .automatic(desiredCount: 4)) { _ in
                                         AxisValueLabel(format: .dateTime.day().month(), centered: false)
-                                            .font(.system(size: 11))
+                                            .font(.scaled(size: 11))
                                             .foregroundStyle(Color.gray)
                                     }
                                 }
@@ -155,7 +155,7 @@ struct HomeView: View {
                                         AxisGridLine()
                                             .foregroundStyle(Color.brandBlush)
                                         AxisValueLabel()
-                                            .font(.system(size: 11))
+                                            .font(.scaled(size: 11))
                                             .foregroundStyle(Color.gray)
                                     }
                                 }
@@ -172,7 +172,7 @@ struct HomeView: View {
                         VStack(alignment: .leading, spacing: 16) {
                             HStack {
                                 Text(NSLocalizedString("your_routine", comment: ""))
-                                    .font(.system(size: 18, weight: .bold))
+                                    .font(.scaled(size: 18, weight: .bold))
                                     .foregroundColor(.brandText)
 
                                 Spacer()
@@ -180,7 +180,7 @@ struct HomeView: View {
                                 if vm.pendingSuggestionCount > 0 {
                                     NavigationLink(destination: RoutineView(selectedTab: $selectedTab)) {
                                         Text(String(format: NSLocalizedString("new_suggestions_%lld", comment: ""), vm.pendingSuggestionCount))
-                                            .font(.system(size: 12, weight: .semibold))
+                                            .font(.scaled(size: 12, weight: .semibold))
                                             .foregroundColor(.brandPrimary)
                                             .padding(.horizontal, 10)
                                             .padding(.vertical, 6)
@@ -196,13 +196,13 @@ struct HomeView: View {
                                     HStack(alignment: .center, spacing: 16) {
                                         VStack(alignment: .leading, spacing: 4) {
                                             Text(routineTitle)
-                                                .font(.system(size: 22, weight: .bold))
+                                                .font(.scaled(size: 22, weight: .bold))
                                                 .lineLimit(2)
                                                 .minimumScaleFactor(0.85)
 
                                             if !vm.routineSteps.isEmpty {
                                                 Text(String(format: NSLocalizedString("routine_steps_done_%lld_%lld", comment: ""), vm.completedStepCount, vm.routineSteps.count))
-                                                    .font(.system(size: 14, weight: .medium))
+                                                    .font(.scaled(size: 14, weight: .medium))
                                                     .opacity(0.9)
                                             }
                                         }
@@ -210,7 +210,7 @@ struct HomeView: View {
                                         Spacer(minLength: 16)
 
                                         Image(systemName: routineIcon)
-                                            .font(.system(size: 22, weight: .semibold))
+                                            .font(.scaled(size: 22, weight: .semibold))
                                             .frame(width: 34, height: 34)
                                             .background(Color.white.opacity(0.16))
                                             .accessibilityHidden(true)
@@ -223,7 +223,7 @@ struct HomeView: View {
                                 if vm.routineSteps.isEmpty {
                                     NavigationLink(destination: RoutineView(selectedTab: $selectedTab)) {
                                         Text(NSLocalizedString("tap_to_setup_routine", comment: ""))
-                                            .font(.system(size: 15, weight: .medium))
+                                            .font(.scaled(size: 15, weight: .medium))
                                             .multilineTextAlignment(.leading)
                                             .fixedSize(horizontal: false, vertical: true)
                                             .opacity(0.9)
@@ -238,17 +238,17 @@ struct HomeView: View {
                                             } label: {
                                                 HStack(spacing: 12) {
                                                     Image(systemName: step.isCompleted ? "checkmark.circle.fill" : "circle")
-                                                        .font(.system(size: 21, weight: .medium))
+                                                        .font(.scaled(size: 21, weight: .medium))
 
                                                     VStack(alignment: .leading, spacing: 1) {
                                                         Text(step.typeName)
-                                                            .font(.system(size: 15, weight: .semibold))
+                                                            .font(.scaled(size: 15, weight: .semibold))
                                                             .strikethrough(step.isCompleted)
                                                             .lineLimit(1)
 
                                                         if let productName = step.productName {
                                                             Text(productName)
-                                                                .font(.system(size: 12, weight: .regular))
+                                                                .font(.scaled(size: 12, weight: .regular))
                                                                 .opacity(0.75)
                                                                 .lineLimit(1)
                                                         }
@@ -279,7 +279,7 @@ struct HomeView: View {
                         // products horizontal list
                         VStack(alignment: .leading, spacing: 16) {
                             Text(NSLocalizedString("recommended_products", comment: ""))
-                                .font(.system(size: 18, weight: .bold))
+                                .font(.scaled(size: 18, weight: .bold))
                                 .foregroundColor(.brandText)
                                 .padding(.horizontal, 20)
 
@@ -312,7 +312,7 @@ struct HomeView: View {
                         // articles horizontal list
                         VStack(alignment: .leading, spacing: 16) {
                             Text(NSLocalizedString("latest_articles", comment: ""))
-                                .font(.system(size: 18, weight: .bold))
+                                .font(.scaled(size: 18, weight: .bold))
                                 .foregroundColor(.brandText)
                                 .padding(.horizontal, 20)
 
@@ -367,7 +367,7 @@ struct MetricCard: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(alignment: .center, spacing: 10) {
                 Image(systemName: icon)
-                    .font(.system(size: 14, weight: .bold))
+                    .font(.scaled(size: 14, weight: .bold))
                     .foregroundColor(.brandPrimary)
                     .frame(width: 30, height: 30)
                     .accessibilityHidden(true)
@@ -379,13 +379,13 @@ struct MetricCard: View {
 
             VStack(alignment: .leading, spacing: 3) {
                 Text(value)
-                    .font(.system(size: 25, weight: .bold))
+                    .font(.scaled(size: 25, weight: .bold))
                     .foregroundColor(.brandPrimary)
                     .lineLimit(1)
                     .minimumScaleFactor(0.75)
 
                 Text(label)
-                    .font(.system(size: 13, weight: .medium))
+                    .font(.scaled(size: 13, weight: .medium))
                     .foregroundColor(.gray)
                     .lineLimit(2)
                     .minimumScaleFactor(0.8)
@@ -433,7 +433,7 @@ struct ProductCard: View {
                     .clipShape(RoundedRectangle(cornerRadius: Radius.card))
                 } else {
                     Image(systemName: "bottle.condiment.fill")
-                        .font(.system(size: 40))
+                        .font(.scaled(size: 40))
                         .foregroundColor(Color.brandPrimary.opacity(0.2))
                         .accessibilityHidden(true)
                 }
@@ -442,13 +442,13 @@ struct ProductCard: View {
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(product.name)
-                    .font(.system(size: 15, weight: .bold))
+                    .font(.scaled(size: 15, weight: .bold))
                     .foregroundColor(.brandText)
                     .lineLimit(2)
                     .minimumScaleFactor(0.85)
 
                 Text(product.brand ?? AppStrings.unknownBrand)
-                    .font(.system(size: 13, weight: .medium))
+                    .font(.scaled(size: 13, weight: .medium))
                     .foregroundColor(.gray)
                     .lineLimit(1)
             }
@@ -481,7 +481,7 @@ struct ArticleCard: View {
                     .clipShape(RoundedRectangle(cornerRadius: Radius.card))
                 } else {
                     Image(systemName: "newspaper.fill")
-                        .font(.system(size: 40))
+                        .font(.scaled(size: 40))
                         .foregroundColor(Color.brandPrimary.opacity(0.1))
                         .accessibilityHidden(true)
                 }
@@ -490,13 +490,13 @@ struct ArticleCard: View {
 
             VStack(alignment: .leading, spacing: 4){
                 Text(article.title)
-                    .font(.system(size: 15, weight: .bold))
+                    .font(.scaled(size: 15, weight: .bold))
                     .foregroundColor(.brandText)
                     .lineLimit(2)
                     .minimumScaleFactor(0.85)
 
                 Text(article.content ?? "")
-                    .font(.system(size: 13, weight: .regular))
+                    .font(.scaled(size: 13, weight: .regular))
                     .foregroundColor(.gray)
                     .lineLimit(2)
             }
