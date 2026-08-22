@@ -40,7 +40,7 @@ class LocalPersistenceManager {
     }
     // Analysis Records
     @discardableResult
-    func saveAnalysisRecord(condition: String, confidence: Double, wrinkleScore: Double, eyebagScore: Double, pigmentationScore: Double, hydrationScore: Double, date: Date, drynessScore: Double, inflammationScore: Double, oilinessScore: Double, overallScore: Double, userFeedback: Bool, acneScore: Double, eczemaScore: Double, psoriasisScore: Double, imageData: Data?) -> AnalysisRecord {
+    func saveAnalysisRecord(condition: String, confidence: Double, wrinkleScore: Double, eyebagScore: Double, pigmentationScore: Double, hydrationScore: Double, date: Date, drynessScore: Double, inflammationScore: Double, oilinessScore: Double, overallScore: Double, userFeedback: Bool, acneScore: Double, eczemaScore: Double, imageData: Data?) -> AnalysisRecord {
         let record = AnalysisRecord(context: context)
         record.condition = condition
         record.confidence = confidence
@@ -52,7 +52,6 @@ class LocalPersistenceManager {
         record.userFeedback = userFeedback
         record.acneScore = acneScore
         record.eczemaScore = eczemaScore
-        record.psoriasisScore = psoriasisScore
         record.pigmentationScore = pigmentationScore
         record.hydrationScore = hydrationScore
         record.wrinkleScore = wrinkleScore
@@ -74,7 +73,7 @@ class LocalPersistenceManager {
     /// Runs once per schema version, guarded by UserDefaults.
     func migrateScoresIfNeeded() {
         let versionKey = "scoreSchemaVersion"
-        let currentVersion = 2
+        let currentVersion = 3
         guard UserDefaults.standard.integer(forKey: versionKey) < currentVersion else { return }
 
         let skinType = fetchUserProfile()?.skinType?.lowercased() ?? "normal"
@@ -84,14 +83,13 @@ class LocalPersistenceManager {
             // Very old records stored raw scores on a 0-1 scale; the ML path
             // clamps to [1, 99], so genuine 0-100 records always have a raw
             // maximum of at least 1.0.
-            let rawMax = max(record.acneScore, record.eczemaScore, record.psoriasisScore,
+            let rawMax = max(record.acneScore, record.eczemaScore,
                              record.pigmentationScore, record.hydrationScore)
             let scale: Double = rawMax <= 1.0 ? 1.0 : 100.0
 
             let scores = engine.calculateScore(
                 acne: record.acneScore / scale,
                 redness: record.eczemaScore / scale,
-                psoriasis: record.psoriasisScore / scale,
                 pigmentation: record.pigmentationScore / scale,
                 hydration: record.hydrationScore / scale,
                 wrinkles: record.wrinkleScore / scale,
@@ -104,7 +102,7 @@ class LocalPersistenceManager {
             record.inflammationScore = scores.inflammationScore
             record.overallScore = scores.overallScore
             if record.confidence == 0 {
-                record.confidence = max(record.acneScore, record.eczemaScore, record.psoriasisScore) / scale
+                record.confidence = max(record.acneScore, record.eczemaScore) / scale
             }
         }
 
