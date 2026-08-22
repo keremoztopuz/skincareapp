@@ -36,7 +36,7 @@ class SearchViewModel: ObservableObject {
         do {
             self.products = try await SupabaseService.shared.fetchProducts()
         } catch {
-            print("Failed to fetch products for search: \(error.localizedDescription)")
+            self.products = []
         }
         isLoading = false
     }
