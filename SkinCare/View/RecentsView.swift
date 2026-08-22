@@ -36,6 +36,7 @@ struct RecentsView: View {
                                     HStack(spacing: 6) {
                                         Image(systemName: isCompareMode ? "xmark" : "arrow.left.arrow.right")
                                             .font(.system(size: 13, weight: .semibold))
+                                            .accessibilityHidden(true)
                                         Text(isCompareMode ? AppStrings.cancel : AppStrings.compare)
                                             .font(.system(size: 14, weight: .semibold))
                                     }
@@ -64,10 +65,10 @@ struct RecentsView: View {
                                 }
                             } label: {
                                 HStack {
-                                    Image(systemName: "calendar").font(.system(size: 16))
+                                    Image(systemName: "calendar").font(.system(size: 16)).accessibilityHidden(true)
                                     Text(vm.selectedFilter.localizedTitle).font(.system(size: 16, weight: .medium))
                                     Spacer()
-                                    Image(systemName: "chevron.down").font(.system(size: 14))
+                                    Image(systemName: "chevron.down").font(.system(size: 14)).accessibilityHidden(true)
                                 }
                                 .foregroundColor(.brandText)
                                 .padding(.horizontal, 16)
@@ -141,6 +142,7 @@ struct RecentsView: View {
                                             HStack(spacing: 8) {
                                                 Image(systemName: "crown.fill")
                                                     .font(.system(size: 14))
+                                                    .accessibilityHidden(true)
                                                 Text(NSLocalizedString("go_pro", comment: ""))
                                                     .font(.system(size: 16, weight: .bold))
                                             }
@@ -229,7 +231,7 @@ struct EmptyStateView: View {
 
             Button(action: onScanTap) {
                 HStack(spacing: 10) {
-                    Image(systemName: "viewfinder").font(.system(size: 20))
+                    Image(systemName: "viewfinder").font(.system(size: 20)).accessibilityHidden(true)
                     Text(NSLocalizedString("make_first_scan", comment: "")).font(.system(size: 17, weight: .semibold))
                 }
                 .foregroundColor(.white)
@@ -270,6 +272,7 @@ struct SwipeToDeleteContainer<Content: View>: View {
                 VStack(spacing: 4) {
                     Image(systemName: "trash.fill")
                         .font(.system(size: 20))
+                        .accessibilityHidden(true)
                     Text(NSLocalizedString("delete", comment: ""))
                         .font(.system(size: 12, weight: .medium))
                 }
