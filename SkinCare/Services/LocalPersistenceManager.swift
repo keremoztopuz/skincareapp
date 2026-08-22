@@ -40,7 +40,7 @@ class LocalPersistenceManager {
     }
     // Analysis Records
     @discardableResult
-    func saveAnalysisRecord(condition: String, confidence: Double, wrinkleScore: Double, eyebagScore: Double, pigmentationScore: Double, hydrationScore: Double, date: Date, drynessScore: Double, inflammationScore: Double, oilinessScore: Double, overallScore: Double, userFeedback: Bool, acneScore: Double, eczemaScore: Double, imageData: Data?) -> AnalysisRecord {
+    func saveAnalysisRecord(condition: String, confidence: Double, wrinkleScore: Double, eyebagScore: Double, pigmentationScore: Double, date: Date, drynessScore: Double, inflammationScore: Double, oilinessScore: Double, overallScore: Double, userFeedback: Bool, acneScore: Double, eczemaScore: Double, imageData: Data?) -> AnalysisRecord {
         let record = AnalysisRecord(context: context)
         record.condition = condition
         record.confidence = confidence
@@ -53,7 +53,6 @@ class LocalPersistenceManager {
         record.acneScore = acneScore
         record.eczemaScore = eczemaScore
         record.pigmentationScore = pigmentationScore
-        record.hydrationScore = hydrationScore
         record.wrinkleScore = wrinkleScore
         record.eyebagScore = eyebagScore
         record.imageData = imageData
@@ -73,7 +72,7 @@ class LocalPersistenceManager {
     /// Runs once per schema version, guarded by UserDefaults.
     func migrateScoresIfNeeded() {
         let versionKey = "scoreSchemaVersion"
-        let currentVersion = 3
+        let currentVersion = 4
         guard UserDefaults.standard.integer(forKey: versionKey) < currentVersion else { return }
 
         let skinType = fetchUserProfile()?.skinType?.lowercased() ?? "normal"
@@ -84,14 +83,13 @@ class LocalPersistenceManager {
             // clamps to [1, 99], so genuine 0-100 records always have a raw
             // maximum of at least 1.0.
             let rawMax = max(record.acneScore, record.eczemaScore,
-                             record.pigmentationScore, record.hydrationScore)
+                             record.pigmentationScore, record.wrinkleScore)
             let scale: Double = rawMax <= 1.0 ? 1.0 : 100.0
 
             let scores = engine.calculateScore(
                 acne: record.acneScore / scale,
                 redness: record.eczemaScore / scale,
                 pigmentation: record.pigmentationScore / scale,
-                hydration: record.hydrationScore / scale,
                 wrinkles: record.wrinkleScore / scale,
                 eyebags: record.eyebagScore / scale,
                 skinType: skinType
@@ -108,10 +106,13 @@ class LocalPersistenceManager {
 
         do {
             try context.save()
+            UserDefaults.standard.set(currentVersion, forKey: versionKey)
         } catch {
+            // Leaving the version untouched means the migration is retried on
+            // the next launch instead of leaving the store half-converted.
+            context.rollback()
             print("Score migration save error: \(error)")
         }
-        UserDefaults.standard.set(currentVersion, forKey: versionKey)
     }
 
     // Fetching
