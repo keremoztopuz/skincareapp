@@ -38,7 +38,6 @@ enum AppStrings {
     static let scansLeft = String(localized: "scans_left")
     static let monthlyScanLimitExpired = String(localized: "monthly_scan_limit_expired")
     static let analyzing = String(localized: "analyzing")
-    static let cloudAnalysisDisclosure = String(localized: "cloud_analysis_disclosure")
     static let startAnalysis = String(localized: "start_analysis")
     static let scanLimitReached = String(localized: "scan_limit_reached")
 
