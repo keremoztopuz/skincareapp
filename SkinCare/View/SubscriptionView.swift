@@ -11,58 +11,35 @@ import RevenueCat
 
 struct SubscriptionView: View {
     @State private var logoScale: CGFloat = 0
-    @State private var isPulsing = false
     @State private var selectedPlan: Plan = .pro
     @State private var freeCardAppeared = false
     @State private var proCardAppeared = false
     @State private var isPurchasing = false
     @State private var purchaseError: String?
-    @StateObject private var vm = SubscriptionViewModel()
+    @State private var proPriceText: String?
     @EnvironmentObject var appVM: ContentViewModel
 
     enum Plan {
         case free, pro
     }
 
-    let mainColor = Color(red: 1.0, green: 0.97, blue: 0.97)
-    let secondaryColor = Color(red: 0.47, green: 0.11, blue: 0.17)
-    let outerColor = Color(red: 1.0, green: 0.87, blue: 0.87)
-
     var body: some View {
         GeometryReader { geo in
             let outerSize = geo.size.width * 0.28
-            let innerSize = outerSize * 0.75
 
             ZStack {
-                mainColor.ignoresSafeArea()
+                Color.brandBackground.ignoresSafeArea()
 
                 VStack(spacing: 0) {
 
                     // MARK: - Logo
-                    ZStack {
-                            Circle()
-                                .fill(outerColor)
-                                .frame(width: outerSize, height: outerSize)
-                                .scaleEffect(isPulsing ? 1.12 : 1.0)
-                                .animation(
-                                    .easeInOut(duration: 1.4).repeatForever(autoreverses: true),
-                                    value: isPulsing
-                                )
-
-                            Circle()
-                                .fill(secondaryColor)
-                                .frame(width: innerSize, height: innerSize)
-
-                            Image(systemName: "crown.fill")
-                                .font(.system(size: 32))
-                                .foregroundColor(.white)
-                        }
+                    BrandCircleIcon(systemImage: "crown.fill", size: outerSize, animated: true)
                         .scaleEffect(logoScale)
                         .onAppear {
                             withAnimation(.spring(response: 0.4, dampingFraction: 0.6)) {
                                 logoScale = 1.0
                             }
-                            isPulsing = true
+                            loadProPrice()
                         }
                     .padding(.top, 24)
 
@@ -70,7 +47,7 @@ struct SubscriptionView: View {
                         VStack(spacing: 8) {
                             Text(NSLocalizedString("unlock_premium", comment: ""))
                                 .font(.system(size: 30, weight: .bold))
-                                .foregroundColor(Color(red: 0.1, green: 0.1, blue: 0.2))
+                                .foregroundColor(.brandText)
 
                         }
                     .padding(.top, 6)
@@ -80,11 +57,11 @@ struct SubscriptionView: View {
                             planCard(
                                 plan: .free,
                                 title: AppStrings.free,
-                                price: "$0",
-                                period: AppStrings.perMonth,
+                                price: NSLocalizedString("price_free", comment: ""),
+                                period: "",
                                 features: [
-                                    ("sparkles", NSLocalizedString("5_analysis_per_month", comment: "")),
-                                    ("face.smiling", NSLocalizedString("basic_insights", comment: "")),
+                                    ("camera.viewfinder", NSLocalizedString("5_analysis_per_month", comment: "")),
+                                    ("chart.bar", NSLocalizedString("basic_insights", comment: "")),
                                     ("bag", NSLocalizedString("limited_recommendations", comment: "")),
                                     ("clock.arrow.circlepath", NSLocalizedString("last_5_scans", comment: ""))
                                 ],
@@ -96,11 +73,11 @@ struct SubscriptionView: View {
                             planCard(
                                 plan: .pro,
                                 title: AppStrings.pro,
-                                price: "$4.99",
-                                period: AppStrings.perMonth,
+                                price: proPriceText ?? "",
+                                period: proPriceText == nil ? "" : AppStrings.perMonth,
                                 features: [
                                     ("infinity", NSLocalizedString("unlimited_analysis", comment: "")),
-                                    ("face.smiling.inverse", NSLocalizedString("all_conditions_detected", comment: "")),
+                                    ("chart.bar.fill", NSLocalizedString("all_conditions_detected", comment: "")),
                                     ("bag.fill", NSLocalizedString("full_recommendations", comment: "")),
                                     ("chart.line.uptrend.xyaxis", NSLocalizedString("complete_history", comment: ""))
                                 ],
@@ -140,8 +117,8 @@ struct SubscriptionView: View {
                                         Text(selectedPlan == .pro ? NSLocalizedString("start_free_trial", comment: "") : NSLocalizedString("continue_with_free", comment: ""))
                                             .font(.system(size: 18, weight: .bold))
 
-                                        if selectedPlan == .pro {
-                                            Text(NSLocalizedString("then_price_monthly", comment: ""))
+                                        if selectedPlan == .pro, let price = proPriceText {
+                                            Text(String(format: NSLocalizedString("then_price_monthly_%@", comment: ""), price))
                                                 .font(.system(size: 12, weight: .regular))
                                                 .opacity(0.85)
                                         }
@@ -150,8 +127,8 @@ struct SubscriptionView: View {
                                 .foregroundColor(.white)
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 16)
-                                .background(secondaryColor)
-                                .cornerRadius(16)
+                                .background(Color.brandPrimary)
+                                .cornerRadius(Radius.card)
                             }
                             .disabled(isPurchasing)
 
@@ -174,6 +151,8 @@ struct SubscriptionView: View {
                                     .font(.system(size: 13, weight: .medium))
                                     .foregroundColor(.gray.opacity(0.7))
                             }
+
+                            LegalFooter()
                         }
                     .padding(.horizontal, 20)
                     .padding(.bottom, 16)
@@ -205,23 +184,23 @@ struct SubscriptionView: View {
                         HStack(spacing: 6) {
                             Text(title)
                                 .font(.system(size: 22, weight: .bold))
-                                .foregroundColor(isPopular ? .white : Color(red: 0.1, green: 0.1, blue: 0.2))
+                                .foregroundColor(isPopular ? .white : .brandText)
 
                             if isPopular {
                                 Text(NSLocalizedString("popular", comment: ""))
                                     .font(.system(size: 10, weight: .bold))
-                                    .foregroundColor(secondaryColor)
+                                    .foregroundColor(.brandPrimary)
                                     .padding(.horizontal, 8)
                                     .padding(.vertical, 3)
                                     .background(Color.white)
-                                    .cornerRadius(6)
+                                    .cornerRadius(Radius.small)
                             }
                         }
 
                         HStack(alignment: .firstTextBaseline, spacing: 0) {
                             Text(price)
                                 .font(.system(size: 24, weight: .bold))
-                                .foregroundColor(isPopular ? .white : secondaryColor)
+                                .foregroundColor(isPopular ? .white : .brandPrimary)
                             Text(period)
                                 .font(.system(size: 14, weight: .regular))
                                 .foregroundColor(isPopular ? .white.opacity(0.7) : .gray)
@@ -232,12 +211,12 @@ struct SubscriptionView: View {
 
                     ZStack {
                         Circle()
-                            .stroke(isPopular ? .white : (isSelected ? secondaryColor : Color.gray.opacity(0.3)), lineWidth: 2)
+                            .stroke(isPopular ? .white : (isSelected ? Color.brandPrimary : Color.gray.opacity(0.3)), lineWidth: 2)
                             .frame(width: 24, height: 24)
 
                         if isSelected {
                             Circle()
-                                .fill(isPopular ? .white : secondaryColor)
+                                .fill(isPopular ? .white : Color.brandPrimary)
                                 .frame(width: 14, height: 14)
                         }
                     }
@@ -251,12 +230,12 @@ struct SubscriptionView: View {
                         HStack(spacing: 10) {
                             Image(systemName: icon)
                                 .font(.system(size: 14))
-                                .foregroundColor(isPopular ? .white.opacity(0.9) : secondaryColor)
+                                .foregroundColor(isPopular ? .white.opacity(0.9) : .brandPrimary)
                                 .frame(width: 20)
 
                             Text(text)
                                 .font(.system(size: 14, weight: .regular))
-                                .foregroundColor(isPopular ? .white.opacity(0.9) : Color(red: 0.1, green: 0.1, blue: 0.2))
+                                .foregroundColor(isPopular ? .white.opacity(0.9) : .brandText)
 
                             Spacer()
                         }
@@ -276,16 +255,26 @@ struct SubscriptionView: View {
             }
             .padding(16)
             .background(
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(isPopular ? secondaryColor : Color.white)
+                RoundedRectangle(cornerRadius: Radius.card)
+                    .fill(isPopular ? Color.brandPrimary : Color.white)
             )
             .overlay(
-                RoundedRectangle(cornerRadius: 16)
-                    .stroke(isSelected && !isPopular ? secondaryColor : Color.gray.opacity(isPopular ? 0 : 0.15), lineWidth: isSelected ? 2 : 1)
+                RoundedRectangle(cornerRadius: Radius.card)
+                    .stroke(isSelected && !isPopular ? Color.brandPrimary : Color.gray.opacity(isPopular ? 0 : 0.15), lineWidth: isSelected ? 2 : 1)
             )
-            .shadow(color: Color.black.opacity(isSelected ? 0.08 : 0.04), radius: isSelected ? 12 : 6, x: 0, y: 4)
+            .cardShadow()
         }
         .buttonStyle(PlainButtonStyle())
+    }
+
+    // MARK: - Localized Price
+    private func loadProPrice() {
+        Purchases.shared.getOfferings { offerings, _ in
+            guard let package = offerings?.current?.monthly ?? offerings?.current?.availablePackages.first else { return }
+            DispatchQueue.main.async {
+                proPriceText = package.storeProduct.localizedPriceString
+            }
+        }
     }
 
     // MARK: - RevenueCat Purchase
