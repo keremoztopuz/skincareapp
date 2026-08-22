@@ -53,6 +53,7 @@ struct HomeView: View {
                                 Image(systemName: "wifi.slash")
                                     .font(.system(size: 24))
                                     .foregroundColor(.gray)
+                                    .accessibilityHidden(true)
                                 Text(error)
                                     .font(.system(size: 14))
                                     .foregroundColor(.gray)
@@ -83,6 +84,7 @@ struct HomeView: View {
                                             Image(systemName: "sparkles")
                                                 .font(.system(size: 44, weight: .medium))
                                                 .foregroundColor(.white)
+                                                .accessibilityHidden(true)
 
                                             Text(NSLocalizedString("skin_analysis", comment: ""))
                                                 .foregroundColor(.white)
@@ -211,6 +213,7 @@ struct HomeView: View {
                                             .font(.system(size: 22, weight: .semibold))
                                             .frame(width: 34, height: 34)
                                             .background(Color.white.opacity(0.16))
+                                            .accessibilityHidden(true)
                                             .clipShape(Circle())
                                     }
                                     .contentShape(Rectangle())
@@ -367,6 +370,7 @@ struct MetricCard: View {
                     .font(.system(size: 14, weight: .bold))
                     .foregroundColor(.brandPrimary)
                     .frame(width: 30, height: 30)
+                    .accessibilityHidden(true)
                     .background(Color.brandPrimary.opacity(0.10))
                     .clipShape(Circle())
 
@@ -431,6 +435,7 @@ struct ProductCard: View {
                     Image(systemName: "bottle.condiment.fill")
                         .font(.system(size: 40))
                         .foregroundColor(Color.brandPrimary.opacity(0.2))
+                        .accessibilityHidden(true)
                 }
             }
             .frame(width: 148, height: 132)
@@ -478,6 +483,7 @@ struct ArticleCard: View {
                     Image(systemName: "newspaper.fill")
                         .font(.system(size: 40))
                         .foregroundColor(Color.brandPrimary.opacity(0.1))
+                        .accessibilityHidden(true)
                 }
             }
             .frame(width: 258, height: 148)
