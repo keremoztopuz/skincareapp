@@ -46,7 +46,7 @@ struct SubscriptionView: View {
                     // MARK: - Title
                         VStack(spacing: 8) {
                             Text(NSLocalizedString("unlock_premium", comment: ""))
-                                .font(.system(size: 30, weight: .bold))
+                                .font(.scaled(size: 30, weight: .bold))
                                 .foregroundColor(.brandText)
 
                         }
@@ -115,11 +115,11 @@ struct SubscriptionView: View {
                                             .padding(.vertical, 6)
                                     } else {
                                         Text(selectedPlan == .pro ? NSLocalizedString("start_free_trial", comment: "") : NSLocalizedString("continue_with_free", comment: ""))
-                                            .font(.system(size: 18, weight: .bold))
+                                            .font(.scaled(size: 18, weight: .bold))
 
                                         if selectedPlan == .pro, let price = proPriceText {
                                             Text(String(format: NSLocalizedString("then_price_monthly_%@", comment: ""), price))
-                                                .font(.system(size: 12, weight: .regular))
+                                                .font(.scaled(size: 12, weight: .regular))
                                                 .opacity(0.85)
                                         }
                                     }
@@ -139,7 +139,7 @@ struct SubscriptionView: View {
                                     }
                                 }) {
                                     Text(NSLocalizedString("no_thanks_free", comment: ""))
-                                        .font(.system(size: 14, weight: .regular))
+                                        .font(.scaled(size: 14, weight: .regular))
                                         .foregroundColor(.gray)
                                 }
                             }
@@ -148,7 +148,7 @@ struct SubscriptionView: View {
                                 restorePurchases()
                             }) {
                                 Text(NSLocalizedString("restore_purchases", comment: ""))
-                                    .font(.system(size: 13, weight: .medium))
+                                    .font(.scaled(size: 13, weight: .medium))
                                     .foregroundColor(.gray.opacity(0.7))
                             }
 
@@ -183,12 +183,12 @@ struct SubscriptionView: View {
                     VStack(alignment: .leading, spacing: 2) {
                         HStack(spacing: 6) {
                             Text(title)
-                                .font(.system(size: 22, weight: .bold))
+                                .font(.scaled(size: 22, weight: .bold))
                                 .foregroundColor(isPopular ? .white : .brandText)
 
                             if isPopular {
                                 Text(NSLocalizedString("popular", comment: ""))
-                                    .font(.system(size: 10, weight: .bold))
+                                    .font(.scaled(size: 10, weight: .bold))
                                     .foregroundColor(.brandPrimary)
                                     .padding(.horizontal, 8)
                                     .padding(.vertical, 3)
@@ -199,10 +199,10 @@ struct SubscriptionView: View {
 
                         HStack(alignment: .firstTextBaseline, spacing: 0) {
                             Text(price)
-                                .font(.system(size: 24, weight: .bold))
+                                .font(.scaled(size: 24, weight: .bold))
                                 .foregroundColor(isPopular ? .white : .brandPrimary)
                             Text(period)
-                                .font(.system(size: 14, weight: .regular))
+                                .font(.scaled(size: 14, weight: .regular))
                                 .foregroundColor(isPopular ? .white.opacity(0.7) : .gray)
                         }
                     }
@@ -229,12 +229,12 @@ struct SubscriptionView: View {
                     ForEach(features, id: \.1) { icon, text in
                         HStack(spacing: 10) {
                             Image(systemName: icon)
-                                .font(.system(size: 14))
+                                .font(.scaled(size: 14))
                                 .foregroundColor(isPopular ? .white.opacity(0.9) : .brandPrimary)
                                 .frame(width: 20)
 
                             Text(text)
-                                .font(.system(size: 14, weight: .regular))
+                                .font(.scaled(size: 14, weight: .regular))
                                 .foregroundColor(isPopular ? .white.opacity(0.9) : .brandText)
 
                             Spacer()
@@ -246,7 +246,7 @@ struct SubscriptionView: View {
                     HStack {
                         Spacer()
                         Text(NSLocalizedString("free_trial_included", comment: ""))
-                            .font(.system(size: 12, weight: .medium))
+                            .font(.scaled(size: 12, weight: .medium))
                             .foregroundColor(.white.opacity(0.8))
                         Spacer()
                     }
