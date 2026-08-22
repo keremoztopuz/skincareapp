@@ -11,6 +11,9 @@ struct CameraView: View {
     @State private var showResult = false
     @State private var showQuotaAlert = false
     @State private var showUpgrade = false
+    /// TabView keeps this view alive across tab switches, so notification
+    /// observers fire even while another tab is showing. Only react when visible.
+    @State private var isCameraVisible = false
 
     var body: some View {
         GeometryReader { geo in
@@ -192,6 +195,7 @@ struct CameraView: View {
         }
         .sheet(isPresented: $showUpgrade) { UpgradeSheetView() }
         .onAppear {
+            isCameraVisible = true
             if !hasSeenCameraGuide {
                 showGuide = true
             }
@@ -199,10 +203,13 @@ struct CameraView: View {
             vm.resetScanner()
         }
         .onDisappear {
+            isCameraVisible = false
             vm.stopSession()
         }
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
-            vm.checkPermission()
+            if isCameraVisible {
+                vm.checkPermission()
+            }
         }
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.didEnterBackgroundNotification)) { _ in
             vm.stopSession()
