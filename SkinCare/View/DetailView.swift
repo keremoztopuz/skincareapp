@@ -107,7 +107,7 @@ struct ProductDetailContent: View {
                     .clipShape(RoundedRectangle(cornerRadius: Radius.card))
                 } else {
                     Image(systemName: "bottle.condiment.fill")
-                        .font(.system(size: 80))
+                        .font(.scaled(size: 80))
                         .foregroundColor(Color.brandPrimary.opacity(0.2))
                 }
             }
@@ -115,11 +115,11 @@ struct ProductDetailContent: View {
 
             VStack(alignment: .leading, spacing: 8) {
                 Text(product.brand ?? AppStrings.unknownBrand)
-                    .font(.system(size: 14, weight: .medium))
+                    .font(.scaled(size: 14, weight: .medium))
                     .foregroundColor(.gray)
 
                 Text(product.name)
-                    .font(.system(size: 28, weight: .bold))
+                    .font(.scaled(size: 28, weight: .bold))
                     .foregroundColor(.brandText)
             }
 
@@ -127,11 +127,11 @@ struct ProductDetailContent: View {
 
             VStack(alignment: .leading, spacing: 12) {
                 Text(NSLocalizedString("description", comment: ""))
-                    .font(.system(size: 18, weight: .bold))
+                    .font(.scaled(size: 18, weight: .bold))
                     .foregroundColor(.brandText)
 
                 Text(product.description ?? AppStrings.noProductDescription)
-                    .font(.system(size: 16))
+                    .font(.scaled(size: 16))
                     .foregroundColor(.gray)
                     .lineSpacing(4)
             }
@@ -139,11 +139,11 @@ struct ProductDetailContent: View {
             if let ingredients = product.activeIngredients {
                 VStack(alignment: .leading, spacing: 12) {
                     Text(NSLocalizedString("active_ingredients", comment: ""))
-                        .font(.system(size: 18, weight: .bold))
+                        .font(.scaled(size: 18, weight: .bold))
                         .foregroundColor(.brandText)
 
                     Text(ingredients)
-                        .font(.system(size: 16))
+                        .font(.scaled(size: 16))
                         .foregroundColor(.gray)
                 }
             }
@@ -176,7 +176,7 @@ struct ArticleDetailContent: View {
                 }
 
                 Text(article.articleType ?? AppStrings.article)
-                    .font(.system(size: 12, weight: .bold))
+                    .font(.scaled(size: 12, weight: .bold))
                     .padding(.horizontal, 12)
                     .padding(.vertical, 6)
                     .background(Color.white)
@@ -187,7 +187,7 @@ struct ArticleDetailContent: View {
             .cardShadow()
 
             Text(article.title)
-                .font(.system(size: 32, weight: .bold))
+                .font(.scaled(size: 32, weight: .bold))
                 .foregroundColor(.brandText)
             
             HStack(spacing: 20) {
@@ -202,12 +202,12 @@ struct ArticleDetailContent: View {
                     }
                 }
             }
-            .font(.system(size: 14, weight: .medium))
+            .font(.scaled(size: 14, weight: .medium))
             .foregroundColor(.gray)
             
             if let readTime = article.readTime {
                 Text(String(format: NSLocalizedString("min_read", comment: ""), readTime))
-                    .font(.system(size: 12, weight: .bold))
+                    .font(.scaled(size: 12, weight: .bold))
                     .padding(.horizontal, 10)
                     .padding(.vertical, 4)
                     .background(Color.brandPrimary.opacity(0.1))
@@ -216,7 +216,7 @@ struct ArticleDetailContent: View {
             }
 
             Text(article.content ?? "")
-                .font(.system(size: 16))
+                .font(.scaled(size: 16))
                 .foregroundColor(Color.brandText.opacity(0.8))
                 .lineSpacing(6)
         }
