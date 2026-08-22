@@ -41,7 +41,7 @@ struct ResultView: View {
                     // MARK: - Scanned Image Section
                     VStack(alignment: .leading, spacing: 14) {
                         Text(NSLocalizedString("scanned_image", comment: ""))
-                            .font(.system(size: 18, weight: .bold))
+                            .font(.scaled(size: 18, weight: .bold))
                             .foregroundColor(.brandText)
 
                         // The photo is drawn as an overlay so a fill-scaled image
@@ -57,7 +57,7 @@ struct ResultView: View {
                                         .scaledToFill()
                                 } else {
                                     Image(systemName: "camera.viewfinder")
-                                        .font(.system(size: 50))
+                                        .font(.scaled(size: 50))
                                         .foregroundColor(Color.brandPrimary.opacity(0.3))
                                 }
                             }
@@ -71,7 +71,7 @@ struct ResultView: View {
                     if let record {
                         VStack(alignment: .leading, spacing: 16) {
                             Text(NSLocalizedString("overall_score", comment: ""))
-                                .font(.system(size: 18, weight: .bold))
+                                .font(.scaled(size: 18, weight: .bold))
                                 .foregroundColor(.brandText)
 
                             HStack {
@@ -90,7 +90,7 @@ struct ResultView: View {
                     // MARK: - Results Section
                     VStack(alignment: .leading, spacing: 16) {
                         Text(NSLocalizedString("results", comment: ""))
-                            .font(.system(size: 18, weight: .bold))
+                            .font(.scaled(size: 18, weight: .bold))
                             .foregroundColor(.brandText)
                             .padding(.horizontal, 20)
 
@@ -116,13 +116,13 @@ struct ResultView: View {
                     if isFromRecents || showRecommendations {
                         VStack(alignment: .leading, spacing: 16) {
                             Text(NSLocalizedString("recommended_products", comment: ""))
-                                .font(.system(size: 18, weight: .bold))
+                                .font(.scaled(size: 18, weight: .bold))
                                 .foregroundColor(.brandText)
                                 .padding(.horizontal, 20)
 
                             if let error = vm.errorMessage, vm.recommendProduct.isEmpty, !vm.isLoading {
                                 Text(error)
-                                    .font(.system(size: 14))
+                                    .font(.scaled(size: 14))
                                     .foregroundColor(.gray)
                                     .padding(.horizontal, 20)
                             }
@@ -156,7 +156,7 @@ struct ResultView: View {
                         }) {
                             HStack(spacing: 12) {
                                 Image(systemName: "bag.fill")
-                                    .font(.system(size: 20))
+                                    .font(.scaled(size: 20))
                                 Text(NSLocalizedString("see_recommendations", comment: ""))
                             }
                         }
@@ -170,7 +170,7 @@ struct ResultView: View {
                         }) {
                             HStack(spacing: 12) {
                                 Image(systemName: routineCreated ? "checkmark.circle.fill" : "calendar.badge.plus")
-                                    .font(.system(size: 20))
+                                    .font(.scaled(size: 20))
                                 Text(routineCreated ? AppStrings.routineCreated : AppStrings.createRoutine)
                             }
                         }
@@ -187,7 +187,7 @@ struct ResultView: View {
                     // Pad before expanding: the reverse order makes this text
                     // wider than the screen and shifts the whole page sideways.
                     Text(NSLocalizedString("results_not_medical_advice", comment: ""))
-                        .font(.system(size: 12))
+                        .font(.scaled(size: 12))
                         .foregroundColor(.gray)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 24)
@@ -199,7 +199,7 @@ struct ResultView: View {
 
             Button(action: closeResult) {
                 Image(systemName: "arrow.left")
-                    .font(.system(size: 16, weight: .bold))
+                    .font(.scaled(size: 16, weight: .bold))
                     .foregroundColor(.white)
                     .frame(width: 44, height: 44)
                     .background(Color.brandPrimary)
@@ -290,18 +290,18 @@ struct ResultBar: View {
                     .frame(width: 44, height: 44)
 
                 Image(systemName: icon)
-                    .font(.system(size: 20))
+                    .font(.scaled(size: 20))
                     .foregroundColor(locked ? .gray.opacity(0.5) : .white)
             }
 
             Text(title)
-                .font(.system(size: 16, weight: .bold))
+                .font(.scaled(size: 16, weight: .bold))
                 .foregroundColor(locked ? .gray.opacity(0.5) : .brandText)
 
             HStack(alignment: .firstTextBaseline, spacing: 2) {
                 if locked {
                     Text(AppStrings.pro)
-                        .font(.system(size: 12, weight: .bold))
+                        .font(.scaled(size: 12, weight: .bold))
                         .foregroundColor(.brandPrimary)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 4)
@@ -309,17 +309,17 @@ struct ResultBar: View {
                         .cornerRadius(Radius.small)
                 } else {
                     Text("\(Int(score))")
-                        .font(.system(size: 28, weight: .bold))
+                        .font(.scaled(size: 28, weight: .bold))
                         .foregroundColor(.brandPrimary)
 
                     Text("/100")
-                        .font(.system(size: 14, weight: .semibold))
+                        .font(.scaled(size: 14, weight: .semibold))
                         .foregroundColor(.gray)
 
                     Spacer(minLength: 6)
 
                     Text(Severity(score: score).localizedTitle)
-                        .font(.system(size: 11, weight: .semibold))
+                        .font(.scaled(size: 11, weight: .semibold))
                         .foregroundColor(.brandPrimary)
                         .padding(.horizontal, 7)
                         .padding(.vertical, 3)
