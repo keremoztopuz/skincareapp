@@ -30,20 +30,17 @@ class ScoringEngine {
         acne: Double,
         redness: Double,
         pigmentation: Double,
-        hydration: Double,
         wrinkles: Double = 0,
         eyebags: Double = 0,
         skinType: String
     ) -> SkinScore {
         let type = normalizedSkinType(skinType)
-        let dehydration = max(0.0, 1.0 - hydration)
 
         // MARK: Overall (higher = better)
         // Susceptibility multipliers per skin type; unlisted weights stay at 1.0.
         let acneWeight: Double = 1.00 * (type == "oily" ? 1.15 : (type == "combination" ? 1.05 : 1.0))
         let rednessWeight: Double = 0.80 * (type == "sensitive" ? 1.25 : (type == "dry" ? 1.10 : 1.0))
         let pigmentationWeight: Double = 0.50
-        let dehydrationWeight: Double = 0.60 * (type == "dry" ? 1.20 : (type == "combination" ? 1.05 : 1.0))
         let wrinkleWeight: Double = 0.35
         let eyebagWeight: Double = 0.25
 
@@ -52,7 +49,6 @@ class ScoringEngine {
             + acneWeight * acne
             + rednessWeight * redness
             + pigmentationWeight * pigmentation
-            + dehydrationWeight * dehydration
             + wrinkleWeight * wrinkles
             + eyebagWeight * eyebags
         let overallScore = clamp(100.0 * exp(-load))
@@ -79,10 +75,10 @@ class ScoringEngine {
         case "oily": drynessBase = 0.05
         default: drynessBase = 0.10
         }
-        let dehydrationBoost: Double = type == "dry" ? 1.2 : 1.0
+        // Without a hydration measurement, dryness rests on the reported skin
+        // type plus redness, which correlates with a compromised barrier.
         let drynessLoad = drynessBase
-            + 1.5 * dehydration * dehydrationBoost
-            + 0.5 * redness
+            + 0.9 * redness
         let drynessScore = clamp(100.0 * (1.0 - exp(-drynessLoad)))
 
         // MARK: Oiliness (higher = worse)
