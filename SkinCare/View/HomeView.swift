@@ -8,13 +8,13 @@ struct HomeView: View {
     @Binding var selectedTab: Int
     
     var routineTitle: String {
-        let hour = Calendar.current.component(.hour, from: Date())
-        return hour < 18 ? NSLocalizedString("morning_routine", comment: "") : NSLocalizedString("evening_routine", comment: "")
+        vm.routineTimeKey == "morning"
+            ? NSLocalizedString("morning_routine", comment: "")
+            : NSLocalizedString("evening_routine", comment: "")
     }
 
     var routineIcon: String {
-        let hour = Calendar.current.component(.hour, from: Date())
-        return hour < 18 ? "sun.max.fill" : "moon.fill"
+        vm.routineTimeKey == "morning" ? "sun.max.fill" : "moon.fill"
     }
 
     var greetingText: String {
@@ -172,72 +172,104 @@ struct HomeView: View {
                                 Text(NSLocalizedString("your_routine", comment: ""))
                                     .font(.system(size: 18, weight: .bold))
                                     .foregroundColor(.brandText)
-                                if vm.hasPendingSuggestions {
-                                    Circle()
-                                        .fill(Color.brandPrimary)
-                                        .frame(width: 8, height: 8)
+
+                                Spacer()
+
+                                if vm.pendingSuggestionCount > 0 {
+                                    NavigationLink(destination: RoutineView(selectedTab: $selectedTab)) {
+                                        Text(String(format: NSLocalizedString("new_suggestions_%lld", comment: ""), vm.pendingSuggestionCount))
+                                            .font(.system(size: 12, weight: .semibold))
+                                            .foregroundColor(.brandPrimary)
+                                            .padding(.horizontal, 10)
+                                            .padding(.vertical, 6)
+                                            .background(Color.brandBlush)
+                                            .clipShape(Capsule())
+                                    }
+                                    .buttonStyle(.plain)
                                 }
                             }
 
-                            NavigationLink(destination: RoutineView(selectedTab: $selectedTab)) {
-                                VStack(alignment: .leading, spacing: 14) {
-                                    HStack(alignment: .top) {
-                                        Text(routineTitle)
-                                            .font(.system(size: 22, weight: .bold))
-                                            .lineLimit(2)
-                                            .minimumScaleFactor(0.85)
+                            VStack(alignment: .leading, spacing: 12) {
+                                NavigationLink(destination: RoutineView(selectedTab: $selectedTab)) {
+                                    HStack(alignment: .center, spacing: 16) {
+                                        VStack(alignment: .leading, spacing: 4) {
+                                            Text(routineTitle)
+                                                .font(.system(size: 22, weight: .bold))
+                                                .lineLimit(2)
+                                                .minimumScaleFactor(0.85)
+
+                                            if !vm.routineSteps.isEmpty {
+                                                Text(String(format: NSLocalizedString("routine_steps_done_%lld_%lld", comment: ""), vm.completedStepCount, vm.routineSteps.count))
+                                                    .font(.system(size: 14, weight: .medium))
+                                                    .opacity(0.9)
+                                            }
+                                        }
+
                                         Spacer(minLength: 16)
+
                                         Image(systemName: routineIcon)
                                             .font(.system(size: 22, weight: .semibold))
                                             .frame(width: 34, height: 34)
                                             .background(Color.white.opacity(0.16))
                                             .clipShape(Circle())
                                     }
+                                    .contentShape(Rectangle())
+                                }
+                                .buttonStyle(.plain)
 
-                                    if vm.routineItemCount > 0 {
-                                        Text(String(format: NSLocalizedString("steps_configured_%lld", comment: ""), vm.routineItemCount))
-                                            .font(.system(size: 15, weight: .medium))
-                                            .opacity(0.9)
-
-                                        HStack(spacing: 8) {
-                                            ForEach(Array(vm.routineStepNames.prefix(3)), id: \.self) { name in
-                                                Text(name)
-                                                    .font(.system(size: 12, weight: .semibold))
-                                                    .lineLimit(1)
-                                                    .minimumScaleFactor(0.8)
-                                                    .padding(.horizontal, 10)
-                                                    .padding(.vertical, 7)
-                                                    .background(Color.white.opacity(0.16))
-                                                    .clipShape(Capsule())
-                                            }
-
-                                            if vm.routineStepNames.count > 3 {
-                                                Text("+\(vm.routineStepNames.count - 3)")
-                                                    .font(.system(size: 12, weight: .bold))
-                                                    .padding(.horizontal, 10)
-                                                    .padding(.vertical, 7)
-                                                    .background(Color.white.opacity(0.16))
-                                                    .clipShape(Capsule())
-                                            }
-                                        }
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                    } else {
+                                if vm.routineSteps.isEmpty {
+                                    NavigationLink(destination: RoutineView(selectedTab: $selectedTab)) {
                                         Text(NSLocalizedString("tap_to_setup_routine", comment: ""))
                                             .font(.system(size: 15, weight: .medium))
                                             .multilineTextAlignment(.leading)
                                             .fixedSize(horizontal: false, vertical: true)
                                             .opacity(0.9)
+                                            .padding(.top, 2)
                                     }
+                                    .buttonStyle(.plain)
+                                } else {
+                                    VStack(spacing: 0) {
+                                        ForEach(vm.routineSteps) { step in
+                                            Button {
+                                                vm.toggleStep(step.id)
+                                            } label: {
+                                                HStack(spacing: 12) {
+                                                    Image(systemName: step.isCompleted ? "checkmark.circle.fill" : "circle")
+                                                        .font(.system(size: 21, weight: .medium))
+
+                                                    VStack(alignment: .leading, spacing: 1) {
+                                                        Text(step.typeName)
+                                                            .font(.system(size: 15, weight: .semibold))
+                                                            .strikethrough(step.isCompleted)
+                                                            .lineLimit(1)
+
+                                                        if let productName = step.productName {
+                                                            Text(productName)
+                                                                .font(.system(size: 12, weight: .regular))
+                                                                .opacity(0.75)
+                                                                .lineLimit(1)
+                                                        }
+                                                    }
+
+                                                    Spacer()
+                                                }
+                                                .opacity(step.isCompleted ? 0.65 : 1.0)
+                                                .padding(.vertical, 8)
+                                                .contentShape(Rectangle())
+                                            }
+                                            .buttonStyle(.plain)
+                                        }
+                                    }
+                                    .animation(.spring(response: 0.4, dampingFraction: 0.6), value: vm.completedStepCount)
                                 }
-                                .foregroundColor(.white)
-                                .padding(22)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .frame(minHeight: 150)
-                                .background(Color.brandPrimary)
-                                .clipShape(RoundedRectangle(cornerRadius: Radius.card))
-                                .cardShadow()
                             }
-                            .buttonStyle(.plain)
+                            .foregroundColor(.white)
+                            .padding(22)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .frame(minHeight: 150)
+                            .background(Color.brandPrimary)
+                            .clipShape(RoundedRectangle(cornerRadius: Radius.card))
+                            .cardShadow()
                         }
                         .padding(.horizontal, 20)
                         
