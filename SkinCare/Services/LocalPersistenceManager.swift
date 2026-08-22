@@ -10,9 +10,11 @@ internal import CoreData
 
 class LocalPersistenceManager {
     static let shared = LocalPersistenceManager()
-    private init() {
+    private let context: NSManagedObjectContext
+
+    init(context: NSManagedObjectContext = PersistenceController.shared.container.viewContext) {
+        self.context = context
     }
-    private let context = PersistenceController.shared.container.viewContext
     // User Profile
     func saveUserProfile(name: String, skinType: String, ageRange: String, gender: String, knownIssues: String) {
         let request: NSFetchRequest<UserProfile> = UserProfile.fetchRequest()
