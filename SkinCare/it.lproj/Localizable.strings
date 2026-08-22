@@ -12,6 +12,8 @@
 "your_routine" = "La tua routine";
 "steps_configured_%lld" = "%lld passaggi configurati";
 "tap_to_setup_routine" = "Tocca per impostare la tua routine di cura della pelle";
+"routine_steps_done_%lld_%lld" = "%1$lld di %2$lld completati";
+"new_suggestions_%lld" = "%lld nuovi suggerimenti";
 "recommended_products" = "Prodotti consigliati";
 "latest_articles" = "Ultimi articoli";
 "morning_routine" = "Routine mattutina";
