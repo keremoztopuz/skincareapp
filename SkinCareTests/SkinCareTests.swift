@@ -5,43 +5,51 @@
 //  Created by Kerem Öztopuz on 14.05.2026.
 //
 
-import XCTest
 import Testing
+import Foundation
 @testable import SkinCare
 internal import CoreData
 
-@Test @MainActor func testContentViewFlow() {
+private func resetAppFlowDefaults() {
     UserDefaults.standard.removeObject(forKey: "hasCompletedOnBoarding")
+    UserDefaults.standard.removeObject(forKey: "hasAcceptedDisclaimer")
     UserDefaults.standard.removeObject(forKey: "hasCompletedProfile")
     UserDefaults.standard.removeObject(forKey: "hasCompletedSubscription")
+    UserDefaults.standard.removeObject(forKey: "isPremium")
+}
+
+@Test @MainActor func testContentViewFlow() {
+    resetAppFlowDefaults()
 
     let vm = ContentViewModel()
     vm.showSplash = false
-    XCTAssertEqual(vm.currentState, .onboarding)
+    #expect(vm.currentState == .onboarding)
     vm.completeOnBoarding()
-    XCTAssertEqual(vm.currentState, .profileSetup)
+    #expect(vm.currentState == .disclaimer)
+    vm.acceptDisclaimer()
+    #expect(vm.currentState == .profileSetup)
     vm.completeProfile()
-    XCTAssertEqual(vm.currentState, .loading)
+    #expect(vm.currentState == .loading)
     vm.showLoading = false
-    XCTAssertEqual(vm.currentState, .subscription)
+    #expect(vm.currentState == .subscription)
     vm.completePurchaseStep(isPremium: true)
     vm.showLoading = false
     vm.hasCompletedSubscription = true
-    XCTAssertEqual(vm.currentState, .mainApp)
+    #expect(vm.currentState == .mainApp)
 }
 
 @Test func testProfileSetupValidation() {
     let vm = ProfileSetupViewModel()
 
-    XCTAssertFalse(vm.isCurrentPageValid)
+    #expect(!vm.isCurrentPageValid)
     vm.name = "Kerem"
-    XCTAssertTrue(vm.isCurrentPageValid)
+    #expect(vm.isCurrentPageValid)
     vm.handleContinue()
-    XCTAssertEqual(vm.currentPage, 1)
+    #expect(vm.currentPage == 1)
 }
 
 @Test func testRecentsViewModelMergeSort() {
-    let context = PersistenceController.shared.container.viewContext
+    let context = PersistenceController(inMemory: true).container.viewContext
 
     let record1 = AnalysisRecord(context: context)
     record1.date = Date().addingTimeInterval(-86400 * 5)
@@ -55,71 +63,70 @@ internal import CoreData
     let vm = RecentsViewModel()
     let sorted = vm.mergeSort(records)
 
-    XCTAssertEqual(sorted.first, record2)
-    XCTAssertEqual(sorted.last, record3)
+    #expect(sorted.first == record2)
+    #expect(sorted.last == record3)
 
     context.rollback()
 }
 
 @Test @MainActor func testResultsViewModelRecommendations() async {
     let vm = ResultsViewModel(record: nil)
-    try? await Task.sleep(nanoseconds: 1_000_000_000)
-    
-    XCTAssertEqual(vm.recommendation.first, "Keep your skin hydrated and protected.")
+    await vm.generateRecommendations()
+
+    #expect(vm.recommendation.first == String(localized: "recommendation_keep_hydrated"))
 }
 
 @Test @MainActor func testProfileSetupFullPageNavigation() {
     let vm = ProfileSetupViewModel()
 
-    XCTAssertEqual(vm.currentPage, 0)
-    XCTAssertFalse(vm.isCurrentPageValid)
+    #expect(vm.currentPage == 0)
+    #expect(!vm.isCurrentPageValid)
     vm.name = "Kerem"
-    XCTAssertTrue(vm.isCurrentPageValid)
+    #expect(vm.isCurrentPageValid)
     vm.handleContinue()
 
-    XCTAssertEqual(vm.currentPage, 1)
-    XCTAssertTrue(vm.isCurrentPageValid)
+    #expect(vm.currentPage == 1)
+    #expect(vm.isCurrentPageValid)
     vm.handleContinue()
 
-    XCTAssertEqual(vm.currentPage, 2)
-    XCTAssertFalse(vm.isCurrentPageValid)
+    #expect(vm.currentPage == 2)
+    #expect(!vm.isCurrentPageValid)
     vm.gender = .male
-    XCTAssertTrue(vm.isCurrentPageValid)
+    #expect(vm.isCurrentPageValid)
     vm.handleContinue()
 
-    XCTAssertEqual(vm.currentPage, 3)
-    XCTAssertFalse(vm.isCurrentPageValid)
+    #expect(vm.currentPage == 3)
+    #expect(!vm.isCurrentPageValid)
     vm.skinType = .oily
-    XCTAssertTrue(vm.isCurrentPageValid)
+    #expect(vm.isCurrentPageValid)
 }
 
 @Test func testOnBoardingViewModelPages() {
     let vm = OnBoardingViewModel()
 
-    XCTAssertEqual(vm.pages.count, 4)
-    XCTAssertEqual(vm.currentPage, 0)
+    #expect(vm.pages.count == 4)
+    #expect(vm.currentPage == 0)
 
     for page in vm.pages {
-        XCTAssertFalse(page.title.isEmpty)
-        XCTAssertFalse(page.description.isEmpty)
-        XCTAssertFalse(page.icon.isEmpty)
+        #expect(!page.title.isEmpty)
+        #expect(!page.description.isEmpty)
+        #expect(!page.icon.isEmpty)
     }
 }
 
 @Test @MainActor func testContentViewFlowFreeUser() {
-    UserDefaults.standard.removeObject(forKey: "hasCompletedOnBoarding")
-    UserDefaults.standard.removeObject(forKey: "hasCompletedProfile")
-    UserDefaults.standard.removeObject(forKey: "hasCompletedSubscription")
+    resetAppFlowDefaults()
 
     let vm = ContentViewModel()
     vm.showSplash = false
     vm.completeOnBoarding()
+    vm.acceptDisclaimer()
     vm.completeProfile()
     vm.showLoading = false
     vm.completePurchaseStep(isPremium: false)
     vm.showLoading = false
     vm.hasCompletedSubscription = true
 
-    XCTAssertEqual(vm.currentState, .mainApp)
-    XCTAssertFalse(vm.isPremium)
+    #expect(vm.currentState == .mainApp)
+    #expect(!SubscriptionManager.shared.isPremium)
 }
