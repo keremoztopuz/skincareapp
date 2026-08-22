@@ -11,11 +11,14 @@ import Foundation
 internal import CoreData
 
 private func resetAppFlowDefaults() {
-    UserDefaults.standard.removeObject(forKey: "hasCompletedOnBoarding")
-    UserDefaults.standard.removeObject(forKey: "hasAcceptedDisclaimer")
-    UserDefaults.standard.removeObject(forKey: "hasCompletedProfile")
-    UserDefaults.standard.removeObject(forKey: "hasCompletedSubscription")
-    UserDefaults.standard.removeObject(forKey: "isPremium")
+    // Write explicit false instead of removing: the host app (or a cloned
+    // simulator) may have seeded these true, and an explicit write is
+    // authoritative even when a stale cfprefsd cache survives removal.
+    UserDefaults.standard.set(false, forKey: "hasCompletedOnBoarding")
+    UserDefaults.standard.set(false, forKey: "hasAcceptedDisclaimer")
+    UserDefaults.standard.set(false, forKey: "hasCompletedProfile")
+    UserDefaults.standard.set(false, forKey: "hasCompletedSubscription")
+    UserDefaults.standard.set(false, forKey: "isPremium")
 }
 
 @Test @MainActor func testContentViewFlow() {
