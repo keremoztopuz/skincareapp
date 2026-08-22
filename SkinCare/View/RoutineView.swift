@@ -87,6 +87,7 @@ struct RoutineView: View {
             HStack(spacing: 8) {
                 Image(systemName: icon)
                     .font(.system(size: 16))
+                    .accessibilityHidden(true)
                 Text(title)
                     .font(.system(size: 16, weight: .semibold))
             }
@@ -117,6 +118,7 @@ struct RoutineView: View {
                 Image(systemName: step.icon)
                     .font(.system(size: 14))
                     .foregroundColor(.brandPrimary)
+                    .accessibilityHidden(true)
                 Text(step.label)
                     .font(.system(size: 14, weight: .semibold))
                     .foregroundColor(.brandPrimary)
@@ -151,6 +153,7 @@ struct RoutineView: View {
                         .overlay(
                             Image(systemName: step.icon)
                                 .foregroundColor(Color.brandPrimary.opacity(0.5))
+                                .accessibilityHidden(true)
                         )
                 }
                 .frame(width: 56, height: 56)
@@ -162,6 +165,7 @@ struct RoutineView: View {
                     .overlay(
                         Image(systemName: step.icon)
                             .foregroundColor(Color.brandPrimary.opacity(0.5))
+                            .accessibilityHidden(true)
                     )
             }
 
@@ -222,6 +226,7 @@ struct RoutineView: View {
             HStack(spacing: 10) {
                 Image(systemName: "plus.circle.fill")
                     .font(.system(size: 20))
+                    .accessibilityHidden(true)
                 Text(String(format: NSLocalizedString("add_product_type_%@", comment: ""), step.label))
                     .font(.system(size: 15, weight: .medium))
             }
@@ -243,6 +248,7 @@ struct RoutineView: View {
                 Image(systemName: "lightbulb.fill")
                     .font(.system(size: 16))
                     .foregroundColor(.brandPrimary)
+                    .accessibilityHidden(true)
                 Text(NSLocalizedString("new_recommendations", comment: ""))
                     .font(.system(size: 16, weight: .bold))
                     .foregroundColor(.brandText)
@@ -372,6 +378,7 @@ struct ProductPickerSheet: View {
                         Image(systemName: "tray")
                             .font(.system(size: 40))
                             .foregroundColor(.gray)
+                            .accessibilityHidden(true)
                         Text(NSLocalizedString("no_products_found", comment: ""))
                             .font(.system(size: 16))
                             .foregroundColor(.gray)
@@ -441,6 +448,7 @@ struct ProductPickerSheet: View {
             Image(systemName: "plus.circle.fill")
                 .font(.system(size: 22))
                 .foregroundColor(.brandPrimary)
+                .accessibilityHidden(true)
         }
         .padding(14)
         .background(Color.white)
