@@ -47,7 +47,7 @@ struct DisclaimerView: View {
 
                 VStack(spacing: 24) {
                     Text(NSLocalizedString("important_notice", comment: ""))
-                        .font(.system(size: 28, weight: .bold))
+                        .font(.scaled(size: 28, weight: .bold))
                         .foregroundColor(.brandText)
                         .multilineTextAlignment(.center)
 
@@ -87,7 +87,7 @@ struct DisclaimerView: View {
 
                             if hasAccepted {
                                 Image(systemName: "checkmark")
-                                    .font(.system(size: 14, weight: .bold))
+                                    .font(.scaled(size: 14, weight: .bold))
                                     .foregroundColor(.white)
                                     .frame(width: 24, height: 24)
                                     .background(Color.brandPrimary)
@@ -97,7 +97,7 @@ struct DisclaimerView: View {
                         }
 
                         Text(NSLocalizedString("accept_terms", comment: ""))
-                            .font(.system(size: 15, weight: .medium))
+                            .font(.scaled(size: 15, weight: .medium))
                             .foregroundColor(.brandText)
                             .multilineTextAlignment(.leading)
                     }
@@ -116,7 +116,7 @@ struct DisclaimerView: View {
                     .padding(.vertical, 18)
                     .background(hasAccepted ? Color.brandPrimary : Color.gray.opacity(0.3))
                     .foregroundColor(hasAccepted ? .white : .gray)
-                    .font(.system(size: 18, weight: .bold))
+                    .font(.scaled(size: 18, weight: .bold))
                     .cornerRadius(Radius.card)
                 }
                 .disabled(!hasAccepted)
@@ -147,12 +147,12 @@ struct DisclaimerItem: View {
                     .fill(Color.brandBlush)
                     .frame(width: 40, height: 40)
                 Image(systemName: icon)
-                    .font(.system(size: 16))
+                    .font(.scaled(size: 16))
                     .foregroundColor(.brandPrimary)
             }
 
             Text(text)
-                .font(.system(size: 14, weight: .regular))
+                .font(.scaled(size: 14, weight: .regular))
                 .foregroundColor(.gray)
                 .fixedSize(horizontal: false, vertical: true)
         }
