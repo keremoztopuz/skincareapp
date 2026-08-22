@@ -286,8 +286,15 @@ struct CameraView: View {
         func makeUIView(context: Context) -> UIView {
             let view = VideoPreviewView()
             view.backgroundColor = .lightGray
-            view.videoPreviewLayer.session = session
             view.videoPreviewLayer.videoGravity = .resizeAspectFill
+            // Attaching the session here runs inside SwiftUI's layout pass;
+            // AVFoundation commits its configuration on a nested run loop,
+            // which re-enters layout and crashes (AttributeGraph abort).
+            // Defer the attachment until the current update finishes.
+            let session = self.session
+            DispatchQueue.main.async {
+                view.videoPreviewLayer.session = session
+            }
             return view
         }
 
