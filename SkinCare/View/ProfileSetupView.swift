@@ -28,7 +28,7 @@ struct ProfileSetupView: View {
                             Image(systemName: "chevron.left")
                             Text(NSLocalizedString("back", comment: ""))
                         }
-                        .font(.system(size: 16, weight: .medium))
+                        .font(.scaled(size: 16, weight: .medium))
                         .foregroundColor(.brandPrimary)
                     }
                     .padding(.horizontal, 28)
@@ -40,11 +40,11 @@ struct ProfileSetupView: View {
                     if vm.currentPage == 0 {
                         VStack(alignment: .leading, spacing: 12) {
                             Text(NSLocalizedString("whats_your_name", comment: ""))
-                                .font(.system(size: 28, weight: .bold))
+                                .font(.scaled(size: 28, weight: .bold))
                                 .foregroundColor(.brandText)
 
                             Text(NSLocalizedString("lets_get_to_know", comment: ""))
-                                .font(.system(size: 16))
+                                .font(.scaled(size: 16))
                                 .foregroundColor(.gray)
 
                             TextField(NSLocalizedString("enter_your_name", comment: ""), text: $vm.name)
@@ -92,15 +92,15 @@ struct ProfileSetupView: View {
         var body: some View {
             VStack (alignment: .leading, spacing: 12){
                 Text(NSLocalizedString("how_old", comment: ""))
-                    .font(.system(size: 28, weight: .bold))
+                    .font(.scaled(size: 28, weight: .bold))
                     .foregroundColor(.brandText)
 
                 Text(NSLocalizedString("helps_personalize_routines", comment: ""))
-                    .font(.system(size: 16))
+                    .font(.scaled(size: 16))
                     .foregroundColor(.gray)
 
                 Text("\(age)")
-                    .font(.system(size: 48, weight: .bold))
+                    .font(.scaled(size: 48, weight: .bold))
                     .foregroundColor(.brandPrimary)
                     .padding(.top, 16)
 
@@ -120,11 +120,11 @@ struct ProfileSetupView: View {
         var body: some View {
             VStack(alignment: .leading, spacing: 12) {
                 Text(NSLocalizedString("whats_your_gender", comment: ""))
-                    .font(.system(size: 28, weight: .bold))
+                    .font(.scaled(size: 28, weight: .bold))
                     .foregroundColor(.brandText)
 
                 Text(NSLocalizedString("helps_tailor_recommendations", comment: ""))
-                    .font(.system(size: 16))
+                    .font(.scaled(size: 16))
                     .foregroundColor(.gray)
 
                 VStack(spacing: 12) {
@@ -133,7 +133,7 @@ struct ProfileSetupView: View {
                         Button(action: { gender = option
                         }) {
                             Text(option.localizedTitle)
-                                .font(.system(size: 16, weight: .medium))
+                                .font(.scaled(size: 16, weight: .medium))
                                 .foregroundColor(gender == option ? .white : .brandText)
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 16)
@@ -156,11 +156,11 @@ struct ProfileSetupView: View {
         var body: some View {
             VStack(alignment: .leading, spacing: 12) {
                 Text(NSLocalizedString("whats_your_skin_type", comment: ""))
-                    .font(.system(size: 28, weight: .bold))
+                    .font(.scaled(size: 28, weight: .bold))
                     .foregroundColor(.brandText)
 
                 Text(NSLocalizedString("customize_analysis", comment: ""))
-                    .font(.system(size: 16))
+                    .font(.scaled(size: 16))
                     .foregroundColor(.gray)
 
                 VStack(spacing: 12) {
@@ -170,10 +170,10 @@ struct ProfileSetupView: View {
                         }) {
                             VStack(spacing: 4) {
                                 Text(option.localizedTitle)
-                                    .font(.system(size: 16, weight: .medium))
+                                    .font(.scaled(size: 16, weight: .medium))
 
                                 Text(option.description)
-                                    .font(.system(size: 12))
+                                    .font(.scaled(size: 12))
 
                             }
                             .foregroundColor(skinType == option ? .white : .brandText)
@@ -199,7 +199,7 @@ private func warningLabel(_ text: String, visible: Bool) -> some View {
     ZStack {
         if visible {
             Text(text)
-                .font(.system(size: 14))
+                .font(.scaled(size: 14))
                 .foregroundColor(.brandPrimary)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
