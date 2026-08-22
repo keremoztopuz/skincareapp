@@ -19,11 +19,11 @@ struct CameraGuideView: View {
                 BrandCircleIcon(systemImage: "camera.fill", size: 80, animated: true)
 
                 Text(NSLocalizedString("camera_guidelines", comment: ""))
-                    .font(.system(size: 28, weight: .bold))
+                    .font(.scaled(size: 28, weight: .bold))
                     .foregroundColor(.brandText)
 
                 Text(NSLocalizedString("follow_essentials", comment: ""))
-                    .font(.system(size: 15, weight: .regular))
+                    .font(.scaled(size: 15, weight: .regular))
                     .foregroundColor(.gray)
                     .multilineTextAlignment(.center)
 
@@ -34,7 +34,7 @@ struct CameraGuideView: View {
                                 .foregroundColor(.brandPrimary)
 
                             Text(NSLocalizedString("dos", comment: ""))
-                                .font(.system(size: 17, weight: .semibold))
+                                .font(.scaled(size: 17, weight: .semibold))
                         }
 
                         VStack(spacing: 6) {
@@ -66,7 +66,7 @@ struct CameraGuideView: View {
                                 .foregroundColor(.brandPrimary)
 
                             Text(NSLocalizedString("donts", comment: ""))
-                                .font(.system(size: 17, weight: .semibold))
+                                .font(.scaled(size: 17, weight: .semibold))
                         }
                         VStack(spacing: 6) {
                             HStack(spacing: 6) {
@@ -129,10 +129,10 @@ struct BulletRow: View {
         HStack(alignment: .top, spacing: 6) {
             Image(systemName: icon)
                 .foregroundColor(.brandPrimary)
-                .font(.system(size: 18))
+                .font(.scaled(size: 18))
                 .padding(.top, -1)
             Text(text)
-                .font(.system(size: 13, weight: .medium))
+                .font(.scaled(size: 13, weight: .medium))
                 .fixedSize(horizontal: false, vertical: true)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
