@@ -27,7 +27,6 @@
 "enable_camera_description" = "Cilt analizi yolculuğunuza başlamak için kamera erişimini etkinleştirin.";
 "enable_camera" = "Kamerayı Etkinleştir";
 "free_scans_used" = "Aylık %lld ücretsiz tarama hakkınızı kullandınız. Sınırsız analiz için Pro'ya geçin.";
-"cloud_analysis_disclosure" = "Gelişmiş analizler (kırışıklık, göz altı torbası vb.) Google Gemini AI üzerinden güvenli bir şekilde işlenmektedir.";
 "recent_analysis" = "Son Analizler";
 "select_2_analyses" = "2 analiz seçin ve karşılaştırın";
 "all_time" = "Tüm Zamanlar";
