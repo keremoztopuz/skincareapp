@@ -18,10 +18,6 @@ enum Subscriptions: String, CaseIterable {
 
 class SubscriptionViewModel: ObservableObject {
     @Published var selectedSubscription: Subscriptions = .premium
-    
-    func completePurchase() {
-        UserDefaults.standard.set(true, forKey: "hasCompletedSubscription")
-    }
 }
 
 
