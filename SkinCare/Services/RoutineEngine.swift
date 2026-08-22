@@ -82,7 +82,6 @@ class RoutineEngine {
         // skin-type adjustment in rankProducts stays meaningful.
         if record.acneScore > 35 { conditions.append(("acne", record.acneScore / 100.0)) }
         if record.eczemaScore > 35 { conditions.append(("redness", record.eczemaScore / 100.0)) }
-        if record.psoriasisScore > 35 { conditions.append(("psoriasis", record.psoriasisScore / 100.0)) }
         if record.pigmentationScore > 35 { conditions.append(("pigmentation", record.pigmentationScore / 100.0)) }
         if record.wrinkleScore > 30 { conditions.append(("wrinkles", record.wrinkleScore / 100.0)) }
         if record.eyebagScore > 30 { conditions.append(("eyebags", record.eyebagScore / 100.0)) }
