@@ -275,37 +275,6 @@ struct ArticleDetailContent: View {
     }
 }
 
-struct TopicBadge: View {
-    let text: String
-    var body: some View {
-        Text(text)
-            .font(.system(size: 14, weight: .medium))
-            .padding(.horizontal, 16)
-            .padding(.vertical, 8)
-            .background(Color.white)
-            .cornerRadius(12)
-            .shadow(color: Color.black.opacity(0.03), radius: 5, x: 0, y: 2)
-    }
-}
-
-struct FlowLayout: View {
-    let spacing: CGFloat
-    let content: [AnyView]
-    
-    init<Views>(spacing: CGFloat, @ViewBuilder content: () -> Views) where Views: View {
-        self.spacing = spacing
-        self.content = [AnyView(content())]
-    }
-    
-    var body: some View {
-        HStack(spacing: spacing) {
-            ForEach(0..<content.count, id: \.self) { index in
-                content[index]
-            }
-        }
-    }
-}
-
 #Preview("Product Detail") {
     DetailView(type: .product(Product(
         id: UUID(),
