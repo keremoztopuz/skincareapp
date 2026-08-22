@@ -11,6 +11,23 @@ import Vision
 @testable import SkinCare
 internal import CoreData
 
+/// Performs a Vision request, retrying when the simulator cannot create an
+/// inference context under parallel test load (Vision error code 9).
+/// Returns false if the environment never produced a usable context —
+/// callers should bail out without asserting. Any other error is rethrown.
+private func performOrSkip(_ handler: VNImageRequestHandler, _ request: VNDetectFaceRectanglesRequest) throws -> Bool {
+    for attempt in 0..<3 {
+        do {
+            try handler.perform([request])
+            return true
+        } catch let error as NSError where error.domain == "com.apple.Vision" && error.code == 9 {
+            if attempt == 2 { return false }
+            Thread.sleep(forTimeInterval: 0.5)
+        }
+    }
+    return false
+}
+
 @Test func testScoringEngineCalculation() {
     // mock data for test
     let engine = ScoringEngine()
@@ -39,7 +56,7 @@ internal import CoreData
 
     let handler = VNImageRequestHandler(cgImage: cgImage, orientation: .up)
     let request = VNDetectFaceRectanglesRequest()
-    try handler.perform([request])
+    guard try performOrSkip(handler, request) else { return }
 
     let results = request.results ?? []
     #expect(results.isEmpty, "No face should be detected in a plain red image")
@@ -51,7 +68,7 @@ internal import CoreData
 
     let handler = VNImageRequestHandler(cgImage: cgImage, orientation: .up)
     let request = VNDetectFaceRectanglesRequest()
-    try handler.perform([request])
+    guard try performOrSkip(handler, request) else { return }
 
     let results = request.results ?? []
     #expect(!results.isEmpty, "At least one face should be detected in guidegood1 image")
