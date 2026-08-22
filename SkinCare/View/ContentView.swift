@@ -1,9 +1,5 @@
 import SwiftUI
 
-// MARK: CONTENT VIEW OPTIMIZATION
-
-// FOR NOW, JUST RESETS THE PAGE ON EVERY BUILD.
-
 struct ContentView: View {
     @EnvironmentObject var vm: ContentViewModel
     
@@ -20,7 +16,7 @@ struct ContentView: View {
         case .splash:
             SplashView()
         case .loading:
-            SplashView(loadingMessage: "Preparing your profile...")
+            SplashView(loadingMessage: NSLocalizedString("preparing_profile", comment: ""))
         case .subscription:
             SubscriptionView()
         }
