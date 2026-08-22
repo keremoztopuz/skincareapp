@@ -14,7 +14,7 @@ struct BackHeaderBar: View {
         HStack {
             Button(action: onBack) {
                 Image(systemName: "arrow.left")
-                    .font(.system(size: 16, weight: .bold))
+                    .font(.scaled(size: 16, weight: .bold))
                     .foregroundColor(.white)
                     .padding(12)
                     .background(Color.brandPrimary)
@@ -23,7 +23,7 @@ struct BackHeaderBar: View {
             .accessibilityLabel(Text(NSLocalizedString("back", comment: "")))
             Spacer()
             Text(title)
-                .font(.system(size: 18, weight: .bold))
+                .font(.scaled(size: 18, weight: .bold))
                 .foregroundColor(.brandText)
             Spacer()
             Circle().fill(Color.clear).frame(width: 40, height: 40)
