@@ -10,10 +10,26 @@ import SwiftUI
 internal import Combine
 internal import CoreData
 
+enum RecordFilter: CaseIterable {
+    case allTime
+    case thisWeek
+    case thisMonth
+
+    var localizedTitle: String {
+        switch self {
+        case .allTime: return AppStrings.allTime
+        case .thisWeek: return AppStrings.thisWeek
+        case .thisMonth: return AppStrings.thisMonth
+        }
+    }
+}
+
 class RecentsViewModel: ObservableObject {
     @Published var records: [AnalysisRecord] = []
     @Published var lockedRecords: [AnalysisRecord] = []
-    @Published var selectedFilter: String = "This Week"
+    @Published var selectedFilter: RecordFilter = .allTime {
+        didSet { fetchRecords() }
+    }
 
     init() {
         fetchRecords()
@@ -24,13 +40,25 @@ class RecentsViewModel: ObservableObject {
 
     func fetchRecords() {
         let fetched = LocalPersistenceManager.shared.fetchAnalysisRecords()
-        let sorted  = mergeSort(fetched)
+        let filtered = applyFilter(fetched)
+        let sorted = mergeSort(filtered)
         if isPremium {
             self.records = sorted
             self.lockedRecords = []
         } else {
             self.records = Array(sorted.prefix(freeLimit))
             self.lockedRecords = Array(sorted.dropFirst(freeLimit).prefix(3))
+        }
+    }
+
+    private func applyFilter(_ records: [AnalysisRecord]) -> [AnalysisRecord] {
+        guard selectedFilter != .allTime else { return records }
+        let calendar = Calendar.current
+        let now = Date()
+        let granularity: Calendar.Component = selectedFilter == .thisWeek ? .weekOfYear : .month
+        return records.filter { record in
+            guard let date = record.date else { return false }
+            return calendar.isDate(date, equalTo: now, toGranularity: granularity)
         }
     }
 
