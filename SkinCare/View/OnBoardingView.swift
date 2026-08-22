@@ -68,7 +68,7 @@ struct OnBoardingPageView: View {
                             .accessibilityHidden(true)
                     } else {
                         Image(systemName: page.icon)
-                            .font(.system(size: outerSize * 0.28))
+                            .font(.scaled(size: outerSize * 0.28))
                             .foregroundColor(.white)
                     }
                 }
@@ -76,7 +76,7 @@ struct OnBoardingPageView: View {
 
                 // title
                 Text(page.title)
-                    .font(.system(size: 28, weight: .bold))
+                    .font(.scaled(size: 28, weight: .bold))
                     .foregroundColor(Color.brandText)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 30)
@@ -84,7 +84,7 @@ struct OnBoardingPageView: View {
 
                 // description
                 Text(page.description)
-                    .font(.system(size: 16))
+                    .font(.scaled(size: 16))
                     .foregroundColor(.gray)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 40)
@@ -166,7 +166,7 @@ struct OnBoardingView: View {
                             .padding(.vertical, 18)
                             .background(Color.white)
                             .foregroundColor(Color.brandPrimary)
-                            .font(.system(size: 18, weight: .semibold))
+                            .font(.scaled(size: 18, weight: .semibold))
                             .cornerRadius(Radius.card)
                             .cardShadow()
                         }
@@ -188,7 +188,7 @@ struct OnBoardingView: View {
                         .padding(.vertical, 18)
                         .background(Color.brandPrimary)
                         .foregroundColor(.white)
-                        .font(.system(size: 18, weight: .bold))
+                        .font(.scaled(size: 18, weight: .bold))
                         .cornerRadius(Radius.card)
                     }
                 }
