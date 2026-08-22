@@ -65,7 +65,6 @@
 "unlock_premium" = "Unlock Premium";
 "start_free_trial" = "Start 3-Day Free Trial";
 "continue_with_free" = "Continue with Free";
-"then_price_monthly" = "Then $4.99/month. Cancel anytime.";
 "no_thanks_free" = "No thanks, continue with Free";
 "restore_purchases" = "Restore Purchases";
 "free_trial_included" = "3-day free trial included";
@@ -150,7 +149,6 @@
 /* Upgrade Sheet */
 "upgrade_to_pro" = "Upgrade to Pro";
 "unlock_full_capabilities" = "Unlock full skin analysis capabilities";
-"price_monthly" = "$4.99 / month  ·  Cancel anytime";
 "continue_with_free_plan" = "Continue with Free Plan";
 "welcome_to_pro" = "Welcome to Pro!";
 "all_features_now_unlocked" = "All features are now unlocked.";
@@ -299,3 +297,24 @@
 "purchase_error_package_not_found" = "Subscription package not found. Please try again later.";
 "purchase_error_failed_%@" = "Purchase failed: %@";
 "purchase_error_restore_failed_%@" = "Restore failed: %@";
+
+/* UI polish and compliance additions */
+"preparing_profile" = "Preparing your profile...";
+"search_no_products" = "Products could not be loaded. Check your connection and try again.";
+"search_no_results" = "No products match your search.";
+"price_free" = "Free";
+"then_price_monthly_%@" = "Then %@ per month. Auto-renews until canceled.";
+"price_monthly_%@" = "%@ per month. Auto-renews until canceled in Settings.";
+"upgrade_feature_unlimited_scans" = "Unlimited monthly scans";
+"upgrade_feature_full_analysis" = "Full analysis: wrinkles, eye bags, pigmentation, hydration";
+"upgrade_feature_full_history" = "Full history of all past scans";
+"upgrade_feature_unlimited_recommendations" = "Unlimited product recommendations";
+"free_feature_5_scans" = "5 scans per month";
+"free_feature_conditions" = "Acne and redness detection";
+"free_feature_last_5" = "Last 5 analyses visible";
+"terms_of_use" = "Terms of Use";
+"privacy_policy" = "Privacy Policy";
+"results_not_medical_advice" = "Results are informational only and not a medical diagnosis. Consult a dermatologist for concerns about your skin.";
+"analysis_failed_title" = "Analysis Failed";
+"analysis_error_photo" = "The photo could not be processed. Please try again.";
+"analysis_error_model" = "The analysis could not be completed. Please try again.";
