@@ -190,6 +190,8 @@ struct RoutineView: View {
             .accessibilityLabel(Text(NSLocalizedString("delete", comment: "")))
         }
         .contentShape(Rectangle())
+        .accessibilityElement(children: .combine)
+        .accessibilityAddTraits(.isButton)
         .onTapGesture {
             if let productId = item.productId {
                 selectedProduct = Product(
