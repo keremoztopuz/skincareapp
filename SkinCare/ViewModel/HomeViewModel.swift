@@ -10,18 +10,27 @@ import SwiftUI
 internal import CoreData
 internal import Combine
 
+struct ScoreTrendPoint: Identifiable {
+    let id = UUID()
+    let date: Date
+    let score: Double
+}
+
 class HomeViewModel: ObservableObject {
     @Published var userName: String = ""
     @Published var articles: [Articles] = []
     @Published var products: [Product] = []
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
-    
+
     // Average Statistics
     @Published var avgOverallScore: Int = 0
     @Published var avgDryness: Int = 0
     @Published var avgOiliness: Int = 0
     @Published var avgInflammation: Int = 0
+
+    // Overall score trend, oldest first, capped to the last 10 scans.
+    @Published var scoreTrend: [ScoreTrendPoint] = []
 
     // Routine Summary
     @Published var routineStepNames: [String] = []
@@ -72,11 +81,20 @@ class HomeViewModel: ObservableObject {
         let totalOiliness = records.reduce(0.0) { $0 + $1.oilinessScore }
         let totalInflammation = records.reduce(0.0) { $0 + $1.inflammationScore }
         
+        let trend = records
+            .compactMap { record -> ScoreTrendPoint? in
+                guard let date = record.date else { return nil }
+                return ScoreTrendPoint(date: date, score: record.overallScore)
+            }
+            .sorted { $0.date < $1.date }
+            .suffix(10)
+
         DispatchQueue.main.async {
             self.avgOverallScore = Int(totalOverall / count)
             self.avgDryness = Int(totalDryness / count)
             self.avgOiliness = Int(totalOiliness / count)
             self.avgInflammation = Int(totalInflammation / count)
+            self.scoreTrend = Array(trend)
         }
     }
     

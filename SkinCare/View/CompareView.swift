@@ -11,9 +11,11 @@ struct CompareView: View {
         let acneDiff    = record1.acneScore    - record2.acneScore
         let wrinkleDiff = record1.wrinkleScore - record2.wrinkleScore
         var parts: [String] = []
-        if overallDiff > 5 {
+        // The rebuilt scoring formula spans a wider 0-100 range, so an 8-point
+        // deadband keeps the insight copy as selective as the old 5 was.
+        if overallDiff > 8 {
             parts.append(String(format: NSLocalizedString("compare_insight_overall_improved", comment: ""), Int(overallDiff)))
-        } else if overallDiff < -5 {
+        } else if overallDiff < -8 {
             parts.append(String(format: NSLocalizedString("compare_insight_overall_decreased", comment: ""), Int(abs(overallDiff))))
         }
         if acneDiff < -5 {

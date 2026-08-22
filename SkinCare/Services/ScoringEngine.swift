@@ -15,48 +15,116 @@ struct SkinScore {
     let dominantCondition: String
 }
 
+/// Converts raw condition severities (0-1) into the derived scores shown in the app.
+///
+/// All formulas use exponential soft saturation instead of linear sums with hard
+/// caps, so the full 0-100 range is usable and extreme inputs cannot silently
+/// flatline. `overallScore` is computed once from the raw severities (never from
+/// the derived bars) to avoid double counting, and decays as `100 * exp(-load)`.
+/// Skin type contributes small load intercepts plus susceptibility multipliers
+/// on individual weights, so the measured evidence always dominates the
+/// self-reported profile.
 class ScoringEngine {
 
-    func calculateScore(acne: Double, redness: Double, psoriasis: Double, pigmentation: Double, hydration: Double, skinType: String) -> SkinScore {
-        let oilinessBase: Double
-        switch skinType{
-            case "oily": oilinessBase = 70.0
-            case "dry": oilinessBase = 10.0
-            case "combo": oilinessBase = 50.0
-            default: oilinessBase = 35.0
-        }
+    func calculateScore(
+        acne: Double,
+        redness: Double,
+        psoriasis: Double,
+        pigmentation: Double,
+        hydration: Double,
+        wrinkles: Double = 0,
+        eyebags: Double = 0,
+        skinType: String
+    ) -> SkinScore {
+        let type = normalizedSkinType(skinType)
+        let dehydration = max(0.0, 1.0 - hydration)
 
-        let oilinessScore = min(oilinessBase + acne * 25.0 + psoriasis * 10.0, 100.0)
+        // MARK: Overall (higher = better)
+        // Susceptibility multipliers per skin type; unlisted weights stay at 1.0.
+        let acneWeight: Double = 1.00 * (type == "oily" ? 1.15 : (type == "combination" ? 1.05 : 1.0))
+        let rednessWeight: Double = 0.80 * (type == "sensitive" ? 1.25 : (type == "dry" ? 1.10 : 1.0))
+        let psoriasisWeight: Double = 0.90 * (type == "sensitive" ? 1.10 : 1.0)
+        let pigmentationWeight: Double = 0.50
+        let dehydrationWeight: Double = 0.60 * (type == "dry" ? 1.20 : (type == "combination" ? 1.05 : 1.0))
+        let wrinkleWeight: Double = 0.35
+        let eyebagWeight: Double = 0.25
 
-        let drynessBase: Double
-        switch skinType {
-            case "dry": drynessBase = 70.0
-            case "oily": drynessBase = 10.0
-            case "combo": drynessBase = 50.0
-            default: drynessBase = 35.0
-        }
+        // Floor keeps a perfect scan at ~98 instead of a fake 100.
+        let load = 0.02
+            + acneWeight * acne
+            + rednessWeight * redness
+            + psoriasisWeight * psoriasis
+            + pigmentationWeight * pigmentation
+            + dehydrationWeight * dehydration
+            + wrinkleWeight * wrinkles
+            + eyebagWeight * eyebags
+        let overallScore = clamp(100.0 * exp(-load))
 
-        let hydrationPenalty = max(0, (1.0 - hydration)) * 30.0
-        let drynessScore = min(drynessBase + redness * 35.0 + psoriasis * 15.0 + hydrationPenalty, 100.0)
-
+        // MARK: Inflammation (higher = worse)
         let inflammationBase: Double
-        switch skinType {
-            case "sensitive": inflammationBase = 70.0
-            case "oily": inflammationBase = 30.0
-            case "dry": inflammationBase = 10.0
-            case "combo": inflammationBase = 50.0
-            default: inflammationBase = 35.0
+        switch type {
+        case "sensitive": inflammationBase = 0.15
+        case "oily", "combination": inflammationBase = 0.08
+        default: inflammationBase = 0.05
         }
+        let rednessBoost: Double = type == "sensitive" ? 1.2 : 1.0
+        let psoriasisBoost: Double = type == "sensitive" ? 1.1 : 1.0
+        let inflammationLoad = inflammationBase
+            + 1.6 * acne
+            + 1.4 * redness * rednessBoost
+            + 1.5 * psoriasis * psoriasisBoost
+            + 0.3 * pigmentation
+        let inflammationScore = clamp(100.0 * (1.0 - exp(-inflammationLoad)))
 
-        let inflammationScore = min(inflammationBase + acne * 45.0 + redness * 35.0 + psoriasis * 40.0 + pigmentation * 15.0, 100.0)
+        // MARK: Dryness (higher = worse)
+        let drynessBase: Double
+        switch type {
+        case "dry": drynessBase = 0.35
+        case "combination", "sensitive": drynessBase = 0.15
+        case "oily": drynessBase = 0.05
+        default: drynessBase = 0.10
+        }
+        let dehydrationBoost: Double = type == "dry" ? 1.2 : 1.0
+        let drynessLoad = drynessBase
+            + 1.5 * dehydration * dehydrationBoost
+            + 0.5 * redness
+            + 0.4 * psoriasis
+        let drynessScore = clamp(100.0 * (1.0 - exp(-drynessLoad)))
 
-        let overallScore = max(0.0, min(hydration * 30.0 + 50.0 - inflammationScore * 0.30 - drynessScore * 0.10 - oilinessScore * 0.10 - pigmentation * 10.0, 100.0))
+        // MARK: Oiliness (higher = worse)
+        // Base-heavy by necessity: there is no direct sebum measurement, acne
+        // is the only correlated signal.
+        let oilinessBase: Double
+        switch type {
+        case "oily": oilinessBase = 0.90
+        case "combination": oilinessBase = 0.55
+        case "sensitive": oilinessBase = 0.30
+        case "dry": oilinessBase = 0.10
+        default: oilinessBase = 0.35
+        }
+        let oilinessLoad = oilinessBase + 0.9 * acne + 0.25 * psoriasis
+        let oilinessScore = clamp(100.0 * (1.0 - exp(-oilinessLoad)))
 
+        // MARK: Dominant condition
         let scores = ["acne": acne, "redness": redness, "psoriasis": psoriasis, "pigmentation": pigmentation]
         let top = scores.max(by: { $0.value < $1.value })
         let dominantCondition = (top?.value ?? 0) > 0.25 ? (top?.key ?? "") : ""
 
-        return SkinScore(overallScore: overallScore, drynessScore: drynessScore, oilinessScore: oilinessScore, inflammationScore: inflammationScore, dominantCondition: dominantCondition)
+        return SkinScore(
+            overallScore: overallScore,
+            drynessScore: drynessScore,
+            oilinessScore: oilinessScore,
+            inflammationScore: inflammationScore,
+            dominantCondition: dominantCondition
+        )
     }
 
+    private func normalizedSkinType(_ skinType: String) -> String {
+        let type = skinType.lowercased()
+        return type == "combo" ? "combination" : type
+    }
+
+    private func clamp(_ value: Double) -> Double {
+        min(max(value, 0.0), 100.0)
+    }
 }

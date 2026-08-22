@@ -78,12 +78,14 @@ class RoutineEngine {
     private func detectActiveConditions(from record: AnalysisRecord) -> [(String, Double)] {
         var conditions: [(String, Double)] = []
 
-        if record.acneScore > 0.25 { conditions.append(("acne", record.acneScore)) }
-        if record.eczemaScore > 0.25 { conditions.append(("redness", record.eczemaScore)) }
-        if record.psoriasisScore > 0.25 { conditions.append(("psoriasis", record.psoriasisScore)) }
-        if record.pigmentationScore > 0.25 { conditions.append(("pigmentation", record.pigmentationScore)) }
-        if record.wrinkleScore > 0.20 { conditions.append(("wrinkles", record.wrinkleScore)) }
-        if record.eyebagScore > 0.20 { conditions.append(("eyebags", record.eyebagScore)) }
+        // Raw scores are stored on a 0-100 scale; normalize to 0-1 so the
+        // skin-type adjustment in rankProducts stays meaningful.
+        if record.acneScore > 35 { conditions.append(("acne", record.acneScore / 100.0)) }
+        if record.eczemaScore > 35 { conditions.append(("redness", record.eczemaScore / 100.0)) }
+        if record.psoriasisScore > 35 { conditions.append(("psoriasis", record.psoriasisScore / 100.0)) }
+        if record.pigmentationScore > 35 { conditions.append(("pigmentation", record.pigmentationScore / 100.0)) }
+        if record.wrinkleScore > 30 { conditions.append(("wrinkles", record.wrinkleScore / 100.0)) }
+        if record.eyebagScore > 30 { conditions.append(("eyebags", record.eyebagScore / 100.0)) }
 
         if record.drynessScore > 40.0 && !conditions.contains(where: { $0.0 == "redness" }) {
             conditions.append(("redness", record.drynessScore / 100.0))

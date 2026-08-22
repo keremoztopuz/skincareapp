@@ -25,5 +25,6 @@ struct SkinCareApp: App {
     
     init() {
         Purchases.configure(withAPIKey: RevenueCatConfig.apiKey)
+        LocalPersistenceManager.shared.migrateScoresIfNeeded()
     }
 }

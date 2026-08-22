@@ -318,3 +318,13 @@
 "analysis_failed_title" = "Analysis Failed";
 "analysis_error_photo" = "The photo could not be processed. Please try again.";
 "analysis_error_model" = "The analysis could not be completed. Please try again.";
+
+/* Score visualization additions */
+"score_trend" = "Score Trend";
+"overall_band_excellent" = "Excellent";
+"overall_band_good" = "Good";
+"overall_band_fair" = "Needs care";
+"overall_band_poor" = "Needs attention";
+"severity_low" = "Low";
+"severity_moderate" = "Moderate";
+"severity_high" = "High";

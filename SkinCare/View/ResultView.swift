@@ -67,6 +67,26 @@ struct ResultView: View {
                     .padding(.horizontal, 20)
                     .padding(.top, isFromRecents ? 0 : 20)
 
+                    // MARK: - Overall Score
+                    if let record {
+                        VStack(alignment: .leading, spacing: 16) {
+                            Text(NSLocalizedString("overall_score", comment: ""))
+                                .font(.system(size: 18, weight: .bold))
+                                .foregroundColor(.brandText)
+
+                            HStack {
+                                Spacer()
+                                ScoreRing(score: record.overallScore)
+                                Spacer()
+                            }
+                            .padding(.vertical, 20)
+                            .background(Color.white)
+                            .cornerRadius(Radius.card)
+                            .cardShadow()
+                        }
+                        .padding(.horizontal, 20)
+                    }
+
                     // MARK: - Results Section
                     VStack(alignment: .leading, spacing: 16) {
                         Text(NSLocalizedString("results", comment: ""))
@@ -296,6 +316,16 @@ struct ResultBar: View {
                     Text("/100")
                         .font(.system(size: 14, weight: .semibold))
                         .foregroundColor(.gray)
+
+                    Spacer(minLength: 6)
+
+                    Text(Severity(score: score).localizedTitle)
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundColor(.brandPrimary)
+                        .padding(.horizontal, 7)
+                        .padding(.vertical, 3)
+                        .background(Color.brandBlush)
+                        .cornerRadius(Radius.small)
                 }
             }
             .frame(height: 34)

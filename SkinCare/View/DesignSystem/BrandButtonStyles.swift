@@ -19,6 +19,9 @@ struct PrimaryButtonStyle: ButtonStyle {
             .cornerRadius(Radius.card)
             .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
             .animation(.easeOut(duration: 0.15), value: configuration.isPressed)
+            .sensoryFeedback(.impact(weight: .light), trigger: configuration.isPressed) { old, new in
+                isEnabled && !old && new
+            }
     }
 }
 

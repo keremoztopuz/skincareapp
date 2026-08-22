@@ -79,8 +79,11 @@ struct RecentsView: View {
                             .padding(.horizontal, 20)
 
                             // MARK: Cards
-                            ForEach(vm.records, id: \.self) { record in
+                            ForEach(Array(vm.records.enumerated()), id: \.element) { index, record in
                                 let isSelected = compareRecords.contains(record)
+                                // Records are newest-first; the next index is the previous scan.
+                                let previous = index + 1 < vm.records.count ? vm.records[index + 1] : nil
+                                let delta = previous.map { record.overallScore - $0.overallScore }
                                 SwipeToDeleteContainer(onDelete: {
                                     withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
                                         vm.deleteRecord(record)
@@ -94,7 +97,7 @@ struct RecentsView: View {
                                             showDetail = true
                                         }
                                     } label: {
-                                        RecordCard(record: record, isCompareMode: isCompareMode, isSelected: isSelected)
+                                        RecordCard(record: record, isCompareMode: isCompareMode, isSelected: isSelected, delta: delta)
                                     }
                                     .buttonStyle(.plain)
                                     .animation(.spring(response: 0.2), value: isSelected)
