@@ -18,6 +18,9 @@ struct SkinCareApp: App {
         WindowGroup {
             ContentView()
                 .preferredColorScheme(.light)
+                // Scaled fonts support Dynamic Type; cap the range so
+                // fixed-frame layouts stay intact at accessibility sizes.
+                .dynamicTypeSize(...DynamicTypeSize.accessibility1)
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
                 .environmentObject(appVM)
         }
