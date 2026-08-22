@@ -182,6 +182,14 @@ struct CameraView: View {
                 .padding(.horizontal, 24)
             }
         }
+        .alert(NSLocalizedString("analysis_failed_title", comment: ""), isPresented: Binding(
+            get: { vm.errorMessage != nil },
+            set: { if !$0 { vm.errorMessage = nil } }
+        )) {
+            Button(AppStrings.ok, role: .cancel) {}
+        } message: {
+            Text(vm.errorMessage ?? "")
+        }
         .alert(AppStrings.scanLimitReached, isPresented: $showQuotaAlert) {
             Button(AppStrings.goPro) { showUpgrade = true }
             Button(AppStrings.ok, role: .cancel) {}
