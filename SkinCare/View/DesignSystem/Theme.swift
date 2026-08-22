@@ -28,8 +28,11 @@ enum Radius {
 }
 
 extension View {
-    /// The single card shadow used across the app.
+    /// The single card shadow used across the app: a tight key shadow for
+    /// edge definition layered under a soft ambient one for depth.
     func cardShadow() -> some View {
-        shadow(color: Color.brandPrimary.opacity(0.08), radius: 8, x: 0, y: 3)
+        self
+            .shadow(color: Color.brandPrimary.opacity(0.06), radius: 2, x: 0, y: 1)
+            .shadow(color: Color.brandPrimary.opacity(0.08), radius: 12, x: 0, y: 6)
     }
 }
