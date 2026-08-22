@@ -73,16 +73,16 @@ struct ScoreRing: View {
             VStack(spacing: 4) {
                 HStack(alignment: .firstTextBaseline, spacing: 2) {
                     Text("\(Int(progress.rounded()))")
-                        .font(.scaled(size: size * 0.26, weight: .bold))
+                        .font(.system(size: size * 0.26, weight: .bold))
                         .foregroundColor(.brandText)
                         .contentTransition(.numericText())
                     Text("/100")
-                        .font(.scaled(size: size * 0.09, weight: .semibold))
+                        .font(.system(size: size * 0.09, weight: .semibold))
                         .foregroundColor(.gray)
                 }
 
                 Text(OverallBand(score: score).localizedTitle)
-                    .font(.scaled(size: size * 0.085, weight: .semibold))
+                    .font(.system(size: size * 0.085, weight: .semibold))
                     .foregroundColor(.brandPrimary)
                     .padding(.horizontal, 10)
                     .padding(.vertical, 4)
