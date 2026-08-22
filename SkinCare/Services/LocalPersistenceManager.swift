@@ -139,6 +139,29 @@ class LocalPersistenceManager {
         }
     }
 
+    /// Removes every user-generated record: profile, analysis history, and routine.
+    func deleteAllUserData() {
+        let requests: [NSFetchRequest<NSFetchRequestResult>] = [
+            UserProfile.fetchRequest(),
+            AnalysisRecord.fetchRequest(),
+            RoutineItem.fetchRequest(),
+            RoutineSuggestion.fetchRequest()
+        ]
+        for request in requests {
+            if let objects = try? context.fetch(request) as? [NSManagedObject] {
+                for object in objects {
+                    context.delete(object)
+                }
+            }
+        }
+        do {
+            try context.save()
+        } catch {
+            context.rollback()
+            print("Delete all error: \(error)")
+        }
+    }
+
     func fetchUserProfile() -> UserProfile? {
         let request: NSFetchRequest<UserProfile> = UserProfile.fetchRequest()
         request.sortDescriptors = [NSSortDescriptor(key: "createdAt", ascending: false)]
