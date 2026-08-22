@@ -10,14 +10,9 @@ struct RoutineView: View {
 
     private var isPremium: Bool { SubscriptionManager.shared.isPremium }
 
-    let mainColor = Color(red: 1.0, green: 0.97, blue: 0.97)
-    let secondaryColor = Color(red: 0.47, green: 0.11, blue: 0.17)
-    let primaryText = Color(red: 0.1, green: 0.1, blue: 0.2)
-    let outerColor = Color(red: 1.0, green: 0.87, blue: 0.87)
-
     var body: some View {
         ZStack {
-            mainColor.ignoresSafeArea()
+            Color.brandBackground.ignoresSafeArea()
 
             if !isPremium {
                 premiumLockedView
@@ -55,25 +50,7 @@ struct RoutineView: View {
         ScrollView(.vertical, showsIndicators: false) {
             VStack(alignment: .leading, spacing: 24) {
 
-                HStack {
-                    Button { dismiss() } label: {
-                        Image(systemName: "arrow.left")
-                            .font(.system(size: 16, weight: .bold))
-                            .foregroundColor(.white)
-                            .padding(12)
-                            .background(secondaryColor)
-                            .clipShape(Circle())
-                            .shadow(color: secondaryColor.opacity(0.3), radius: 5, x: 0, y: 3)
-                    }
-                    Spacer()
-                    Text(NSLocalizedString("your_routine", comment: ""))
-                        .font(.system(size: 18, weight: .bold))
-                        .foregroundColor(primaryText)
-                    Spacer()
-                    Circle().fill(Color.clear).frame(width: 40, height: 40)
-                }
-                .padding(.horizontal, 20)
-                .padding(.top, 10)
+                BackHeaderBar(title: NSLocalizedString("your_routine", comment: "")) { dismiss() }
 
                 if !vm.pendingSuggestions.isEmpty {
                     suggestionBanner
@@ -96,8 +73,8 @@ struct RoutineView: View {
             timeButton(title: NSLocalizedString("morning", comment: ""), icon: "sun.max.fill", time: "morning")
             timeButton(title: NSLocalizedString("evening", comment: ""), icon: "moon.fill", time: "evening")
         }
-        .background(outerColor)
-        .cornerRadius(16)
+        .background(Color.brandBlush)
+        .cornerRadius(Radius.card)
         .padding(.horizontal, 20)
     }
 
@@ -113,11 +90,11 @@ struct RoutineView: View {
                 Text(title)
                     .font(.system(size: 16, weight: .semibold))
             }
-            .foregroundColor(vm.selectedRoutineTime == time ? .white : primaryText)
+            .foregroundColor(vm.selectedRoutineTime == time ? .white : .brandText)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 14)
-            .background(vm.selectedRoutineTime == time ? secondaryColor : Color.clear)
-            .cornerRadius(16)
+            .background(vm.selectedRoutineTime == time ? Color.brandPrimary : Color.clear)
+            .cornerRadius(Radius.card)
         }
     }
 
@@ -139,10 +116,10 @@ struct RoutineView: View {
             HStack(spacing: 8) {
                 Image(systemName: step.icon)
                     .font(.system(size: 14))
-                    .foregroundColor(secondaryColor)
+                    .foregroundColor(.brandPrimary)
                 Text(step.label)
                     .font(.system(size: 14, weight: .semibold))
-                    .foregroundColor(secondaryColor)
+                    .foregroundColor(.brandPrimary)
                 Spacer()
                 if item != nil {
                     Text(String(format: NSLocalizedString("step_number_%lld", comment: ""), Int(step.order) + 1))
@@ -159,8 +136,8 @@ struct RoutineView: View {
         }
         .padding(16)
         .background(Color.white)
-        .cornerRadius(20)
-        .shadow(color: Color.black.opacity(0.04), radius: 8, x: 0, y: 4)
+        .cornerRadius(Radius.card)
+        .cardShadow()
     }
 
     private func filledStepContent(item: RoutineItem, step: RoutineViewModel.RoutineStep) -> some View {
@@ -169,29 +146,29 @@ struct RoutineView: View {
                 AsyncImage(url: imageUrl) { image in
                     image.resizable().aspectRatio(contentMode: .fill)
                 } placeholder: {
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(outerColor)
+                    RoundedRectangle(cornerRadius: Radius.small)
+                        .fill(Color.brandBlush)
                         .overlay(
                             Image(systemName: step.icon)
-                                .foregroundColor(secondaryColor.opacity(0.5))
+                                .foregroundColor(Color.brandPrimary.opacity(0.5))
                         )
                 }
                 .frame(width: 56, height: 56)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .clipShape(RoundedRectangle(cornerRadius: Radius.small))
             } else {
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(outerColor)
+                RoundedRectangle(cornerRadius: Radius.small)
+                    .fill(Color.brandBlush)
                     .frame(width: 56, height: 56)
                     .overlay(
                         Image(systemName: step.icon)
-                            .foregroundColor(secondaryColor.opacity(0.5))
+                            .foregroundColor(Color.brandPrimary.opacity(0.5))
                     )
             }
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(item.productName ?? AppStrings.unknownProduct)
                     .font(.system(size: 16, weight: .semibold))
-                    .foregroundColor(primaryText)
+                    .foregroundColor(.brandText)
                     .lineLimit(1)
                 if let brand = item.productBrand {
                     Text(brand)
@@ -210,6 +187,7 @@ struct RoutineView: View {
                     .font(.system(size: 20))
                     .foregroundColor(.gray.opacity(0.4))
             }
+            .accessibilityLabel(Text(NSLocalizedString("delete", comment: "")))
         }
         .contentShape(Rectangle())
         .onTapGesture {
@@ -245,12 +223,12 @@ struct RoutineView: View {
                 Text(String(format: NSLocalizedString("add_product_type_%@", comment: ""), step.label))
                     .font(.system(size: 15, weight: .medium))
             }
-            .foregroundColor(secondaryColor.opacity(0.6))
+            .foregroundColor(Color.brandPrimary.opacity(0.6))
             .frame(maxWidth: .infinity)
             .padding(.vertical, 16)
             .background(
-                RoundedRectangle(cornerRadius: 14)
-                    .strokeBorder(secondaryColor.opacity(0.2), style: StrokeStyle(lineWidth: 1.5, dash: [8, 4]))
+                RoundedRectangle(cornerRadius: Radius.card)
+                    .strokeBorder(Color.brandPrimary.opacity(0.2), style: StrokeStyle(lineWidth: 1.5, dash: [8, 4]))
             )
         }
     }
@@ -260,12 +238,12 @@ struct RoutineView: View {
     private var suggestionBanner: some View {
         VStack(alignment: .leading, spacing: 14) {
             HStack {
-                Image(systemName: "sparkles")
+                Image(systemName: "lightbulb.fill")
                     .font(.system(size: 16))
-                    .foregroundColor(secondaryColor)
+                    .foregroundColor(.brandPrimary)
                 Text(NSLocalizedString("new_recommendations", comment: ""))
                     .font(.system(size: 16, weight: .bold))
-                    .foregroundColor(primaryText)
+                    .foregroundColor(.brandText)
                 Spacer()
                 Text(String(format: NSLocalizedString("products_count_%lld", comment: ""), vm.pendingSuggestions.count))
                     .font(.system(size: 13, weight: .medium))
@@ -289,8 +267,8 @@ struct RoutineView: View {
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 12)
-                        .background(secondaryColor)
-                        .cornerRadius(12)
+                        .background(Color.brandPrimary)
+                        .cornerRadius(Radius.card)
                 }
 
                 Button {
@@ -298,18 +276,18 @@ struct RoutineView: View {
                 } label: {
                     Text(NSLocalizedString("dismiss", comment: ""))
                         .font(.system(size: 14, weight: .bold))
-                        .foregroundColor(secondaryColor)
+                        .foregroundColor(.brandPrimary)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 12)
-                        .background(outerColor)
-                        .cornerRadius(12)
+                        .background(Color.brandBlush)
+                        .cornerRadius(Radius.card)
                 }
             }
         }
         .padding(18)
         .background(Color.white)
-        .cornerRadius(20)
-        .shadow(color: Color.black.opacity(0.04), radius: 8, x: 0, y: 4)
+        .cornerRadius(Radius.card)
+        .cardShadow()
         .padding(.horizontal, 20)
     }
 
@@ -319,14 +297,14 @@ struct RoutineView: View {
                 AsyncImage(url: imageUrl) { image in
                     image.resizable().aspectRatio(contentMode: .fill)
                 } placeholder: {
-                    RoundedRectangle(cornerRadius: 10).fill(outerColor)
+                    RoundedRectangle(cornerRadius: Radius.small).fill(Color.brandBlush)
                 }
                 .frame(width: 80, height: 80)
-                .clipShape(RoundedRectangle(cornerRadius: 10))
+                .clipShape(RoundedRectangle(cornerRadius: Radius.small))
             }
             Text(suggestion.productName ?? "")
                 .font(.system(size: 12, weight: .semibold))
-                .foregroundColor(primaryText)
+                .foregroundColor(.brandText)
                 .lineLimit(1)
             Text(AppStrings.localizedRoutineTime(suggestion.routineTime))
                 .font(.system(size: 11))
@@ -339,43 +317,15 @@ struct RoutineView: View {
 
     private var premiumLockedView: some View {
         VStack(spacing: 24) {
-            HStack {
-                Button { dismiss() } label: {
-                    Image(systemName: "arrow.left")
-                        .font(.system(size: 16, weight: .bold))
-                        .foregroundColor(.white)
-                        .padding(12)
-                        .background(secondaryColor)
-                        .clipShape(Circle())
-                        .shadow(color: secondaryColor.opacity(0.3), radius: 5, x: 0, y: 3)
-                }
-                Spacer()
-                Text(NSLocalizedString("your_routine", comment: ""))
-                    .font(.system(size: 18, weight: .bold))
-                    .foregroundColor(primaryText)
-                Spacer()
-                Circle().fill(Color.clear).frame(width: 40, height: 40)
-            }
-            .padding(.horizontal, 20)
-            .padding(.top, 10)
+            BackHeaderBar(title: NSLocalizedString("your_routine", comment: "")) { dismiss() }
 
             Spacer()
 
-            ZStack {
-                Circle()
-                    .fill(outerColor)
-                    .frame(width: 120, height: 120)
-                Circle()
-                    .fill(secondaryColor)
-                    .frame(width: 80, height: 80)
-                Image(systemName: "lock.fill")
-                    .font(.system(size: 32))
-                    .foregroundColor(.white)
-            }
+            BrandCircleIcon(systemImage: "lock.fill", size: 120)
 
             Text(NSLocalizedString("personalized_routine", comment: ""))
                 .font(.system(size: 24, weight: .bold))
-                .foregroundColor(primaryText)
+                .foregroundColor(.brandText)
 
             Text(NSLocalizedString("upgrade_for_routine", comment: ""))
                 .font(.system(size: 16))
@@ -387,22 +337,13 @@ struct RoutineView: View {
                 showUpgrade = true
             } label: {
                 Text(NSLocalizedString("upgrade_to_pro", comment: ""))
-                    .font(.system(size: 16, weight: .bold))
-                    .foregroundColor(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 18)
-                    .background(secondaryColor)
-                    .cornerRadius(20)
-                    .shadow(color: secondaryColor.opacity(0.3), radius: 10, x: 0, y: 8)
             }
+            .buttonStyle(PrimaryButtonStyle())
             .padding(.horizontal, 40)
 
             Spacer()
         }
     }
-
-    // MARK: - Empty State (no analysis yet)
-
 }
 
 // MARK: - Product Picker Sheet
@@ -417,14 +358,10 @@ struct ProductPickerSheet: View {
     @State private var products: [Product] = []
     @State private var isLoading = true
 
-    let mainColor = Color(red: 1.0, green: 0.97, blue: 0.97)
-    let secondaryColor = Color(red: 0.47, green: 0.11, blue: 0.17)
-    let primaryText = Color(red: 0.1, green: 0.1, blue: 0.2)
-
     var body: some View {
         NavigationStack {
             ZStack {
-                mainColor.ignoresSafeArea()
+                Color.brandBackground.ignoresSafeArea()
 
                 if isLoading {
                     ProgressView()
@@ -478,17 +415,17 @@ struct ProductPickerSheet: View {
                 AsyncImage(url: imageUrl) { image in
                     image.resizable().aspectRatio(contentMode: .fill)
                 } placeholder: {
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(Color(red: 1.0, green: 0.87, blue: 0.87))
+                    RoundedRectangle(cornerRadius: Radius.small)
+                        .fill(Color.brandBlush)
                 }
                 .frame(width: 50, height: 50)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .clipShape(RoundedRectangle(cornerRadius: Radius.small))
             }
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(product.name)
                     .font(.system(size: 15, weight: .semibold))
-                    .foregroundColor(primaryText)
+                    .foregroundColor(.brandText)
                     .lineLimit(1)
                 if let brand = product.brand {
                     Text(brand)
@@ -501,12 +438,12 @@ struct ProductPickerSheet: View {
 
             Image(systemName: "plus.circle.fill")
                 .font(.system(size: 22))
-                .foregroundColor(secondaryColor)
+                .foregroundColor(.brandPrimary)
         }
         .padding(14)
         .background(Color.white)
-        .cornerRadius(16)
-        .shadow(color: Color.black.opacity(0.03), radius: 6, x: 0, y: 3)
+        .cornerRadius(Radius.card)
+        .cardShadow()
     }
 }
 
