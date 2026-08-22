@@ -12,6 +12,8 @@ struct RecordCard: View {
     let record: AnalysisRecord
     var isCompareMode: Bool = false
     var isSelected: Bool = false
+    /// Overall score change versus the previous scan; shows a trend chip when set.
+    var delta: Double? = nil
 
     var body: some View {
         HStack(alignment: .top, spacing: 14) {
@@ -61,6 +63,20 @@ struct RecordCard: View {
                     Text("/100")
                         .font(.system(size: 16))
                         .foregroundColor(.gray)
+
+                    if let delta, abs(delta) >= 1 {
+                        HStack(spacing: 2) {
+                            Image(systemName: delta > 0 ? "arrow.up" : "arrow.down")
+                                .font(.system(size: 10, weight: .bold))
+                            Text("\(abs(Int(delta)))")
+                                .font(.system(size: 12, weight: .bold))
+                        }
+                        .foregroundColor(delta > 0 ? .brandPositive : .brandNegative)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 3)
+                        .background((delta > 0 ? Color.brandPositive : Color.brandNegative).opacity(0.1))
+                        .cornerRadius(Radius.small)
+                    }
                 }
 
                 ScoreBar(label: AppStrings.dryness, value: record.drynessScore)
