@@ -267,3 +267,8 @@
 "severity_low" = "Faible";
 "severity_moderate" = "Modérée";
 "severity_high" = "Élevée";
+"settings" = "Réglages";
+"delete_all_data" = "Supprimer toutes les données";
+"delete_all_data_message" = "Votre profil, votre historique d'analyses et votre routine seront définitivement supprimés de cet appareil.";
+"version" = "Version";
+"restore_no_subscription" = "Aucun abonnement actif à restaurer n'a été trouvé.";
