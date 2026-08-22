@@ -51,7 +51,7 @@ struct CompareView: View {
                                 .frame(width: 40, height: 40)
                                 .cardShadow()
                             Text(NSLocalizedString("vs", comment: ""))
-                                .font(.system(size: 12, weight: .bold))
+                                .font(.scaled(size: 12, weight: .bold))
                                 .foregroundColor(.brandPrimary)
                         }
                         Spacer()
@@ -86,7 +86,7 @@ struct CompareView: View {
                     // MARK: Skin Metrics title
                     HStack {
                         Text(NSLocalizedString("skin_metrics", comment: ""))
-                            .font(.system(size: 17, weight: .bold))
+                            .font(.scaled(size: 17, weight: .bold))
                             .foregroundColor(.brandText)
                         Spacer()
                     }
@@ -109,14 +109,14 @@ struct CompareView: View {
                     VStack(alignment: .leading, spacing: 10) {
                         HStack(spacing: 6) {
                             Image(systemName: "lightbulb.fill")
-                                .font(.system(size: 15))
+                                .font(.scaled(size: 15))
                                 .foregroundColor(.brandPrimary)
                             Text(NSLocalizedString("ai_insight", comment: ""))
-                                .font(.system(size: 15, weight: .bold))
+                                .font(.scaled(size: 15, weight: .bold))
                                 .foregroundColor(.brandPrimary)
                         }
                         Text(analysisInsight)
-                            .font(.system(size: 14))
+                            .font(.scaled(size: 14))
                             .foregroundColor(.brandText)
                             .lineSpacing(4)
                     }
@@ -137,10 +137,10 @@ struct CompareView: View {
     private func dateLabel(record: AnalysisRecord, isLeft: Bool) -> some View {
         VStack(alignment: isLeft ? .leading : .trailing, spacing: 2) {
             Text(record.date ?? Date(), style: .date)
-                .font(.system(size: 13, weight: .semibold))
+                .font(.scaled(size: 13, weight: .semibold))
                 .foregroundColor(.brandPrimary)
             Text(record.date ?? Date(), style: .time)
-                .font(.system(size: 12))
+                .font(.scaled(size: 12))
                 .foregroundColor(.gray)
         }
     }
@@ -162,7 +162,7 @@ struct CompareView: View {
                     .frame(width: 148, height: 180)
                     .overlay(
                         Image(systemName: "person.crop.rectangle")
-                            .font(.system(size: 26))
+                            .font(.scaled(size: 26))
                             .foregroundColor(Color.brandPrimary.opacity(0.5))
                     )
             }
@@ -178,31 +178,31 @@ struct CompareView: View {
 
         HStack {
             Text("\(Int(val1))\(unit)")
-                .font(.system(size: 26, weight: .bold))
+                .font(.scaled(size: 26, weight: .bold))
                 .foregroundColor(.brandText)
                 .frame(width: 72, alignment: .leading)
             Spacer()
             VStack(spacing: 2) {
                 Text(label)
-                    .font(.system(size: 13, weight: .semibold))
+                    .font(.scaled(size: 13, weight: .semibold))
                     .foregroundColor(.brandText)
                 HStack(spacing: 3) {
                     Text(diff == 0 ? "0" : "\(diff > 0 ? "+" : "")\(Int(diff))\(unit)")
-                        .font(.system(size: 12, weight: .bold))
+                        .font(.scaled(size: 12, weight: .bold))
                         .foregroundColor(diffColor)
                     if diff != 0 {
                         Image(systemName: diff > 0 ? "arrow.up" : "arrow.down")
-                            .font(.system(size: 10, weight: .bold))
+                            .font(.scaled(size: 10, weight: .bold))
                             .foregroundColor(diffColor)
                     }
                 }
                 Text(NSLocalizedString("vs", comment: ""))
-                    .font(.system(size: 11))
+                    .font(.scaled(size: 11))
                     .foregroundColor(.gray.opacity(0.5))
             }
             Spacer()
             Text("\(Int(val2))\(unit)")
-                .font(.system(size: 26, weight: .bold))
+                .font(.scaled(size: 26, weight: .bold))
                 .foregroundColor(.gray)
                 .frame(width: 72, alignment: .trailing)
         }
@@ -223,28 +223,28 @@ struct CompareView: View {
         VStack(spacing: 0) {
             HStack(alignment: .center) {
                 Text("\(Int(val1))%")
-                    .font(.system(size: 16, weight: .bold))
+                    .font(.scaled(size: 16, weight: .bold))
                     .foregroundColor(.brandText)
                     .frame(width: 48, alignment: .leading)
                 Spacer()
                 VStack(spacing: 1) {
                     Text(label)
-                        .font(.system(size: 13, weight: .semibold))
+                        .font(.scaled(size: 13, weight: .semibold))
                         .foregroundColor(.brandText)
                     if diff != 0 {
                         HStack(spacing: 3) {
                             Text("\(diff > 0 ? "+" : "")\(Int(diff))%")
-                                .font(.system(size: 11, weight: .bold))
+                                .font(.scaled(size: 11, weight: .bold))
                                 .foregroundColor(diffColor)
                             Image(systemName: diff > 0 ? "arrow.up" : "arrow.down")
-                                .font(.system(size: 9, weight: .bold))
+                                .font(.scaled(size: 9, weight: .bold))
                                 .foregroundColor(diffColor)
                         }
                     }
                 }
                 Spacer()
                 Text("\(Int(val2))%")
-                    .font(.system(size: 16, weight: .bold))
+                    .font(.scaled(size: 16, weight: .bold))
                     .foregroundColor(.gray)
                     .frame(width: 48, alignment: .trailing)
             }
