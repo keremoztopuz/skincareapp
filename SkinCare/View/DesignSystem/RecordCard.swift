@@ -29,7 +29,7 @@ struct RecordCard: View {
                     .frame(width: 120, height: 200)
                     .overlay(
                         Image(systemName: "person.crop.rectangle")
-                            .font(.system(size: 24))
+                            .font(.scaled(size: 24))
                             .foregroundColor(Color.brandPrimary.opacity(0.6))
                     )
             }
@@ -37,17 +37,17 @@ struct RecordCard: View {
             VStack(alignment: .leading, spacing: 14) {
                 HStack {
                     Text(record.date ?? Date(), style: .date)
-                        .font(.system(size: 14))
+                        .font(.scaled(size: 14))
                         .foregroundColor(.gray)
                     Spacer()
                     if isCompareMode {
                         Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-                            .font(.system(size: 22))
+                            .font(.scaled(size: 22))
                             .foregroundColor(isSelected ? Color.brandPrimary : Color.gray.opacity(0.4))
                             .animation(.spring(response: 0.2), value: isSelected)
                     } else {
                         Text(AppStrings.localizedCondition(record.condition))
-                            .font(.system(size: 13, weight: .semibold))
+                            .font(.scaled(size: 13, weight: .semibold))
                             .foregroundColor(.brandPrimary)
                             .padding(.horizontal, 12)
                             .padding(.vertical, 5)
@@ -58,18 +58,18 @@ struct RecordCard: View {
 
                 HStack(alignment: .firstTextBaseline, spacing: 4) {
                     Text("\(Int(record.overallScore))")
-                        .font(.system(size: 36, weight: .bold))
+                        .font(.scaled(size: 36, weight: .bold))
                         .foregroundColor(.brandText)
                     Text("/100")
-                        .font(.system(size: 16))
+                        .font(.scaled(size: 16))
                         .foregroundColor(.gray)
 
                     if let delta, abs(delta) >= 1 {
                         HStack(spacing: 2) {
                             Image(systemName: delta > 0 ? "arrow.up" : "arrow.down")
-                                .font(.system(size: 10, weight: .bold))
+                                .font(.scaled(size: 10, weight: .bold))
                             Text("\(abs(Int(delta)))")
-                                .font(.system(size: 12, weight: .bold))
+                                .font(.scaled(size: 12, weight: .bold))
                         }
                         .foregroundColor(delta > 0 ? .brandPositive : .brandNegative)
                         .padding(.horizontal, 6)
