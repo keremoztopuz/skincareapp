@@ -187,12 +187,14 @@ struct ResultView: View {
                     }
 
                     // MARK: - Non-diagnostic disclaimer
+                    // Pad before expanding: the reverse order makes this text
+                    // wider than the screen and shifts the whole page sideways.
                     Text(NSLocalizedString("results_not_medical_advice", comment: ""))
                         .font(.system(size: 12))
                         .foregroundColor(.gray)
                         .multilineTextAlignment(.center)
-                        .frame(maxWidth: .infinity)
                         .padding(.horizontal, 24)
+                        .frame(maxWidth: .infinity)
                         .padding(.bottom, 24)
                 }
                 .padding(.top, 70)
