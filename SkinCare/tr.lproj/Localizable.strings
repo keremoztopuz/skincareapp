@@ -281,3 +281,10 @@
 "severity_low" = "Düşük";
 "severity_moderate" = "Orta";
 "severity_high" = "Yüksek";
+
+/* Profile settings section */
+"settings" = "Ayarlar";
+"delete_all_data" = "Tüm Verileri Sil";
+"delete_all_data_message" = "Profiliniz, analiz geçmişiniz ve rutininiz bu cihazdan kalıcı olarak silinir.";
+"version" = "Sürüm";
+"restore_no_subscription" = "Geri yüklenecek aktif bir abonelik bulunamadı.";
