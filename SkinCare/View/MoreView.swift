@@ -466,6 +466,7 @@ struct InfoCard: View {
             Image(systemName: "chevron.right")
                 .font(.system(size: 14, weight: .bold))
                 .foregroundColor(.gray.opacity(0.5))
+                .accessibilityHidden(true)
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 16)
