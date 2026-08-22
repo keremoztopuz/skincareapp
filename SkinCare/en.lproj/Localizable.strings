@@ -15,6 +15,8 @@
 "your_routine" = "Your Routine";
 "steps_configured_%lld" = "%lld steps configured";
 "tap_to_setup_routine" = "Tap to set up your personalized skincare routine";
+"routine_steps_done_%lld_%lld" = "%1$lld of %2$lld done";
+"new_suggestions_%lld" = "%lld new suggestions";
 "recommended_products" = "Recommended Products";
 "latest_articles" = "Latest Articles";
 "morning_routine" = "Morning Routine";
