@@ -9,7 +9,7 @@ class OnBoardingViewModel: ObservableObject {
          OnBoardingPage(
              lottieAnimation: "AI Star loader UI",
              lottieOffset: CGPoint(x: 5, y: 0),
-             icon: "sparkle",
+             icon: "viewfinder",
              title: NSLocalizedString("onboarding_title_1", comment: ""),
              description: NSLocalizedString("onboarding_desc_1", comment: "")
          ),
