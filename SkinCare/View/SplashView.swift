@@ -23,49 +23,26 @@ struct SplashView: View {
     @State private var logoScale: CGFloat = 0
     @State private var titleScale: CGFloat = 0
     @State private var tipScale: CGFloat = 0
-    @State private var isPulsing = false
 
     var body: some View {
         GeometryReader { geo in
             let outerSize = geo.size.width * 0.42
-            let innerSize = outerSize * 0.75
 
             ZStack {
-                Color(red: 1.0, green: 0.97, blue: 0.97)
+                Color.brandBackground
                     .ignoresSafeArea()
 
                 VStack {
                     Spacer()
 
                     // Logo
-                    ZStack {
-                        Circle()
-                            .fill(Color(red: 1.0, green: 0.87, blue: 0.87))
-                            .frame(width: outerSize, height: outerSize)
-                            .scaleEffect(isPulsing ? 1.12 : 1.0)
-                            .animation(
-                                .easeInOut(duration: 1.4).repeatForever(autoreverses: true),
-                                value: isPulsing
-                            )
-
-                        Circle()
-                            .fill(Color(red: 0.47, green: 0.11, blue: 0.17))
-                            .frame(width: innerSize, height: innerSize)
-
-                        // Icon
-                        Image("AppLogo")
-                            .renderingMode(.template)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 200, height: 200)
-                            .foregroundColor(.white)
-                    }
-                    .scaleEffect(logoScale)
+                    BrandCircleIcon(assetImage: "AppLogo", size: outerSize, animated: true)
+                        .scaleEffect(logoScale)
 
                     // App name
                     Text("SkinCareAI")
                         .font(.system(size: 28, weight: .bold))
-                        .foregroundColor(Color(red: 0.47, green: 0.11, blue: 0.17))
+                        .foregroundColor(.brandPrimary)
                         .padding(.top, 12)
                         .scaleEffect(titleScale)
                     
@@ -99,7 +76,6 @@ struct SplashView: View {
             }
             .onAppear {
                 currentTip = tips.randomElement() ?? ""
-                isPulsing = true
 
                 withAnimation(.spring(response: 0.4, dampingFraction: 0.6)) {
                     logoScale = 1.0
