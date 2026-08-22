@@ -59,13 +59,13 @@ struct RecentsView: View {
 
                             // MARK: Filter
                             Menu {
-                                Button(NSLocalizedString("all_time", comment: "")) { vm.selectedFilter = "All Time" }
-                                Button(NSLocalizedString("this_week", comment: "")) { vm.selectedFilter = "This Week" }
-                                Button(NSLocalizedString("this_month", comment: "")) { vm.selectedFilter = "This Month" }
+                                ForEach(RecordFilter.allCases, id: \.self) { filter in
+                                    Button(filter.localizedTitle) { vm.selectedFilter = filter }
+                                }
                             } label: {
                                 HStack {
                                     Image(systemName: "calendar").font(.system(size: 16))
-                                    Text(filterTitle(vm.selectedFilter)).font(.system(size: 16, weight: .medium))
+                                    Text(vm.selectedFilter.localizedTitle).font(.system(size: 16, weight: .medium))
                                     Spacer()
                                     Image(systemName: "chevron.down").font(.system(size: 14))
                                 }
@@ -201,14 +201,6 @@ struct RecentsView: View {
             } else if compareRecords.count < 2 {
                 compareRecords.append(record)
             }
-        }
-    }
-
-    private func filterTitle(_ filter: String) -> String {
-        switch filter {
-        case "This Week": return AppStrings.thisWeek
-        case "This Month": return AppStrings.thisMonth
-        default: return AppStrings.allTime
         }
     }
 
