@@ -198,8 +198,14 @@ struct CameraView: View {
             vm.checkPermission()
             vm.resetScanner()
         }
+        .onDisappear {
+            vm.stopSession()
+        }
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
             vm.checkPermission()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.didEnterBackgroundNotification)) { _ in
+            vm.stopSession()
         }
         .fullScreenCover(isPresented: $showGuide, onDismiss: {
             if vm.permissionStatus == .notDetermined {
