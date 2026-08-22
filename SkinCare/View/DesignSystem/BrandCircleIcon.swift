@@ -6,7 +6,7 @@
 import SwiftUI
 
 /// Signature nested-circle mark: blush outer ring, burgundy core, white glyph.
-/// `animated` adds the breathing pulse — reserve it for splash and onboarding.
+/// `animated` adds the breathing pulse: reserve it for splash and onboarding.
 struct BrandCircleIcon: View {
     var systemImage: String? = nil
     var assetImage: String? = nil
