@@ -281,6 +281,7 @@ struct SwipeToDeleteContainer<Content: View>: View {
             }
             .padding(.trailing, 20)
             .opacity(showDeleteButton ? 1 : 0)
+            .accessibilityHidden(!showDeleteButton)
 
             content
                 .offset(x: offset)
@@ -310,6 +311,13 @@ struct SwipeToDeleteContainer<Content: View>: View {
                 )
         }
         .clipped()
+        // The reveal gesture is a drag, which VoiceOver and Switch Control
+        // cannot perform; expose delete as a custom action instead.
+        .accessibilityAction(named: Text(NSLocalizedString("delete", comment: ""))) {
+            if !disabled {
+                onDelete()
+            }
+        }
     }
 }
 
