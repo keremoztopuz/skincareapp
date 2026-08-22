@@ -24,7 +24,7 @@ struct RecentsView: View {
                             // MARK: Header
                             HStack {
                                 Text(NSLocalizedString("recent_analysis", comment: ""))
-                                    .font(.system(size: 28, weight: .bold))
+                                    .font(.scaled(size: 28, weight: .bold))
                                     .foregroundColor(.brandText)
                                 Spacer()
                                 Button {
@@ -35,10 +35,10 @@ struct RecentsView: View {
                                 } label: {
                                     HStack(spacing: 6) {
                                         Image(systemName: isCompareMode ? "xmark" : "arrow.left.arrow.right")
-                                            .font(.system(size: 13, weight: .semibold))
+                                            .font(.scaled(size: 13, weight: .semibold))
                                             .accessibilityHidden(true)
                                         Text(isCompareMode ? AppStrings.cancel : AppStrings.compare)
-                                            .font(.system(size: 14, weight: .semibold))
+                                            .font(.scaled(size: 14, weight: .semibold))
                                     }
                                     .foregroundColor(.brandPrimary)
                                     .padding(.horizontal, 14)
@@ -52,7 +52,7 @@ struct RecentsView: View {
 
                             if isCompareMode {
                                 Text(NSLocalizedString("select_2_analyses", comment: ""))
-                                    .font(.system(size: 14))
+                                    .font(.scaled(size: 14))
                                     .foregroundColor(.gray)
                                     .padding(.horizontal, 20)
                                     .transition(.opacity)
@@ -65,10 +65,10 @@ struct RecentsView: View {
                                 }
                             } label: {
                                 HStack {
-                                    Image(systemName: "calendar").font(.system(size: 16)).accessibilityHidden(true)
-                                    Text(vm.selectedFilter.localizedTitle).font(.system(size: 16, weight: .medium))
+                                    Image(systemName: "calendar").font(.scaled(size: 16)).accessibilityHidden(true)
+                                    Text(vm.selectedFilter.localizedTitle).font(.scaled(size: 16, weight: .medium))
                                     Spacer()
-                                    Image(systemName: "chevron.down").font(.system(size: 14)).accessibilityHidden(true)
+                                    Image(systemName: "chevron.down").font(.scaled(size: 14)).accessibilityHidden(true)
                                 }
                                 .foregroundColor(.brandText)
                                 .padding(.horizontal, 16)
@@ -122,17 +122,17 @@ struct RecentsView: View {
                                                 .fill(Color.brandBlush)
                                                 .frame(width: 72, height: 72)
                                             Image(systemName: "lock.fill")
-                                                .font(.system(size: 26))
+                                                .font(.scaled(size: 26))
                                                 .foregroundColor(.brandPrimary)
                                         }
                                         .accessibilityHidden(true)
 
                                         Text(NSLocalizedString("see_all_analyses", comment: ""))
-                                            .font(.system(size: 20, weight: .bold))
+                                            .font(.scaled(size: 20, weight: .bold))
                                             .foregroundColor(.brandText)
 
                                         Text(NSLocalizedString("go_pro_history", comment: ""))
-                                            .font(.system(size: 14))
+                                            .font(.scaled(size: 14))
                                             .foregroundColor(.gray)
                                             .multilineTextAlignment(.center)
 
@@ -141,10 +141,10 @@ struct RecentsView: View {
                                         } label: {
                                             HStack(spacing: 8) {
                                                 Image(systemName: "crown.fill")
-                                                    .font(.system(size: 14))
+                                                    .font(.scaled(size: 14))
                                                     .accessibilityHidden(true)
                                                 Text(NSLocalizedString("go_pro", comment: ""))
-                                                    .font(.system(size: 16, weight: .bold))
+                                                    .font(.scaled(size: 16, weight: .bold))
                                             }
                                             .foregroundColor(.white)
                                             .padding(.horizontal, 32)
@@ -222,17 +222,17 @@ struct EmptyStateView: View {
 
             VStack(spacing: 10) {
                 Text(NSLocalizedString("no_analysis_yet", comment: ""))
-                    .font(.system(size: 24, weight: .bold))
+                    .font(.scaled(size: 24, weight: .bold))
                 Text(NSLocalizedString("go_to_camera", comment: ""))
-                    .font(.system(size: 16))
+                    .font(.scaled(size: 16))
                     .foregroundColor(.gray)
                     .multilineTextAlignment(.center)
             }
 
             Button(action: onScanTap) {
                 HStack(spacing: 10) {
-                    Image(systemName: "viewfinder").font(.system(size: 20)).accessibilityHidden(true)
-                    Text(NSLocalizedString("make_first_scan", comment: "")).font(.system(size: 17, weight: .semibold))
+                    Image(systemName: "viewfinder").font(.scaled(size: 20)).accessibilityHidden(true)
+                    Text(NSLocalizedString("make_first_scan", comment: "")).font(.scaled(size: 17, weight: .semibold))
                 }
                 .foregroundColor(.white)
                 .padding(.horizontal, 36)
@@ -271,10 +271,10 @@ struct SwipeToDeleteContainer<Content: View>: View {
             } label: {
                 VStack(spacing: 4) {
                     Image(systemName: "trash.fill")
-                        .font(.system(size: 20))
+                        .font(.scaled(size: 20))
                         .accessibilityHidden(true)
                     Text(NSLocalizedString("delete", comment: ""))
-                        .font(.system(size: 12, weight: .medium))
+                        .font(.scaled(size: 12, weight: .medium))
                 }
                 .foregroundColor(.white)
                 .frame(width: deleteWidth)
