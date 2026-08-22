@@ -29,10 +29,10 @@ struct UpgradeSheetView: View {
                 // MARK: Title
                 VStack(spacing: 8) {
                     Text(NSLocalizedString("upgrade_to_pro", comment: ""))
-                        .font(.system(size: 28, weight: .bold))
+                        .font(.scaled(size: 28, weight: .bold))
                         .foregroundColor(.brandText)
                     Text(NSLocalizedString("unlock_full_capabilities", comment: ""))
-                        .font(.system(size: 15))
+                        .font(.scaled(size: 15))
                         .foregroundColor(.gray)
                         .multilineTextAlignment(.center)
                 }
@@ -73,7 +73,7 @@ struct UpgradeSheetView: View {
                 // MARK: Price and renewal disclosure
                 if let price = priceText {
                     Text(String(format: NSLocalizedString("price_monthly_%@", comment: ""), price))
-                        .font(.system(size: 13))
+                        .font(.scaled(size: 13))
                         .foregroundColor(.gray)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 24)
@@ -91,7 +91,7 @@ struct UpgradeSheetView: View {
                                 .scaleEffect(0.85)
                         } else {
                             Image(systemName: "crown.fill")
-                                .font(.system(size: 17))
+                                .font(.scaled(size: 17))
                             Text(NSLocalizedString("upgrade_now", comment: ""))
                         }
                     }
@@ -105,7 +105,7 @@ struct UpgradeSheetView: View {
                     restore()
                 } label: {
                     Text(NSLocalizedString("restore_purchases", comment: ""))
-                        .font(.system(size: 13, weight: .medium))
+                        .font(.scaled(size: 13, weight: .medium))
                         .foregroundColor(.gray.opacity(0.7))
                         .padding(.top, 12)
                 }
@@ -115,7 +115,7 @@ struct UpgradeSheetView: View {
                     dismiss()
                 } label: {
                     Text(NSLocalizedString("continue_with_free_plan", comment: ""))
-                        .font(.system(size: 15))
+                        .font(.scaled(size: 15))
                         .foregroundColor(.gray)
                         .padding(.vertical, 10)
                 }
@@ -145,11 +145,11 @@ struct UpgradeSheetView: View {
     private func featureRow(icon: String, text: String, isFree: Bool) -> some View {
         HStack(spacing: 14) {
             Image(systemName: icon)
-                .font(.system(size: 16))
+                .font(.scaled(size: 16))
                 .foregroundColor(isFree ? Color.gray.opacity(0.5) : .brandPrimary)
                 .frame(width: 22)
             Text(text)
-                .font(.system(size: 14, weight: isFree ? .regular : .medium))
+                .font(.scaled(size: 14, weight: isFree ? .regular : .medium))
                 .foregroundColor(isFree ? .gray : .brandText)
             Spacer()
         }
@@ -165,14 +165,14 @@ struct UpgradeSheetView: View {
                 ZStack {
                     Circle().fill(Color.white).frame(width: 80, height: 80)
                     Image(systemName: "checkmark.circle.fill")
-                        .font(.system(size: 52))
+                        .font(.scaled(size: 52))
                         .foregroundColor(.brandPositive)
                 }
                 Text(NSLocalizedString("welcome_to_pro", comment: ""))
-                    .font(.system(size: 22, weight: .bold))
+                    .font(.scaled(size: 22, weight: .bold))
                     .foregroundColor(.white)
                 Text(NSLocalizedString("all_features_now_unlocked", comment: ""))
-                    .font(.system(size: 15))
+                    .font(.scaled(size: 15))
                     .foregroundColor(.white.opacity(0.85))
             }
         }
