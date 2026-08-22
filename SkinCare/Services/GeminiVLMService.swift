@@ -98,6 +98,7 @@ private enum GeminiRequest {
                             Assess wrinkles, eyebags, pigmentation, and hydration.
                             Acne and redness are handled separately and must not be included.
                             Use scores from 0 to 100, where higher means the issue is more visible or severe.
+                            Exception: for hydration, higher means BETTER hydrated skin. 100 means optimally hydrated, 0 means severely dehydrated.
                             Return continuous numeric scores with one decimal place, such as 18.7 or 42.3.
                             Do not round scores to multiples of 5 or 10 unless the visual evidence truly supports that exact value.
                             If a signal is weak or unclear, keep the score low and confidence low.
