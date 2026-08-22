@@ -11,6 +11,12 @@ internal import CoreData
 internal import Combine
 
 class ProfileSetupViewModel: ObservableObject {
+    private let persistenceManager: LocalPersistenceManager
+
+    init(persistenceManager: LocalPersistenceManager = .shared) {
+        self.persistenceManager = persistenceManager
+    }
+
     @Published var currentPage = 0
     @Published var name = "" {
         didSet {
@@ -53,14 +59,13 @@ class ProfileSetupViewModel: ObservableObject {
     }
 
     func completeProfile() {
-        let manager = LocalPersistenceManager.shared
-          manager.saveUserProfile(
-              name: name,
-              skinType: skinType?.rawValue ?? "Normal",
-              ageRange: String(age),
-              gender: gender?.rawValue ?? "Prefer not to say",
-              knownIssues: ""
-          )
-          didFinish = true
-      }
-  }
+        persistenceManager.saveUserProfile(
+            name: name,
+            skinType: skinType?.rawValue ?? "Normal",
+            ageRange: String(age),
+            gender: gender?.rawValue ?? "Prefer not to say",
+            knownIssues: ""
+        )
+        didFinish = true
+    }
+}
