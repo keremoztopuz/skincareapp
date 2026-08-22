@@ -67,6 +67,55 @@ class LocalPersistenceManager {
             return record
         }
     }
+    // MARK: - Score schema migration
+
+    /// Recomputes the derived scores of existing records with the current
+    /// scoring formulas so history stays comparable after an engine change.
+    /// Runs once per schema version, guarded by UserDefaults.
+    func migrateScoresIfNeeded() {
+        let versionKey = "scoreSchemaVersion"
+        let currentVersion = 2
+        guard UserDefaults.standard.integer(forKey: versionKey) < currentVersion else { return }
+
+        let skinType = fetchUserProfile()?.skinType?.lowercased() ?? "normal"
+        let engine = ScoringEngine()
+
+        for record in fetchAnalysisRecords() {
+            // Very old records stored raw scores on a 0-1 scale; the ML path
+            // clamps to [1, 99], so genuine 0-100 records always have a raw
+            // maximum of at least 1.0.
+            let rawMax = max(record.acneScore, record.eczemaScore, record.psoriasisScore,
+                             record.pigmentationScore, record.hydrationScore)
+            let scale: Double = rawMax <= 1.0 ? 1.0 : 100.0
+
+            let scores = engine.calculateScore(
+                acne: record.acneScore / scale,
+                redness: record.eczemaScore / scale,
+                psoriasis: record.psoriasisScore / scale,
+                pigmentation: record.pigmentationScore / scale,
+                hydration: record.hydrationScore / scale,
+                wrinkles: record.wrinkleScore / scale,
+                eyebags: record.eyebagScore / scale,
+                skinType: skinType
+            )
+
+            record.drynessScore = scores.drynessScore
+            record.oilinessScore = scores.oilinessScore
+            record.inflammationScore = scores.inflammationScore
+            record.overallScore = scores.overallScore
+            if record.confidence == 0 {
+                record.confidence = max(record.acneScore, record.eczemaScore, record.psoriasisScore) / scale
+            }
+        }
+
+        do {
+            try context.save()
+        } catch {
+            print("Score migration save error: \(error)")
+        }
+        UserDefaults.standard.set(currentVersion, forKey: versionKey)
+    }
+
     // Fetching
     func fetchAnalysisRecords() -> [AnalysisRecord] {
         let request: NSFetchRequest<AnalysisRecord> = AnalysisRecord.fetchRequest()
