@@ -86,10 +86,10 @@ struct RoutineView: View {
         } label: {
             HStack(spacing: 8) {
                 Image(systemName: icon)
-                    .font(.system(size: 16))
+                    .font(.scaled(size: 16))
                     .accessibilityHidden(true)
                 Text(title)
-                    .font(.system(size: 16, weight: .semibold))
+                    .font(.scaled(size: 16, weight: .semibold))
             }
             .foregroundColor(vm.selectedRoutineTime == time ? .white : .brandText)
             .frame(maxWidth: .infinity)
@@ -116,16 +116,16 @@ struct RoutineView: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 8) {
                 Image(systemName: step.icon)
-                    .font(.system(size: 14))
+                    .font(.scaled(size: 14))
                     .foregroundColor(.brandPrimary)
                     .accessibilityHidden(true)
                 Text(step.label)
-                    .font(.system(size: 14, weight: .semibold))
+                    .font(.scaled(size: 14, weight: .semibold))
                     .foregroundColor(.brandPrimary)
                 Spacer()
                 if item != nil {
                     Text(String(format: NSLocalizedString("step_number_%lld", comment: ""), Int(step.order) + 1))
-                        .font(.system(size: 12, weight: .medium))
+                        .font(.scaled(size: 12, weight: .medium))
                         .foregroundColor(.gray)
                 }
             }
@@ -171,12 +171,12 @@ struct RoutineView: View {
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(item.productName ?? AppStrings.unknownProduct)
-                    .font(.system(size: 16, weight: .semibold))
+                    .font(.scaled(size: 16, weight: .semibold))
                     .foregroundColor(.brandText)
                     .lineLimit(1)
                 if let brand = item.productBrand {
                     Text(brand)
-                        .font(.system(size: 14))
+                        .font(.scaled(size: 14))
                         .foregroundColor(.gray)
                         .lineLimit(1)
                 }
@@ -188,7 +188,7 @@ struct RoutineView: View {
                 vm.removeItem(item)
             } label: {
                 Image(systemName: "xmark.circle.fill")
-                    .font(.system(size: 20))
+                    .font(.scaled(size: 20))
                     .foregroundColor(.gray.opacity(0.4))
             }
             .accessibilityLabel(Text(NSLocalizedString("delete", comment: "")))
@@ -225,10 +225,10 @@ struct RoutineView: View {
         } label: {
             HStack(spacing: 10) {
                 Image(systemName: "plus.circle.fill")
-                    .font(.system(size: 20))
+                    .font(.scaled(size: 20))
                     .accessibilityHidden(true)
                 Text(String(format: NSLocalizedString("add_product_type_%@", comment: ""), step.label))
-                    .font(.system(size: 15, weight: .medium))
+                    .font(.scaled(size: 15, weight: .medium))
             }
             .foregroundColor(Color.brandPrimary.opacity(0.6))
             .frame(maxWidth: .infinity)
@@ -246,15 +246,15 @@ struct RoutineView: View {
         VStack(alignment: .leading, spacing: 14) {
             HStack {
                 Image(systemName: "lightbulb.fill")
-                    .font(.system(size: 16))
+                    .font(.scaled(size: 16))
                     .foregroundColor(.brandPrimary)
                     .accessibilityHidden(true)
                 Text(NSLocalizedString("new_recommendations", comment: ""))
-                    .font(.system(size: 16, weight: .bold))
+                    .font(.scaled(size: 16, weight: .bold))
                     .foregroundColor(.brandText)
                 Spacer()
                 Text(String(format: NSLocalizedString("products_count_%lld", comment: ""), vm.pendingSuggestions.count))
-                    .font(.system(size: 13, weight: .medium))
+                    .font(.scaled(size: 13, weight: .medium))
                     .foregroundColor(.gray)
             }
 
@@ -271,7 +271,7 @@ struct RoutineView: View {
                     withAnimation { vm.acceptAllSuggestions() }
                 } label: {
                     Text(NSLocalizedString("accept_all", comment: ""))
-                        .font(.system(size: 14, weight: .bold))
+                        .font(.scaled(size: 14, weight: .bold))
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 12)
@@ -283,7 +283,7 @@ struct RoutineView: View {
                     withAnimation { vm.dismissAllSuggestions() }
                 } label: {
                     Text(NSLocalizedString("dismiss", comment: ""))
-                        .font(.system(size: 14, weight: .bold))
+                        .font(.scaled(size: 14, weight: .bold))
                         .foregroundColor(.brandPrimary)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 12)
@@ -311,11 +311,11 @@ struct RoutineView: View {
                 .clipShape(RoundedRectangle(cornerRadius: Radius.small))
             }
             Text(suggestion.productName ?? "")
-                .font(.system(size: 12, weight: .semibold))
+                .font(.scaled(size: 12, weight: .semibold))
                 .foregroundColor(.brandText)
                 .lineLimit(1)
             Text(AppStrings.localizedRoutineTime(suggestion.routineTime))
-                .font(.system(size: 11))
+                .font(.scaled(size: 11))
                 .foregroundColor(.gray)
         }
         .frame(width: 90)
@@ -332,11 +332,11 @@ struct RoutineView: View {
             BrandCircleIcon(systemImage: "lock.fill", size: 120)
 
             Text(NSLocalizedString("personalized_routine", comment: ""))
-                .font(.system(size: 24, weight: .bold))
+                .font(.scaled(size: 24, weight: .bold))
                 .foregroundColor(.brandText)
 
             Text(NSLocalizedString("upgrade_for_routine", comment: ""))
-                .font(.system(size: 16))
+                .font(.scaled(size: 16))
                 .foregroundColor(.gray)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 40)
@@ -376,11 +376,11 @@ struct ProductPickerSheet: View {
                 } else if products.isEmpty {
                     VStack(spacing: 12) {
                         Image(systemName: "tray")
-                            .font(.system(size: 40))
+                            .font(.scaled(size: 40))
                             .foregroundColor(.gray)
                             .accessibilityHidden(true)
                         Text(NSLocalizedString("no_products_found", comment: ""))
-                            .font(.system(size: 16))
+                            .font(.scaled(size: 16))
                             .foregroundColor(.gray)
                     }
                 } else {
@@ -433,12 +433,12 @@ struct ProductPickerSheet: View {
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(product.name)
-                    .font(.system(size: 15, weight: .semibold))
+                    .font(.scaled(size: 15, weight: .semibold))
                     .foregroundColor(.brandText)
                     .lineLimit(1)
                 if let brand = product.brand {
                     Text(brand)
-                        .font(.system(size: 13))
+                        .font(.scaled(size: 13))
                         .foregroundColor(.gray)
                 }
             }
@@ -446,7 +446,7 @@ struct ProductPickerSheet: View {
             Spacer()
 
             Image(systemName: "plus.circle.fill")
-                .font(.system(size: 22))
+                .font(.scaled(size: 22))
                 .foregroundColor(.brandPrimary)
                 .accessibilityHidden(true)
         }
