@@ -172,12 +172,6 @@ struct CameraView: View {
                     .disabled(vm.isAnalyzing || !vm.isPermissionGranted)
                     .padding(.bottom, 12)
 
-                    Text(AppStrings.cloudAnalysisDisclosure)
-                        .font(.system(size: 12, weight: .regular))
-                        .foregroundColor(.gray.opacity(0.8))
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, 20)
-                        .padding(.bottom, 20)
                 }
                 .padding(.horizontal, 24)
             }
