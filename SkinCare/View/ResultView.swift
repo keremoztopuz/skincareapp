@@ -44,25 +44,25 @@ struct ResultView: View {
                             .font(.system(size: 18, weight: .bold))
                             .foregroundColor(.brandText)
 
-                        ZStack {
-                            if let data = record?.imageData, let uiImage = UIImage(data: data) {
-                                Image(uiImage: uiImage)
-                                    .resizable()
-                                    .scaledToFill()
-                            } else {
-                                RoundedRectangle(cornerRadius: Radius.card)
-                                    .fill(Color.brandPrimary.opacity(0.12))
-                                    .overlay {
-                                        Image(systemName: "camera.viewfinder")
-                                            .font(.system(size: 50))
-                                            .foregroundColor(Color.brandPrimary.opacity(0.3))
-                                    }
+                        // The photo is drawn as an overlay so a fill-scaled image
+                        // can never widen the layout beyond the screen.
+                        Rectangle()
+                            .fill(Color.brandPrimary.opacity(0.12))
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 370)
+                            .overlay {
+                                if let data = record?.imageData, let uiImage = UIImage(data: data) {
+                                    Image(uiImage: uiImage)
+                                        .resizable()
+                                        .scaledToFill()
+                                } else {
+                                    Image(systemName: "camera.viewfinder")
+                                        .font(.system(size: 50))
+                                        .foregroundColor(Color.brandPrimary.opacity(0.3))
+                                }
                             }
-                        }
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 370)
-                        .cornerRadius(Radius.card)
-                        .cardShadow()
+                            .clipShape(RoundedRectangle(cornerRadius: Radius.card))
+                            .cardShadow()
                     }
                     .padding(.horizontal, 20)
                     .padding(.top, isFromRecents ? 0 : 20)
