@@ -80,7 +80,7 @@ struct HomeView: View {
                                     .frame(width: 142, height: 142)
                                     .overlay {
                                         VStack(spacing: 10) {
-                                            Image(systemName: "viewfinder")
+                                            Image(systemName: "sparkles")
                                                 .font(.system(size: 44, weight: .medium))
                                                 .foregroundColor(.white)
 
