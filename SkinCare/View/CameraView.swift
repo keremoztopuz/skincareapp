@@ -26,11 +26,11 @@ struct CameraView: View {
                 VStack(alignment: .leading, spacing: 12) {
                     VStack(alignment: .leading, spacing: 4) {
                         Text(NSLocalizedString("face_analysis", comment: ""))
-                            .font(.system(size: 34, weight: .bold))
+                            .font(.scaled(size: 34, weight: .bold))
                             .foregroundColor(.brandText)
 
                         Text(NSLocalizedString("position_face", comment: ""))
-                            .font(.system(size: 16, weight: .regular))
+                            .font(.scaled(size: 16, weight: .regular))
                             .foregroundColor(.gray)
                     }
                     .padding(.top, 20)
@@ -39,11 +39,11 @@ struct CameraView: View {
                     if !subscriptionManager.isPremium {
                         HStack(spacing: 6) {
                             Image(systemName: "camera.badge.clock")
-                                .font(.system(size: 13))
+                                .font(.scaled(size: 13))
                             Text(subscriptionManager.scansRemaining == 0
                                  ? AppStrings.monthlyScanLimitExpired
                                  : String(format: AppStrings.scansLeft, subscriptionManager.scansRemaining))
-                                .font(.system(size: 13, weight: .medium))
+                                .font(.scaled(size: 13, weight: .medium))
                         }
                         .foregroundColor(subscriptionManager.scansRemaining == 0 ? .brandNegative : .brandPrimary)
                         .padding(.horizontal, 14)
@@ -144,7 +144,7 @@ struct CameraView: View {
                                     .frame(width: previewWidth * 0.61, height: previewHeight * 0.67)
 
                                 Image(systemName: "camera.fill")
-                                    .font(.system(size: 50))
+                                    .font(.scaled(size: 50))
                                     .foregroundColor(Color.brandPrimary.opacity(0.2))
                             }
                         }
@@ -166,7 +166,7 @@ struct CameraView: View {
                     }) {
                         HStack(spacing: 12) {
                             Image(systemName: vm.isAnalyzing ? "hourglass" : "viewfinder")
-                                .font(.system(size: 20, weight: .bold))
+                                .font(.scaled(size: 20, weight: .bold))
 
                             Text(vm.isAnalyzing ? AppStrings.analyzing : AppStrings.startAnalysis)
                         }
@@ -249,11 +249,11 @@ struct CameraView: View {
             BrandCircleIcon(systemImage: "camera.fill", size: 100)
 
             Text(title)
-                .font(.system(size: 20, weight: .bold))
+                .font(.scaled(size: 20, weight: .bold))
                 .foregroundColor(.brandText)
 
             Text(description)
-                .font(.system(size: 14))
+                .font(.scaled(size: 14))
                 .foregroundColor(.gray)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 24)
@@ -261,9 +261,9 @@ struct CameraView: View {
             Button(action: action) {
                 HStack(spacing: 8) {
                     Image(systemName: buttonIcon)
-                        .font(.system(size: 15, weight: .semibold))
+                        .font(.scaled(size: 15, weight: .semibold))
                     Text(buttonTitle)
-                        .font(.system(size: 16, weight: .bold))
+                        .font(.scaled(size: 16, weight: .bold))
                 }
                 .foregroundColor(.white)
                 .padding(.horizontal, 32)
