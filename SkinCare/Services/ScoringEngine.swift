@@ -29,7 +29,6 @@ class ScoringEngine {
     func calculateScore(
         acne: Double,
         redness: Double,
-        psoriasis: Double,
         pigmentation: Double,
         hydration: Double,
         wrinkles: Double = 0,
@@ -43,7 +42,6 @@ class ScoringEngine {
         // Susceptibility multipliers per skin type; unlisted weights stay at 1.0.
         let acneWeight: Double = 1.00 * (type == "oily" ? 1.15 : (type == "combination" ? 1.05 : 1.0))
         let rednessWeight: Double = 0.80 * (type == "sensitive" ? 1.25 : (type == "dry" ? 1.10 : 1.0))
-        let psoriasisWeight: Double = 0.90 * (type == "sensitive" ? 1.10 : 1.0)
         let pigmentationWeight: Double = 0.50
         let dehydrationWeight: Double = 0.60 * (type == "dry" ? 1.20 : (type == "combination" ? 1.05 : 1.0))
         let wrinkleWeight: Double = 0.35
@@ -53,7 +51,6 @@ class ScoringEngine {
         let load = 0.02
             + acneWeight * acne
             + rednessWeight * redness
-            + psoriasisWeight * psoriasis
             + pigmentationWeight * pigmentation
             + dehydrationWeight * dehydration
             + wrinkleWeight * wrinkles
@@ -68,11 +65,9 @@ class ScoringEngine {
         default: inflammationBase = 0.05
         }
         let rednessBoost: Double = type == "sensitive" ? 1.2 : 1.0
-        let psoriasisBoost: Double = type == "sensitive" ? 1.1 : 1.0
         let inflammationLoad = inflammationBase
             + 1.6 * acne
             + 1.4 * redness * rednessBoost
-            + 1.5 * psoriasis * psoriasisBoost
             + 0.3 * pigmentation
         let inflammationScore = clamp(100.0 * (1.0 - exp(-inflammationLoad)))
 
@@ -88,7 +83,6 @@ class ScoringEngine {
         let drynessLoad = drynessBase
             + 1.5 * dehydration * dehydrationBoost
             + 0.5 * redness
-            + 0.4 * psoriasis
         let drynessScore = clamp(100.0 * (1.0 - exp(-drynessLoad)))
 
         // MARK: Oiliness (higher = worse)
@@ -102,11 +96,11 @@ class ScoringEngine {
         case "dry": oilinessBase = 0.10
         default: oilinessBase = 0.35
         }
-        let oilinessLoad = oilinessBase + 0.9 * acne + 0.25 * psoriasis
+        let oilinessLoad = oilinessBase + 0.9 * acne
         let oilinessScore = clamp(100.0 * (1.0 - exp(-oilinessLoad)))
 
         // MARK: Dominant condition
-        let scores = ["acne": acne, "redness": redness, "psoriasis": psoriasis, "pigmentation": pigmentation]
+        let scores = ["acne": acne, "redness": redness, "pigmentation": pigmentation]
         let top = scores.max(by: { $0.value < $1.value })
         let dominantCondition = (top?.value ?? 0) > 0.25 ? (top?.key ?? "") : ""
 
