@@ -34,7 +34,6 @@
 "enable_camera_description" = "Enable camera access to start your skin analysis journey.";
 "enable_camera" = "Enable Camera";
 "free_scans_used" = "You've used your %lld free monthly scans. Go Pro for unlimited analysis.";
-"cloud_analysis_disclosure" = "Advanced metrics (wrinkles, eyebags, etc.) are processed securely via Google Gemini AI.";
 
 /* Recents */
 "recent_analysis" = "Recent Analysis";
