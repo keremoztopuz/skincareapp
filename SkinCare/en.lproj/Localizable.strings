@@ -328,3 +328,10 @@
 "severity_low" = "Low";
 "severity_moderate" = "Moderate";
 "severity_high" = "High";
+
+/* Profile settings section */
+"settings" = "Settings";
+"delete_all_data" = "Delete All Data";
+"delete_all_data_message" = "This permanently removes your profile, analysis history, and routine from this device.";
+"version" = "Version";
+"restore_no_subscription" = "No active subscription was found to restore.";
