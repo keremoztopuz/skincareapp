@@ -21,17 +21,17 @@ struct MoreView: View {
                     HStack {
                         VStack(alignment: .leading, spacing: 4) {
                             Text(NSLocalizedString("profile", comment: ""))
-                                .font(.system(size: 34, weight: .bold))
+                                .font(.scaled(size: 34, weight: .bold))
                                 .foregroundColor(.brandText)
 
                             Text(NSLocalizedString("manage_information", comment: ""))
-                                .font(.system(size: 16, weight: .regular))
+                                .font(.scaled(size: 16, weight: .regular))
                                 .foregroundColor(.gray)
                         }
                         Spacer()
                         Button(action: { showEditProfile = true }) {
                             Image(systemName: "pencil")
-                                .font(.system(size: 18, weight: .bold))
+                                .font(.scaled(size: 18, weight: .bold))
                                 .foregroundColor(.white)
                                 .frame(width: 44, height: 44)
                                 .background(Color.brandPrimary)
@@ -50,7 +50,7 @@ struct MoreView: View {
 
                     VStack(alignment: .leading, spacing: 16) {
                         Text(NSLocalizedString("personal_information", comment: ""))
-                            .font(.system(size: 18, weight: .bold))
+                            .font(.scaled(size: 18, weight: .bold))
                             .foregroundColor(.brandText)
                             .padding(.horizontal, 20)
                         
@@ -75,23 +75,23 @@ struct MoreView: View {
                                         .frame(width: 52, height: 52)
 
                                     Image(systemName: "crown.fill")
-                                        .font(.system(size: 24))
+                                        .font(.scaled(size: 24))
                                         .foregroundColor(.white)
                                 }
 
                                 VStack(alignment: .leading, spacing: 2) {
                                     Text(NSLocalizedString("premium_active", comment: ""))
-                                        .font(.system(size: 20, weight: .bold))
+                                        .font(.scaled(size: 20, weight: .bold))
                                         .foregroundColor(.white)
                                     Text(NSLocalizedString("all_features_unlocked", comment: ""))
-                                        .font(.system(size: 14))
+                                        .font(.scaled(size: 14))
                                         .foregroundColor(.white.opacity(0.8))
                                 }
 
                                 Spacer()
 
                                 Image(systemName: "checkmark.seal.fill")
-                                    .font(.system(size: 28))
+                                    .font(.scaled(size: 28))
                                     .foregroundColor(.white.opacity(0.9))
                             }
 
@@ -119,16 +119,16 @@ struct MoreView: View {
                                         .frame(width: 48, height: 48)
 
                                     Image(systemName: "crown.fill")
-                                        .font(.system(size: 22))
+                                        .font(.scaled(size: 22))
                                         .foregroundColor(.brandPrimary)
                                 }
 
                                 VStack(alignment: .leading, spacing: 2) {
                                     Text(NSLocalizedString("go_premium", comment: ""))
-                                        .font(.system(size: 20, weight: .bold))
+                                        .font(.scaled(size: 20, weight: .bold))
                                         .foregroundColor(.white)
                                     Text(NSLocalizedString("unlock_advanced_features", comment: ""))
-                                        .font(.system(size: 14))
+                                        .font(.scaled(size: 14))
                                         .foregroundColor(.white.opacity(0.8))
                                 }
                             }
@@ -142,7 +142,7 @@ struct MoreView: View {
 
                             Button(action: { showUpgrade = true }) {
                                 Text(NSLocalizedString("upgrade_now", comment: ""))
-                                    .font(.system(size: 16, weight: .bold))
+                                    .font(.scaled(size: 16, weight: .bold))
                                     .foregroundColor(.brandPrimary)
                                     .frame(maxWidth: .infinity)
                                     .padding(.vertical, 18)
@@ -160,7 +160,7 @@ struct MoreView: View {
 
                     VStack(alignment: .leading, spacing: 16) {
                         Text(NSLocalizedString("settings", comment: ""))
-                            .font(.system(size: 18, weight: .bold))
+                            .font(.scaled(size: 18, weight: .bold))
                             .foregroundColor(.brandText)
                             .padding(.horizontal, 20)
 
@@ -263,13 +263,13 @@ struct SettingsRow: View {
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: icon)
-                .font(.system(size: 16, weight: .semibold))
+                .font(.scaled(size: 16, weight: .semibold))
                 .foregroundColor(isDestructive ? .brandNegative : .brandPrimary)
                 .frame(width: 24)
                 .accessibilityHidden(true)
 
             Text(title)
-                .font(.system(size: 16, weight: .semibold))
+                .font(.scaled(size: 16, weight: .semibold))
                 .foregroundColor(isDestructive ? .brandNegative : .brandText)
 
             Spacer()
@@ -278,11 +278,11 @@ struct SettingsRow: View {
                 ProgressView()
             } else if let value {
                 Text(value)
-                    .font(.system(size: 15, weight: .medium))
+                    .font(.scaled(size: 15, weight: .medium))
                     .foregroundColor(.gray)
             } else if showsChevron {
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 14, weight: .bold))
+                    .font(.scaled(size: 14, weight: .bold))
                     .foregroundColor(.gray.opacity(0.5))
                     .accessibilityHidden(true)
             }
@@ -312,7 +312,7 @@ struct ProfileEditSheet: View {
                         VStack(alignment: .leading, spacing: 6) {
                             fieldLabel(AppStrings.fullName)
                             TextField(AppStrings.fullName, text: $name)
-                                .font(.system(size: 16))
+                                .font(.scaled(size: 16))
                                 .padding(.horizontal, 16)
                                 .padding(.vertical, 14)
                                 .background(Color.white)
@@ -334,7 +334,7 @@ struct ProfileEditSheet: View {
                                 .tint(Color.brandPrimary)
 
                                 Text("\(age)")
-                                    .font(.system(size: 18, weight: .bold))
+                                    .font(.scaled(size: 18, weight: .bold))
                                     .foregroundColor(.brandText)
                                     .frame(minWidth: 34)
                             }
@@ -407,7 +407,7 @@ struct ProfileEditSheet: View {
     @ViewBuilder
     private func fieldLabel(_ text: String) -> some View {
         Text(text)
-            .font(.system(size: 13, weight: .medium))
+            .font(.scaled(size: 13, weight: .medium))
             .foregroundColor(.gray)
     }
 
@@ -416,11 +416,11 @@ struct ProfileEditSheet: View {
         Button(action: action) {
             HStack {
                 Text(title)
-                    .font(.system(size: 16, weight: .semibold))
+                    .font(.scaled(size: 16, weight: .semibold))
                 Spacer()
                 if isSelected {
                     Image(systemName: "checkmark")
-                        .font(.system(size: 14, weight: .bold))
+                        .font(.scaled(size: 14, weight: .bold))
                 }
             }
             .foregroundColor(isSelected ? .white : .brandText)
@@ -442,7 +442,7 @@ struct PremiumCardRow: View {
                 .fill(Color.white.opacity(0.9))
                 .frame(width: 6, height: 6)
             Text(text)
-                .font(.system(size: 14, weight: .medium))
+                .font(.scaled(size: 14, weight: .medium))
                 .foregroundColor(.white.opacity(0.9))
         }
     }
@@ -456,15 +456,15 @@ struct InfoCard: View {
         HStack {
             VStack(alignment: .leading, spacing: 4) {
                 Text(label)
-                    .font(.system(size: 14, weight: .medium))
+                    .font(.scaled(size: 14, weight: .medium))
                     .foregroundColor(.gray)
                 Text(value)
-                    .font(.system(size: 16, weight: .bold))
+                    .font(.scaled(size: 16, weight: .bold))
                     .foregroundColor(.brandText)
             }
             Spacer()
             Image(systemName: "chevron.right")
-                .font(.system(size: 14, weight: .bold))
+                .font(.scaled(size: 14, weight: .bold))
                 .foregroundColor(.gray.opacity(0.5))
                 .accessibilityHidden(true)
         }
