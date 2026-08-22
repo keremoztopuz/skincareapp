@@ -16,6 +16,13 @@ struct ScoreTrendPoint: Identifiable {
     let score: Double
 }
 
+struct RoutineStepDisplay: Identifiable {
+    let id: UUID
+    let typeName: String
+    let productName: String?
+    let isCompleted: Bool
+}
+
 class HomeViewModel: ObservableObject {
     @Published var userName: String = ""
     @Published var articles: [Articles] = []
@@ -33,9 +40,15 @@ class HomeViewModel: ObservableObject {
     @Published var scoreTrend: [ScoreTrendPoint] = []
 
     // Routine Summary
-    @Published var routineStepNames: [String] = []
-    @Published var routineItemCount: Int = 0
-    @Published var hasPendingSuggestions: Bool = false
+    @Published var routineSteps: [RoutineStepDisplay] = []
+    @Published var pendingSuggestionCount: Int = 0
+
+    var completedStepCount: Int { routineSteps.filter(\.isCompleted).count }
+
+    /// Single source for the morning/evening switch, shared with the view.
+    var routineTimeKey: String {
+        Calendar.current.component(.hour, from: Date()) < 18 ? "morning" : "evening"
+    }
 
     init() {
         fetchNames()
@@ -99,14 +112,32 @@ class HomeViewModel: ObservableObject {
     }
     
     func fetchRoutineSummary() {
-        let hour = Calendar.current.component(.hour, from: Date())
-        let timeKey = hour < 18 ? "morning" : "evening"
+        let timeKey = routineTimeKey
         let items = LocalPersistenceManager.shared.fetchRoutineItems(for: timeKey)
-        routineStepNames = items.sorted(by: { $0.stepOrder < $1.stepOrder }).compactMap {
-            $0.productType.map(AppStrings.localizedProductType)
+        let completed = RoutineCompletionStore.shared.completedIDs(time: timeKey)
+        routineSteps = items.sorted(by: { $0.stepOrder < $1.stepOrder }).compactMap { item in
+            guard let id = item.id, let type = item.productType else { return nil }
+            return RoutineStepDisplay(
+                id: id,
+                typeName: AppStrings.localizedProductType(type),
+                productName: item.productName,
+                isCompleted: completed.contains(id)
+            )
         }
-        routineItemCount = items.count
-        hasPendingSuggestions = !LocalPersistenceManager.shared.fetchPendingSuggestions().isEmpty
+        pendingSuggestionCount = LocalPersistenceManager.shared.fetchPendingSuggestions().count
+    }
+
+    func toggleStep(_ id: UUID) {
+        RoutineCompletionStore.shared.toggle(id, time: routineTimeKey)
+        routineSteps = routineSteps.map { step in
+            guard step.id == id else { return step }
+            return RoutineStepDisplay(
+                id: step.id,
+                typeName: step.typeName,
+                productName: step.productName,
+                isCompleted: !step.isCompleted
+            )
+        }
     }
 
     func fetchNames() {
