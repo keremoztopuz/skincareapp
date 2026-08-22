@@ -18,11 +18,11 @@ struct SearchView: View {
             VStack(alignment: .leading, spacing: 20) {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(NSLocalizedString("search", comment: ""))
-                        .font(.system(size: 34, weight: .bold))
+                        .font(.scaled(size: 34, weight: .bold))
                         .foregroundColor(.brandText)
 
                     Text(NSLocalizedString("find_best_products", comment: ""))
-                        .font(.system(size: 16, weight: .regular))
+                        .font(.scaled(size: 16, weight: .regular))
                         .foregroundColor(.gray)
                 }
                 .padding(.horizontal, 20)
@@ -31,10 +31,10 @@ struct SearchView: View {
                 HStack {
                     Image(systemName: "magnifyingglass")
                         .foregroundColor(.brandPrimary)
-                        .font(.system(size: 18, weight: .bold))
+                        .font(.scaled(size: 18, weight: .bold))
 
                     TextField(NSLocalizedString("search_products", comment: ""), text: $vm.searchText)
-                        .font(.system(size: 16))
+                        .font(.scaled(size: 16))
                 }
                 .padding(.vertical, 16)
                 .padding(.horizontal, 20)
@@ -58,7 +58,7 @@ struct SearchView: View {
                         Text(vm.searchText.isEmpty
                              ? NSLocalizedString("search_no_products", comment: "")
                              : NSLocalizedString("search_no_results", comment: ""))
-                            .font(.system(size: 16))
+                            .font(.scaled(size: 16))
                             .foregroundColor(.gray)
                             .multilineTextAlignment(.center)
                             .padding(.horizontal, 40)
@@ -112,12 +112,12 @@ struct SearchProductCard: View {
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(product.name)
-                    .font(.system(size: 16, weight: .bold))
+                    .font(.scaled(size: 16, weight: .bold))
                     .foregroundColor(.brandText)
                     .lineLimit(1)
 
                 Text(product.brand ?? AppStrings.unknownBrand)
-                    .font(.system(size: 12, weight: .bold))
+                    .font(.scaled(size: 12, weight: .bold))
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
                     .background(Color.brandBlush)
@@ -128,7 +128,7 @@ struct SearchProductCard: View {
             Spacer()
 
             Image(systemName: "chevron.right")
-                .font(.system(size: 14, weight: .bold))
+                .font(.scaled(size: 14, weight: .bold))
                 .foregroundColor(.gray.opacity(0.3))
         }
         .padding(16)
