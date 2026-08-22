@@ -102,12 +102,10 @@ struct ResultView: View {
                                     ResultBar(title: AppStrings.wrinkles,     score: record?.wrinkleScore      ?? 0, icon: "sun.max.fill")
                                     ResultBar(title: AppStrings.eyebags,      score: record?.eyebagScore       ?? 0, icon: "eye.fill")
                                     ResultBar(title: AppStrings.pigmentation, score: record?.pigmentationScore ?? 0, icon: "circle.hexagongrid")
-                                    ResultBar(title: AppStrings.hydration,    score: record?.hydrationScore    ?? 0, icon: "drop.degreesign")
                                 } else {
                                     Button { showUpgrade = true } label: { ResultBar(title: AppStrings.wrinkles, score: 0, icon: "lock.fill", locked: true) }.buttonStyle(.plain)
                                     Button { showUpgrade = true } label: { ResultBar(title: AppStrings.eyebags, score: 0, icon: "lock.fill", locked: true) }.buttonStyle(.plain)
                                     Button { showUpgrade = true } label: { ResultBar(title: AppStrings.pigmentation, score: 0, icon: "lock.fill", locked: true) }.buttonStyle(.plain)
-                                    Button { showUpgrade = true } label: { ResultBar(title: AppStrings.hydration, score: 0, icon: "lock.fill", locked: true) }.buttonStyle(.plain)
                                 }
                             }
                             .padding(.horizontal, 20)
