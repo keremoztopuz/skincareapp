@@ -158,6 +158,15 @@ struct ResultView: View {
                     } else {
                         Color.clear.frame(height: 20)
                     }
+
+                    // MARK: - Non-diagnostic disclaimer
+                    Text(NSLocalizedString("results_not_medical_advice", comment: ""))
+                        .font(.system(size: 12))
+                        .foregroundColor(.gray)
+                        .multilineTextAlignment(.center)
+                        .frame(maxWidth: .infinity)
+                        .padding(.horizontal, 24)
+                        .padding(.bottom, 24)
                 }
                 .padding(.top, 70)
             }
