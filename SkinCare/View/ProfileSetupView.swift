@@ -14,10 +14,10 @@ import SwiftUI
 struct ProfileSetupView: View {
     @StateObject private var vm = ProfileSetupViewModel()
     @EnvironmentObject var appVM: ContentViewModel
-    
+
     var body: some View {
         ZStack {
-            Color(red: 1.0, green: 0.97, blue: 0.97)
+            Color.brandBackground
                 .ignoresSafeArea()
             VStack(alignment: .leading, spacing: 0) {
                 if vm.currentPage > 0 {
@@ -29,47 +29,33 @@ struct ProfileSetupView: View {
                             Text(NSLocalizedString("back", comment: ""))
                         }
                         .font(.system(size: 16, weight: .medium))
-                        .foregroundColor(Color(red: 0.47, green: 0.11, blue: 0.17))
+                        .foregroundColor(.brandPrimary)
                     }
                     .padding(.horizontal, 28)
                     .padding(.top, 16)
                 }
                 Spacer()
-                
+
                 Group {
                     if vm.currentPage == 0 {
                         VStack(alignment: .leading, spacing: 12) {
                             Text(NSLocalizedString("whats_your_name", comment: ""))
-                                .font(.system(size: 28, weight:
-                                        .bold))
-                                .foregroundColor(Color(red: 0.1,
-                                                       green: 0.1, blue: 0.2))
-                            
+                                .font(.system(size: 28, weight: .bold))
+                                .foregroundColor(.brandText)
+
                             Text(NSLocalizedString("lets_get_to_know", comment: ""))
                                 .font(.system(size: 16))
                                 .foregroundColor(.gray)
-                            
+
                             TextField(NSLocalizedString("enter_your_name", comment: ""), text: $vm.name)
                                 .padding(.vertical, 12)
                                 .padding(.horizontal, 15)
                                 .background(Color.white)
-                                .cornerRadius(12)
+                                .cornerRadius(Radius.card)
                                 .padding(.top, 16)
-                            
-                            ZStack {
-                                if vm.showNameWarning {
-                                    Text(NSLocalizedString("please_enter_name", comment: ""))
-                                        .font(.system(size: 14))
-                                        .foregroundColor(Color(red:
-                                        0.47, green: 0.11, blue: 0.17))
-                                        .frame(maxWidth: .infinity,
-                                               alignment: .leading)
-                                }
-                            }
-                            .frame(height: 20)
-                            .padding(.top, 8)
+
+                            warningLabel(NSLocalizedString("please_enter_name", comment: ""), visible: vm.showNameWarning)
                         }
-                        .frame(height: 220)
                         .padding(.horizontal, 28)
                     } else if vm.currentPage == 1 {
                         AgePageView(age: $vm.age)
@@ -79,22 +65,15 @@ struct ProfileSetupView: View {
                         SkinTypePageView(skinType: $vm.skinType, showWarning: vm.showSkinTypeWarning)
                     }
                 }
-                
+
                 Spacer()
-                
+
                 Button(action: {
                     vm.handleContinue()
                 }) {
                     Text(NSLocalizedString("continue", comment: ""))
-                        .font(.system(size: 18, weight: .bold))
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 18)
-                        .background(vm.isCurrentPageValid
-                              ? Color(red: 0.47, green: 0.11, blue: 0.17)
-                              : Color.gray.opacity(0.4))
-                        .cornerRadius(12)
                 }
+                .buttonStyle(PrimaryButtonStyle(isEnabled: vm.isCurrentPageValid))
                 .disabled(!vm.isCurrentPageValid)
                 .padding(.horizontal, 28)
                 .padding(.bottom, 48)
@@ -114,24 +93,22 @@ struct ProfileSetupView: View {
             VStack (alignment: .leading, spacing: 12){
                 Text(NSLocalizedString("how_old", comment: ""))
                     .font(.system(size: 28, weight: .bold))
-                    .foregroundColor(Color(red: 0.1,
-                                           green: 0.1, blue: 0.2))
-                
+                    .foregroundColor(.brandText)
+
                 Text(NSLocalizedString("helps_personalize_routines", comment: ""))
                     .font(.system(size: 16))
                     .foregroundColor(.gray)
-                
+
                 Text("\(age)")
                     .font(.system(size: 48, weight: .bold))
-                    .foregroundColor(Color(red: 0.47,
-                                           green: 0.11, blue: 0.17))
+                    .foregroundColor(.brandPrimary)
                     .padding(.top, 16)
-                
+
                 Slider(value: Binding(
                     get: { Double(age) },
                     set: { age = Int($0) }
                 ), in: 13...80, step: 1)
-                .tint(Color(red: 0.47, green: 0.11, blue: 0.17))
+                .tint(Color.brandPrimary)
             }
             .padding(.horizontal, 28)
         }
@@ -144,7 +121,7 @@ struct ProfileSetupView: View {
             VStack(alignment: .leading, spacing: 12) {
                 Text(NSLocalizedString("whats_your_gender", comment: ""))
                     .font(.system(size: 28, weight: .bold))
-                    .foregroundColor(Color(red: 0.1, green: 0.1, blue: 0.2))
+                    .foregroundColor(.brandText)
 
                 Text(NSLocalizedString("helps_tailor_recommendations", comment: ""))
                     .font(.system(size: 16))
@@ -157,26 +134,17 @@ struct ProfileSetupView: View {
                         }) {
                             Text(option.localizedTitle)
                                 .font(.system(size: 16, weight: .medium))
-                                .foregroundColor(gender == option ? .white : Color(red: 0.1, green: 0.1, blue: 0.2))
+                                .foregroundColor(gender == option ? .white : .brandText)
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 16)
-                                .background(gender == option ? Color(red: 0.47, green: 0.11, blue: 0.17) : Color.white)
-                                .cornerRadius(12)
+                                .background(gender == option ? Color.brandPrimary : Color.white)
+                                .cornerRadius(Radius.card)
                         }
                     }
                 }
                 .padding(.top, 16)
 
-                ZStack {
-                    if showWarning {
-                        Text(NSLocalizedString("please_select_gender", comment: ""))
-                            .font(.system(size: 14))
-                            .foregroundColor(Color(red: 0.47, green: 0.11, blue: 0.17))
-                            .frame(maxWidth: .infinity, alignment: .center)
-                    }
-                }
-                .frame(height: 20)
-                .padding(.top, 8)
+                warningLabel(NSLocalizedString("please_select_gender", comment: ""), visible: showWarning)
             }
             .padding(.horizontal, 28)
         }
@@ -186,12 +154,10 @@ struct ProfileSetupView: View {
         @Binding var skinType: SkinType?
         var showWarning: Bool
         var body: some View {
-            let selectedColor = Color(red: 0.47, green: 0.11, blue: 0.17)
-            let darkColor = Color(red: 0.1, green: 0.1, blue: 0.2)
             VStack(alignment: .leading, spacing: 12) {
                 Text(NSLocalizedString("whats_your_skin_type", comment: ""))
                     .font(.system(size: 28, weight: .bold))
-                    .foregroundColor(Color(red: 0.1, green: 0.1, blue: 0.2))
+                    .foregroundColor(.brandText)
 
                 Text(NSLocalizedString("customize_analysis", comment: ""))
                     .font(.system(size: 16))
@@ -210,33 +176,39 @@ struct ProfileSetupView: View {
                                     .font(.system(size: 12))
 
                             }
-                            .foregroundColor(skinType == option ? .white : darkColor)
+                            .foregroundColor(skinType == option ? .white : .brandText)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 14)
-                            .background(skinType == option ? selectedColor : .white)
-                            .cornerRadius(12)
+                            .background(skinType == option ? Color.brandPrimary : Color.white)
+                            .cornerRadius(Radius.card)
                         }
                     }
                 }
                 .padding(.top, 16)
 
-                ZStack {
-                    if showWarning {
-                        Text(NSLocalizedString("please_select_skin_type", comment: ""))
-                            .font(.system(size: 14))
-                            .foregroundColor(Color(red: 0.47, green: 0.11, blue: 0.17))
-                            .frame(maxWidth: .infinity, alignment: .center)
-                    }
-                }
-                .frame(height: 20)
-                .padding(.top, 8)
+                warningLabel(NSLocalizedString("please_select_skin_type", comment: ""), visible: showWarning)
             }
             .padding(.horizontal, 28)
         }
     }
 }
+
+// MARK: - Shared warning label
+@ViewBuilder
+private func warningLabel(_ text: String, visible: Bool) -> some View {
+    ZStack {
+        if visible {
+            Text(text)
+                .font(.system(size: 14))
+                .foregroundColor(.brandPrimary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+    .frame(height: 20)
+    .padding(.top, 8)
+}
+
 #Preview {
     ProfileSetupView()
         .environmentObject(ContentViewModel())
 }
-    

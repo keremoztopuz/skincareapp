@@ -71,7 +71,6 @@ enum AppStrings {
     static let unlockPremium = String(localized: "unlock_premium")
     static let startFreeTrial = String(localized: "start_free_trial")
     static let continueWithFree = String(localized: "continue_with_free")
-    static let thenPriceMonthly = String(localized: "then_price_monthly")
     static let noThanksFree = String(localized: "no_thanks_free")
     static let restorePurchases = String(localized: "restore_purchases")
     static let freeTrialIncluded = String(localized: "free_trial_included")
@@ -150,7 +149,6 @@ enum AppStrings {
     // MARK: - Upgrade Sheet
     static let upgradeToPro = String(localized: "upgrade_to_pro")
     static let unlockFullCapabilities = String(localized: "unlock_full_capabilities")
-    static let priceMonthly = String(localized: "price_monthly")
     static let continueWithFreePlan = String(localized: "continue_with_free_plan")
     static let welcomeToPro = String(localized: "welcome_to_pro")
     static let allFeaturesNowUnlocked = String(localized: "all_features_now_unlocked")

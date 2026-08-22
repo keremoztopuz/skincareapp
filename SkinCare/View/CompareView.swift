@@ -1,32 +1,10 @@
 import SwiftUI
 internal import CoreData
 
-private func mockRecord(ctx: NSManagedObjectContext, overall: Double, acne: Double, redness: Double, daysAgo: Double) -> AnalysisRecord {
-    let r = AnalysisRecord(context: ctx)
-    r.date              = Date(timeIntervalSinceNow: -daysAgo * 86400)
-    r.overallScore      = overall
-    r.acneScore         = acne
-    r.eczemaScore       = redness
-    r.psoriasisScore    = 5
-    r.pigmentationScore = 30
-    r.hydrationScore    = 65
-    r.wrinkleScore      = 20
-    r.eyebagScore       = 15
-    r.drynessScore      = 40
-    r.inflammationScore = 35
-    r.oilinessScore     = 50
-    r.condition         = "Acne"
-    return r
-}
-
 struct CompareView: View {
     @Environment(\.dismiss) var dismiss
     let record1: AnalysisRecord
     let record2: AnalysisRecord
-
-    let mainColor      = Color(red: 1.0, green: 0.97, blue: 0.97)
-    let secondaryColor = Color(red: 0.47, green: 0.11, blue: 0.17)
-    let primaryText    = Color(red: 0.1,  green: 0.1,  blue: 0.2)
 
     private var analysisInsight: String {
         let overallDiff = record1.overallScore - record2.overallScore
@@ -53,31 +31,13 @@ struct CompareView: View {
 
     var body: some View {
         ZStack {
-            mainColor.ignoresSafeArea()
+            Color.brandBackground.ignoresSafeArea()
 
             ScrollView(.vertical, showsIndicators: false) {
                 VStack(spacing: 22) {
 
                     // MARK: Back + Title
-                    HStack {
-                        Button { dismiss() } label: {
-                            Image(systemName: "arrow.left")
-                                .font(.system(size: 16, weight: .bold))
-                                .foregroundColor(.white)
-                                .padding(12)
-                                .background(secondaryColor)
-                                .clipShape(Circle())
-                                .shadow(color: secondaryColor.opacity(0.3), radius: 5, x: 0, y: 3)
-                        }
-                        Spacer()
-                        Text(NSLocalizedString("compare_analyses", comment: ""))
-                            .font(.system(size: 18, weight: .bold))
-                            .foregroundColor(primaryText)
-                        Spacer()
-                        Circle().fill(Color.clear).frame(width: 40, height: 40)
-                    }
-                    .padding(.horizontal, 20)
-                    .padding(.top, 10)
+                    BackHeaderBar(title: NSLocalizedString("compare_analyses", comment: "")) { dismiss() }
 
                     // MARK: Date labels
                     HStack {
@@ -87,10 +47,10 @@ struct CompareView: View {
                             Circle()
                                 .fill(Color.white)
                                 .frame(width: 40, height: 40)
-                                .shadow(color: Color.black.opacity(0.07), radius: 5, x: 0, y: 2)
+                                .cardShadow()
                             Text(NSLocalizedString("vs", comment: ""))
                                 .font(.system(size: 12, weight: .bold))
-                                .foregroundColor(secondaryColor)
+                                .foregroundColor(.brandPrimary)
                         }
                         Spacer()
                         dateLabel(record: record2, isLeft: false)
@@ -125,7 +85,7 @@ struct CompareView: View {
                     HStack {
                         Text(NSLocalizedString("skin_metrics", comment: ""))
                             .font(.system(size: 17, weight: .bold))
-                            .foregroundColor(primaryText)
+                            .foregroundColor(.brandText)
                         Spacer()
                     }
                     .padding(.horizontal, 20)
@@ -145,25 +105,25 @@ struct CompareView: View {
                     }
                     .padding(.horizontal, 20)
 
-                    // MARK: AI Insight
+                    // MARK: Insight
                     VStack(alignment: .leading, spacing: 10) {
                         HStack(spacing: 6) {
-                            Image(systemName: "sparkles")
+                            Image(systemName: "lightbulb.fill")
                                 .font(.system(size: 15))
-                                .foregroundColor(secondaryColor)
+                                .foregroundColor(.brandPrimary)
                             Text(NSLocalizedString("ai_insight", comment: ""))
                                 .font(.system(size: 15, weight: .bold))
-                                .foregroundColor(secondaryColor)
+                                .foregroundColor(.brandPrimary)
                         }
                         Text(analysisInsight)
                             .font(.system(size: 14))
-                            .foregroundColor(primaryText)
+                            .foregroundColor(.brandText)
                             .lineSpacing(4)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(18)
-                    .background(Color(red: 1.0, green: 0.87, blue: 0.87))
-                    .cornerRadius(16)
+                    .background(Color.brandBlush)
+                    .cornerRadius(Radius.card)
                     .padding(.horizontal, 20)
                     .padding(.bottom, 32)
                 }
@@ -178,7 +138,7 @@ struct CompareView: View {
         VStack(alignment: isLeft ? .leading : .trailing, spacing: 2) {
             Text(record.date ?? Date(), style: .date)
                 .font(.system(size: 13, weight: .semibold))
-                .foregroundColor(secondaryColor)
+                .foregroundColor(.brandPrimary)
             Text(record.date ?? Date(), style: .time)
                 .font(.system(size: 12))
                 .foregroundColor(.gray)
@@ -194,16 +154,16 @@ struct CompareView: View {
                     .resizable()
                     .scaledToFill()
                     .frame(width: 148, height: 180)
-                    .clipShape(RoundedRectangle(cornerRadius: 14))
-                    .shadow(color: Color.black.opacity(0.09), radius: 7, x: 0, y: 3)
+                    .clipShape(RoundedRectangle(cornerRadius: Radius.card))
+                    .cardShadow()
             } else {
-                RoundedRectangle(cornerRadius: 14)
-                    .fill(Color(red: 1.0, green: 0.87, blue: 0.87))
+                RoundedRectangle(cornerRadius: Radius.card)
+                    .fill(Color.brandBlush)
                     .frame(width: 148, height: 180)
                     .overlay(
                         Image(systemName: "person.crop.rectangle")
                             .font(.system(size: 26))
-                            .foregroundColor(secondaryColor.opacity(0.5))
+                            .foregroundColor(Color.brandPrimary.opacity(0.5))
                     )
             }
         }
@@ -214,26 +174,27 @@ struct CompareView: View {
     private func metricRow(label: String, val1: Double, val2: Double, unit: String, higherIsBetter: Bool) -> some View {
         let diff = val1 - val2
         let improved = higherIsBetter ? diff > 0 : diff < 0
-        let diffColor: Color = diff == 0 ? .gray : (improved ? Color(red: 0.1, green: 0.6, blue: 0.3) : Color(red: 0.8, green: 0.1, blue: 0.1))
-        let arrow = diff > 0 ? "↑" : (diff < 0 ? "↓" : "=")
+        let diffColor: Color = diff == 0 ? .gray : (improved ? .brandPositive : .brandNegative)
 
         HStack {
             Text("\(Int(val1))\(unit)")
                 .font(.system(size: 26, weight: .bold))
-                .foregroundColor(primaryText)
+                .foregroundColor(.brandText)
                 .frame(width: 72, alignment: .leading)
             Spacer()
             VStack(spacing: 2) {
                 Text(label)
                     .font(.system(size: 13, weight: .semibold))
-                    .foregroundColor(primaryText)
+                    .foregroundColor(.brandText)
                 HStack(spacing: 3) {
-                    Text(diff == 0 ? "= 0" : "\(diff > 0 ? "+" : "")\(Int(diff))\(unit)")
+                    Text(diff == 0 ? "0" : "\(diff > 0 ? "+" : "")\(Int(diff))\(unit)")
                         .font(.system(size: 12, weight: .bold))
                         .foregroundColor(diffColor)
-                    Text(arrow)
-                        .font(.system(size: 12, weight: .bold))
-                        .foregroundColor(diffColor)
+                    if diff != 0 {
+                        Image(systemName: diff > 0 ? "arrow.up" : "arrow.down")
+                            .font(.system(size: 10, weight: .bold))
+                            .foregroundColor(diffColor)
+                    }
                 }
                 Text(NSLocalizedString("vs", comment: ""))
                     .font(.system(size: 11))
@@ -242,14 +203,14 @@ struct CompareView: View {
             Spacer()
             Text("\(Int(val2))\(unit)")
                 .font(.system(size: 26, weight: .bold))
-                .foregroundColor(Color(red: 0.55, green: 0.55, blue: 0.6))
+                .foregroundColor(.gray)
                 .frame(width: 72, alignment: .trailing)
         }
         .padding(.vertical, 14)
         .padding(.horizontal, 18)
         .background(Color.white)
-        .cornerRadius(14)
-        .shadow(color: Color.black.opacity(0.04), radius: 6, x: 0, y: 3)
+        .cornerRadius(Radius.card)
+        .cardShadow()
     }
 
     // MARK: - Detail Row with dual progress bars
@@ -257,30 +218,34 @@ struct CompareView: View {
     private func detailRow(label: String, val1: Double, val2: Double, higherIsBetter: Bool) -> some View {
         let diff = val1 - val2
         let improved = higherIsBetter ? diff > 0 : diff < 0
-        let diffColor: Color = diff == 0 ? .gray : (improved ? Color(red: 0.1, green: 0.6, blue: 0.3) : Color(red: 0.8, green: 0.1, blue: 0.1))
-        let arrow = diff > 0 ? "↑" : (diff < 0 ? "↓" : "")
+        let diffColor: Color = diff == 0 ? .gray : (improved ? .brandPositive : .brandNegative)
 
         VStack(spacing: 0) {
             HStack(alignment: .center) {
                 Text("\(Int(val1))%")
                     .font(.system(size: 16, weight: .bold))
-                    .foregroundColor(primaryText)
+                    .foregroundColor(.brandText)
                     .frame(width: 48, alignment: .leading)
                 Spacer()
                 VStack(spacing: 1) {
                     Text(label)
                         .font(.system(size: 13, weight: .semibold))
-                        .foregroundColor(primaryText)
+                        .foregroundColor(.brandText)
                     if diff != 0 {
-                        Text("\(diff > 0 ? "+" : "")\(Int(diff))% \(arrow)")
-                            .font(.system(size: 11, weight: .bold))
-                            .foregroundColor(diffColor)
+                        HStack(spacing: 3) {
+                            Text("\(diff > 0 ? "+" : "")\(Int(diff))%")
+                                .font(.system(size: 11, weight: .bold))
+                                .foregroundColor(diffColor)
+                            Image(systemName: diff > 0 ? "arrow.up" : "arrow.down")
+                                .font(.system(size: 9, weight: .bold))
+                                .foregroundColor(diffColor)
+                        }
                     }
                 }
                 Spacer()
                 Text("\(Int(val2))%")
                     .font(.system(size: 16, weight: .bold))
-                    .foregroundColor(Color(red: 0.55, green: 0.55, blue: 0.6))
+                    .foregroundColor(.gray)
                     .frame(width: 48, alignment: .trailing)
             }
             .padding(.horizontal, 16)
@@ -289,16 +254,16 @@ struct CompareView: View {
             HStack(spacing: 6) {
                 GeometryReader { geo in
                     ZStack(alignment: .leading) {
-                        RoundedRectangle(cornerRadius: 3).fill(secondaryColor.opacity(0.12)).frame(height: 5)
-                        RoundedRectangle(cornerRadius: 3).fill(secondaryColor).frame(width: geo.size.width * min(val1 / 100, 1.0), height: 5)
+                        RoundedRectangle(cornerRadius: Radius.small).fill(Color.brandPrimary.opacity(0.12)).frame(height: 5)
+                        RoundedRectangle(cornerRadius: Radius.small).fill(Color.brandPrimary).frame(width: geo.size.width * min(val1 / 100, 1.0), height: 5)
                     }
                 }
                 .frame(height: 5)
 
                 GeometryReader { geo in
                     ZStack(alignment: .leading) {
-                        RoundedRectangle(cornerRadius: 3).fill(Color.gray.opacity(0.15)).frame(height: 5)
-                        RoundedRectangle(cornerRadius: 3).fill(Color(red: 0.55, green: 0.55, blue: 0.6)).frame(width: geo.size.width * min(val2 / 100, 1.0), height: 5)
+                        RoundedRectangle(cornerRadius: Radius.small).fill(Color.gray.opacity(0.15)).frame(height: 5)
+                        RoundedRectangle(cornerRadius: Radius.small).fill(Color.gray).frame(width: geo.size.width * min(val2 / 100, 1.0), height: 5)
                     }
                 }
                 .frame(height: 5)
@@ -308,12 +273,31 @@ struct CompareView: View {
             .padding(.bottom, 14)
         }
         .background(Color.white)
-        .cornerRadius(14)
-        .shadow(color: Color.black.opacity(0.04), radius: 5, x: 0, y: 2)
+        .cornerRadius(Radius.card)
+        .cardShadow()
     }
 }
 
-struct CompareViewPreviewWrapper: View {
+#if DEBUG
+private func mockRecord(ctx: NSManagedObjectContext, overall: Double, acne: Double, redness: Double, daysAgo: Double) -> AnalysisRecord {
+    let r = AnalysisRecord(context: ctx)
+    r.date              = Date(timeIntervalSinceNow: -daysAgo * 86400)
+    r.overallScore      = overall
+    r.acneScore         = acne
+    r.eczemaScore       = redness
+    r.psoriasisScore    = 5
+    r.pigmentationScore = 30
+    r.hydrationScore    = 65
+    r.wrinkleScore      = 20
+    r.eyebagScore       = 15
+    r.drynessScore      = 40
+    r.inflammationScore = 35
+    r.oilinessScore     = 50
+    r.condition         = "Acne"
+    return r
+}
+
+private struct CompareViewPreviewWrapper: View {
     let ctx = PersistenceController.preview.container.viewContext
     var body: some View {
         let r1 = mockRecord(ctx: ctx, overall: 88, acne: 25, redness: 40, daysAgo: 0)
@@ -323,3 +307,4 @@ struct CompareViewPreviewWrapper: View {
 }
 
 #Preview { CompareViewPreviewWrapper() }
+#endif

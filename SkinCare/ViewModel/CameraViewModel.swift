@@ -28,6 +28,7 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
     @Published var hydrationScore: Double = 0
     @Published var analysisRecord: AnalysisRecord? = nil
     @Published var isAnalyzing: Bool = false
+    @Published var errorMessage: String? = nil
 
     private let engine = ScoringEngine()
 
@@ -116,7 +117,10 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
         guard let data = photo.fileDataRepresentation(),
               var originalImage = UIImage(data: data) else {
-            DispatchQueue.main.async { self.isAnalyzing = false }
+            DispatchQueue.main.async {
+                self.isAnalyzing = false
+                self.errorMessage = NSLocalizedString("analysis_error_photo", comment: "")
+            }
             return
         }
 
@@ -135,7 +139,10 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
             let startTime = Date()
 
             guard let normalizedImage = originalImage.fixedOrientation() else {
-                await MainActor.run { self.isAnalyzing = false }
+                await MainActor.run {
+                    self.isAnalyzing = false
+                    self.errorMessage = NSLocalizedString("analysis_error_photo", comment: "")
+                }
                 return
             }
 
@@ -246,11 +253,17 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
             guard let modelURL = Bundle.main.url(forResource: "skin_disease", withExtension: "mlmodelc")
                     ?? Bundle.main.url(forResource: "skin_disease", withExtension: "mlpackage") else {
                 NSLog("ML model file not found in bundle")
+                DispatchQueue.main.async {
+                    self.errorMessage = NSLocalizedString("analysis_error_model", comment: "")
+                }
                 return
             }
             mlModel = try MLModel(contentsOf: modelURL, configuration: MLModelConfiguration())
         } catch {
             NSLog("ML model could not be loaded: %@", error.localizedDescription)
+            DispatchQueue.main.async {
+                self.errorMessage = NSLocalizedString("analysis_error_model", comment: "")
+            }
             return
         }
 
@@ -263,6 +276,9 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
         do { output = try mlModel.prediction(from: provider) }
         catch {
             NSLog("ML prediction error: %@", error.localizedDescription)
+            DispatchQueue.main.async {
+                self.errorMessage = NSLocalizedString("analysis_error_model", comment: "")
+            }
             return
         }
 
@@ -702,6 +718,7 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
             self.capturedImage = nil
             self.analysisRecord = nil
             self.detectedCondition = nil
+            self.errorMessage = nil
             self.currentAcneScore = 0
             self.currentRednessScore = 0
             self.currentPsoriasisScore = 0

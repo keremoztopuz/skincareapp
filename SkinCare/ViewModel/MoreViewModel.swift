@@ -20,9 +20,9 @@ class MoreViewModel: ObservableObject {
 
     func loadProfile() {
         let profile = LocalPersistenceManager.shared.fetchUserProfile()
-        userName    = profile?.name       ?? "—"
-        userAge     = profile?.ageRange   ?? "—"
-        userGender  = profile?.gender.map(AppStrings.localizedGender) ?? "—"
-        userSkinType = profile?.skinType.map(AppStrings.localizedSkinType) ?? "—"
+        userName    = profile?.name       ?? "-"
+        userAge     = profile?.ageRange   ?? "-"
+        userGender  = profile?.gender.map(AppStrings.localizedGender) ?? "-"
+        userSkinType = profile?.skinType.map(AppStrings.localizedSkinType) ?? "-"
     }
 }

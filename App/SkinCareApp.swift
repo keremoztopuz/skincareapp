@@ -24,6 +24,6 @@ struct SkinCareApp: App {
     }
     
     init() {
-        Purchases.configure(withAPIKey: "test_AstXKlNoXETqYLbrEpPjBfHELfH")
+        Purchases.configure(withAPIKey: RevenueCatConfig.apiKey)
     }
 }

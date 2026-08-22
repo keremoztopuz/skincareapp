@@ -1,6 +1,5 @@
 import SwiftUI
 import AVFoundation
-import Lottie
 internal import Combine
 
 struct HomeView: View {
@@ -26,14 +25,9 @@ struct HomeView: View {
     
     // MARK: Main View
     var body: some View {
-        let mainColor = Color(red: 1.0, green: 0.97, blue: 0.97)
-        let secondaryColor = Color(red: 0.47, green: 0.11, blue: 0.17)
-        let primaryText = Color(red: 0.1, green: 0.1, blue: 0.2)
-        let outerColor = Color(red: 1.0, green: 0.87, blue: 0.87)
-        
         NavigationStack {
             ZStack {
-                mainColor.ignoresSafeArea()
+                Color.brandBackground.ignoresSafeArea()
                 
                 ScrollView(.vertical, showsIndicators: false) {
                     VStack(alignment: .leading, spacing: 28) {
@@ -42,7 +36,7 @@ struct HomeView: View {
                         VStack(alignment: .leading, spacing: 4) {
                             Text("\(greetingText), \(vm.userName)")
                                 .font(.system(size: 31, weight: .bold))
-                                .foregroundColor(primaryText)
+                                .foregroundColor(.brandText)
                                 .lineLimit(2)
                                 .minimumScaleFactor(0.82)
                             
@@ -65,7 +59,7 @@ struct HomeView: View {
                                     Task { await vm.fetchAllCloudData() }
                                 }
                                 .font(.system(size: 14, weight: .bold))
-                                .foregroundColor(secondaryColor)
+                                .foregroundColor(.brandPrimary)
                             }
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 20)
@@ -76,36 +70,28 @@ struct HomeView: View {
                             selectedTab = 2
                         }) {
                             ZStack {
-                                RoundedRectangle(cornerRadius: 25)
-                                    .fill(outerColor)
+                                RoundedRectangle(cornerRadius: Radius.card)
+                                    .fill(Color.brandBlush)
                                     .frame(height: 210)
-                                    .shadow(color: Color.black.opacity(0.08), radius: 15, x: 0, y: 8)
-                                
+
                                 Circle()
-                                    .fill(secondaryColor)
+                                    .fill(Color.brandPrimary)
                                     .frame(width: 142, height: 142)
                                     .overlay {
-                                        VStack(spacing: -18) {
-                                            LottieView(animation: .named("AI Star loader UI"))
-                                                .playing(loopMode: .loop)
-                                                .configure { animationView in
-                                                    let white = ColorValueProvider(UIColor.white.lottieColorValue)
-                                                    animationView.setValueProvider(white, keypath: AnimationKeypath(keypath: "**.Color"))
-                                                }
-                                                .frame(width: 86, height: 86)
-                                                .padding(.leading, 10)
-                                                .padding(.top, -12)
-                                            
+                                        VStack(spacing: 10) {
+                                            Image(systemName: "viewfinder")
+                                                .font(.system(size: 44, weight: .medium))
+                                                .foregroundColor(.white)
+
                                             Text(NSLocalizedString("skin_analysis", comment: ""))
                                                 .foregroundColor(.white)
                                                 .font(.system(size: 15, weight: .bold))
                                                 .lineLimit(1)
                                                 .minimumScaleFactor(0.85)
-                                                .padding(.top, 15)
                                         }
                                     }
-                                    .shadow(color: secondaryColor.opacity(0.3), radius: 10, x: 0, y: 5)
                             }
+                            .cardShadow()
                         }
                         .padding(.horizontal, 20)
                         
@@ -113,8 +99,8 @@ struct HomeView: View {
                         VStack(alignment: .leading, spacing: 16) {
                             Text(NSLocalizedString("your_skin_health_avg", comment: ""))
                                 .font(.system(size: 18, weight: .bold))
-                                .foregroundColor(primaryText)
-                            
+                                .foregroundColor(.brandText)
+
                             LazyVGrid(
                                 columns: [
                                     GridItem(.flexible(), spacing: 12),
@@ -124,7 +110,7 @@ struct HomeView: View {
                             ) {
                                 MetricCard(value: "\(vm.avgOverallScore)", label: AppStrings.overallScore, icon: "heart.text.square.fill")
                                 MetricCard(value: "\(vm.avgDryness)%", label: AppStrings.dryness, icon: "drop.triangle.fill")
-                                MetricCard(value: "\(vm.avgOiliness)%", label: AppStrings.oiliness, icon: "sparkles")
+                                MetricCard(value: "\(vm.avgOiliness)%", label: AppStrings.oiliness, icon: "drop.halffull")
                                 MetricCard(value: "\(vm.avgInflammation)%", label: AppStrings.inflammation, icon: "flame.fill")
                             }
                         }
@@ -135,10 +121,10 @@ struct HomeView: View {
                             HStack {
                                 Text(NSLocalizedString("your_routine", comment: ""))
                                     .font(.system(size: 18, weight: .bold))
-                                    .foregroundColor(primaryText)
+                                    .foregroundColor(.brandText)
                                 if vm.hasPendingSuggestions {
                                     Circle()
-                                        .fill(secondaryColor)
+                                        .fill(Color.brandPrimary)
                                         .frame(width: 8, height: 8)
                                 }
                             }
@@ -197,9 +183,9 @@ struct HomeView: View {
                                 .padding(22)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .frame(minHeight: 150)
-                                .background(secondaryColor)
-                                .clipShape(RoundedRectangle(cornerRadius: 22))
-                                .shadow(color: secondaryColor.opacity(0.26), radius: 14, x: 0, y: 8)
+                                .background(Color.brandPrimary)
+                                .clipShape(RoundedRectangle(cornerRadius: Radius.card))
+                                .cardShadow()
                             }
                             .buttonStyle(.plain)
                         }
@@ -209,15 +195,15 @@ struct HomeView: View {
                         VStack(alignment: .leading, spacing: 16) {
                             Text(NSLocalizedString("recommended_products", comment: ""))
                                 .font(.system(size: 18, weight: .bold))
-                                .foregroundColor(primaryText)
+                                .foregroundColor(.brandText)
                                 .padding(.horizontal, 20)
 
                             if vm.isLoading && vm.products.isEmpty {
                                 ScrollView(.horizontal, showsIndicators: false) {
                                     HStack(spacing: 16) {
                                         ForEach(0..<3, id: \.self) { _ in
-                                            RoundedRectangle(cornerRadius: 18)
-                                                .fill(outerColor)
+                                            RoundedRectangle(cornerRadius: Radius.card)
+                                                .fill(Color.brandBlush)
                                                 .frame(width: 172, height: 222)
                                         }
                                     }
@@ -242,15 +228,15 @@ struct HomeView: View {
                         VStack(alignment: .leading, spacing: 16) {
                             Text(NSLocalizedString("latest_articles", comment: ""))
                                 .font(.system(size: 18, weight: .bold))
-                                .foregroundColor(primaryText)
+                                .foregroundColor(.brandText)
                                 .padding(.horizontal, 20)
 
                             if vm.isLoading && vm.articles.isEmpty {
                                 ScrollView(.horizontal, showsIndicators: false) {
                                     HStack(spacing: 16) {
                                         ForEach(0..<2, id: \.self) { _ in
-                                            RoundedRectangle(cornerRadius: 18)
-                                                .fill(outerColor)
+                                            RoundedRectangle(cornerRadius: Radius.card)
+                                                .fill(Color.brandBlush)
                                                 .frame(width: 282, height: 246)
                                         }
                                     }
@@ -271,8 +257,6 @@ struct HomeView: View {
                             }
                         }
                         
-                        // news horizontal list section removed
-                        
                         // bottom spacing
                         Color.clear.frame(height: 20)
                     }
@@ -291,16 +275,15 @@ struct MetricCard: View {
     let value: String
     let label: String
     let icon: String
-    let secondaryColor = Color(red: 0.47, green: 0.11, blue: 0.17)
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(alignment: .center, spacing: 10) {
                 Image(systemName: icon)
                     .font(.system(size: 14, weight: .bold))
-                    .foregroundColor(secondaryColor)
+                    .foregroundColor(.brandPrimary)
                     .frame(width: 30, height: 30)
-                    .background(secondaryColor.opacity(0.10))
+                    .background(Color.brandPrimary.opacity(0.10))
                     .clipShape(Circle())
 
                 Spacer(minLength: 0)
@@ -309,7 +292,7 @@ struct MetricCard: View {
             VStack(alignment: .leading, spacing: 3) {
                 Text(value)
                     .font(.system(size: 25, weight: .bold))
-                    .foregroundColor(secondaryColor)
+                    .foregroundColor(.brandPrimary)
                     .lineLimit(1)
                     .minimumScaleFactor(0.75)
 
@@ -324,21 +307,19 @@ struct MetricCard: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .frame(height: 118)
         .background(Color.white)
-        .clipShape(RoundedRectangle(cornerRadius: 18))
-        .shadow(color: Color.black.opacity(0.045), radius: 10, x: 0, y: 5)
+        .clipShape(RoundedRectangle(cornerRadius: Radius.card))
+        .cardShadow()
     }
 }
 
 struct ProductCard: View {
     let product: Product
-    let primaryText = Color(red: 0.1, green: 0.1, blue: 0.2)
-    let secondaryColor = Color(red: 0.47, green: 0.11, blue: 0.17)
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             ZStack {
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(secondaryColor.opacity(0.06))
+                RoundedRectangle(cornerRadius: Radius.card)
+                    .fill(Color.brandPrimary.opacity(0.06))
 
                 if let urlString = product.imageUrl, let url = URL(string: urlString) {
                     AsyncImage(url: url) { image in
@@ -347,22 +328,22 @@ struct ProductCard: View {
                         ProgressView()
                     }
                     .frame(width: 148, height: 132)
-                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                    .clipShape(RoundedRectangle(cornerRadius: Radius.card))
                 } else {
-                    Image(systemName: "face.smiling")
+                    Image(systemName: "bottle.condiment.fill")
                         .font(.system(size: 40))
-                        .foregroundColor(secondaryColor.opacity(0.2))
+                        .foregroundColor(Color.brandPrimary.opacity(0.2))
                 }
             }
             .frame(width: 148, height: 132)
-            
+
             VStack(alignment: .leading, spacing: 4) {
                 Text(product.name)
                     .font(.system(size: 15, weight: .bold))
-                    .foregroundColor(primaryText)
+                    .foregroundColor(.brandText)
                     .lineLimit(2)
                     .minimumScaleFactor(0.85)
-                
+
                 Text(product.brand ?? AppStrings.unknownBrand)
                     .font(.system(size: 13, weight: .medium))
                     .foregroundColor(.gray)
@@ -373,22 +354,20 @@ struct ProductCard: View {
         .padding(12)
         .frame(width: 172, height: 222, alignment: .top)
         .background(Color.white)
-        .clipShape(RoundedRectangle(cornerRadius: 18))
-        .shadow(color: Color.black.opacity(0.045), radius: 10, x: 0, y: 5)
+        .clipShape(RoundedRectangle(cornerRadius: Radius.card))
+        .cardShadow()
     }
 }
 
 struct ArticleCard: View {
     let article: Articles
-    let primaryText = Color(red: 0.1, green: 0.1, blue: 0.2)
-    let secondaryColor = Color(red: 0.47, green: 0.11, blue: 0.17)
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             ZStack {
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(secondaryColor.opacity(0.06))
-                
+                RoundedRectangle(cornerRadius: Radius.card)
+                    .fill(Color.brandPrimary.opacity(0.06))
+
                 if let urlString = article.imageUrl, let url = URL(string: urlString) {
                     AsyncImage(url: url) { image in
                         image.resizable().scaledToFill()
@@ -396,22 +375,22 @@ struct ArticleCard: View {
                         ProgressView()
                     }
                     .frame(width: 258, height: 148)
-                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                    .clipShape(RoundedRectangle(cornerRadius: Radius.card))
                 } else {
                     Image(systemName: "newspaper.fill")
                         .font(.system(size: 40))
-                        .foregroundColor(secondaryColor.opacity(0.1))
+                        .foregroundColor(Color.brandPrimary.opacity(0.1))
                 }
             }
             .frame(width: 258, height: 148)
-            
+
             VStack(alignment: .leading, spacing: 4){
                 Text(article.title)
                     .font(.system(size: 15, weight: .bold))
-                    .foregroundColor(primaryText)
+                    .foregroundColor(.brandText)
                     .lineLimit(2)
                     .minimumScaleFactor(0.85)
-                
+
                 Text(article.content ?? "")
                     .font(.system(size: 13, weight: .regular))
                     .foregroundColor(.gray)
@@ -422,8 +401,8 @@ struct ArticleCard: View {
         .padding(12)
         .frame(width: 282, height: 246, alignment: .top)
         .background(Color.white)
-        .clipShape(RoundedRectangle(cornerRadius: 18))
-        .shadow(color: Color.black.opacity(0.045), radius: 10, x: 0, y: 5)
+        .clipShape(RoundedRectangle(cornerRadius: Radius.card))
+        .cardShadow()
     }
 }
 

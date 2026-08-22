@@ -30,7 +30,7 @@ struct OnBoardingPageView: View {
                 // icons
                 ZStack {
                     Circle()
-                        .fill(Color(red: 1.0, green: 0.87, blue: 0.87))
+                        .fill(Color.brandBlush)
                         .frame(width: outerSize, height: outerSize)
                         .scaleEffect(isPulsing ? 1.12 : 1.0)
                         .animation(
@@ -38,7 +38,7 @@ struct OnBoardingPageView: View {
                             value: isPulsing
                         )
                     Circle()
-                        .fill(Color(red: 0.47, green: 0.11, blue: 0.17))
+                        .fill(Color.brandPrimary)
                         .frame(width: innerSize, height: innerSize)
 
                     if let animName = page.lottieAnimation {
@@ -77,7 +77,7 @@ struct OnBoardingPageView: View {
                 // title
                 Text(page.title)
                     .font(.system(size: 28, weight: .bold))
-                    .foregroundColor(Color(red: 0.1, green: 0.1, blue: 0.2))
+                    .foregroundColor(Color.brandText)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 30)
                     .scaleEffect(titleScale)
@@ -127,7 +127,7 @@ struct OnBoardingView: View {
     var body: some View {
         ZStack(alignment: .topTrailing) {
             // background
-            Color(red: 1.0, green: 0.97, blue: 0.97).ignoresSafeArea()
+            Color.brandBackground.ignoresSafeArea()
 
             VStack(spacing: 0) {
                 // slide pages
@@ -145,7 +145,7 @@ struct OnBoardingView: View {
                     ForEach(0..<vm.pages.count, id: \.self) { index in
                         Capsule()
                             .fill(vm.currentPage == index
-                                  ? Color(red: 0.47, green: 0.11, blue: 0.17)
+                                  ? Color.brandPrimary
                                   : Color.gray.opacity(0.3))
                             .frame(width: vm.currentPage == index ? 24 : 8, height: 8)
                             .animation(.easeInOut, value: vm.currentPage)
@@ -165,10 +165,10 @@ struct OnBoardingView: View {
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 18)
                             .background(Color.white)
-                            .foregroundColor(Color(red: 0.47, green: 0.11, blue: 0.17))
+                            .foregroundColor(Color.brandPrimary)
                             .font(.system(size: 18, weight: .semibold))
-                            .cornerRadius(16)
-                            .shadow(color: .black.opacity(0.08), radius: 4, y: 2)
+                            .cornerRadius(Radius.card)
+                            .cardShadow()
                         }
                     }
 
@@ -186,10 +186,10 @@ struct OnBoardingView: View {
                         }
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 18)
-                        .background(Color(red: 0.47, green: 0.11, blue: 0.17))
+                        .background(Color.brandPrimary)
                         .foregroundColor(.white)
                         .font(.system(size: 18, weight: .bold))
-                        .cornerRadius(16)
+                        .cornerRadius(Radius.card)
                     }
                 }
                 .padding(.horizontal, 30)
@@ -201,7 +201,7 @@ struct OnBoardingView: View {
                 Button(AppStrings.skip) {
                     appVM.completeOnBoarding()
                 }
-                .foregroundColor(.black)
+                .foregroundColor(.brandText)
                 .padding(.trailing, 24)
                 .padding(.top, 16)
             }

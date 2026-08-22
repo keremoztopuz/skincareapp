@@ -21,8 +21,8 @@ Bu dosya App Store'a cikis icin teknik, hesap, gizlilik ve icerik hazirliklarini
 - [x] `IPHONEOS_DEPLOYMENT_TARGET` 18.0.
 - [ ] Release archive Xcode'da basarili.
 - [x] Kamera izni aciklamasi net.
-- [ ] Kamera reddedilince kullaniciya anlasilir ekran gosteriliyor.
-- [x] Analiz gorselleri cihaz disina yuklenmiyor.
+- [x] Kamera reddedilince kullaniciya anlasilir ekran gosteriliyor.
+- [x] Gelismis analiz icin yuz kirpimi Google Gemini'ye gonderiliyor; bu durum uygulama ici aciklamada ve gizlilik politikasinda belirtiliyor. Kalici depolama yapilmiyor.
 - [x] Core Data kayitlari lokal tutuluyor.
 - [x] Supabase sadece urun, makale ve rutin icerigi okumak icin kullaniliyor.
 - [ ] Offline durumda temel analiz akisi calisiyor.

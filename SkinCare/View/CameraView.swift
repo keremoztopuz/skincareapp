@@ -11,260 +11,185 @@ struct CameraView: View {
     @State private var showResult = false
     @State private var showQuotaAlert = false
     @State private var showUpgrade = false
-    
+
     var body: some View {
-        let mainColor = Color(red: 1.0, green: 0.97, blue: 0.97)
-        let secondaryColor = Color(red: 0.47, green: 0.11, blue: 0.17)
-        let primaryText = Color(red: 0.1, green: 0.1, blue: 0.2)
-        
-        ZStack {
-            mainColor.ignoresSafeArea()
-            
-            VStack(alignment: .leading, spacing: 12) {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(NSLocalizedString("face_analysis", comment: ""))
-                        .font(.system(size: 34, weight: .bold))
-                        .foregroundColor(primaryText)
+        GeometryReader { geo in
+            let previewWidth = min(geo.size.width - 48, 360)
+            let previewHeight = previewWidth * 1.25
 
-                    Text(NSLocalizedString("position_face", comment: ""))
-                        .font(.system(size: 16, weight: .regular))
-                        .foregroundColor(.gray)
-                }
-                .padding(.top, 20)
+            ZStack {
+                Color.brandBackground.ignoresSafeArea()
 
-                // Scan quota badge (free users only)
-                if !subscriptionManager.isPremium {
-                    HStack(spacing: 6) {
-                        Image(systemName: "camera.badge.clock")
-                            .font(.system(size: 13))
-                        Text(subscriptionManager.scansRemaining == 0
-                             ? AppStrings.monthlyScanLimitExpired
-                             : String(format: AppStrings.scansLeft, subscriptionManager.scansRemaining))
-                            .font(.system(size: 13, weight: .medium))
+                VStack(alignment: .leading, spacing: 12) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(NSLocalizedString("face_analysis", comment: ""))
+                            .font(.system(size: 34, weight: .bold))
+                            .foregroundColor(.brandText)
+
+                        Text(NSLocalizedString("position_face", comment: ""))
+                            .font(.system(size: 16, weight: .regular))
+                            .foregroundColor(.gray)
                     }
-                    .foregroundColor(subscriptionManager.scansRemaining == 0 ? .red : secondaryColor)
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 8)
-                    .background(subscriptionManager.scansRemaining == 0
-                                ? Color.red.opacity(0.08)
-                                : Color(red: 1.0, green: 0.87, blue: 0.87))
-                    .cornerRadius(20)
-                }
-                
-                Spacer()
-                
-                ZStack {
-                    // Live Camera or Captured Image
-                    Group {
-                        if vm.permissionStatus == .denied {
-                            VStack(spacing: 20) {
-                                ZStack {
-                                    Circle()
-                                        .fill(Color(red: 1.0, green: 0.87, blue: 0.87))
-                                        .frame(width: 100, height: 100)
-                                    Circle()
-                                        .fill(secondaryColor)
-                                        .frame(width: 68, height: 68)
-                                    Image(systemName: "camera.fill")
-                                        .font(.system(size: 28))
-                                        .foregroundColor(.white)
-                                }
+                    .padding(.top, 20)
 
-                                Text(NSLocalizedString("camera_access_required", comment: ""))
-                                    .font(.system(size: 20, weight: .bold))
-                                    .foregroundColor(primaryText)
+                    // Scan quota badge (free users only)
+                    if !subscriptionManager.isPremium {
+                        HStack(spacing: 6) {
+                            Image(systemName: "camera.badge.clock")
+                                .font(.system(size: 13))
+                            Text(subscriptionManager.scansRemaining == 0
+                                 ? AppStrings.monthlyScanLimitExpired
+                                 : String(format: AppStrings.scansLeft, subscriptionManager.scansRemaining))
+                                .font(.system(size: 13, weight: .medium))
+                        }
+                        .foregroundColor(subscriptionManager.scansRemaining == 0 ? .brandNegative : .brandPrimary)
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 8)
+                        .background(subscriptionManager.scansRemaining == 0
+                                    ? Color.brandNegative.opacity(0.08)
+                                    : Color.brandBlush)
+                        .cornerRadius(Radius.card)
+                    }
 
-                                Text(NSLocalizedString("camera_access_description", comment: ""))
-                                    .font(.system(size: 14))
-                                    .foregroundColor(.gray)
-                                    .multilineTextAlignment(.center)
-                                    .padding(.horizontal, 24)
+                    Spacer()
 
-                                Button {
+                    ZStack {
+                        // Live Camera or Captured Image
+                        Group {
+                            if vm.permissionStatus == .denied {
+                                permissionCard(
+                                    title: NSLocalizedString("camera_access_required", comment: ""),
+                                    description: NSLocalizedString("camera_access_description", comment: ""),
+                                    buttonIcon: "gear",
+                                    buttonTitle: NSLocalizedString("open_settings", comment: ""),
+                                    size: CGSize(width: previewWidth, height: previewHeight)
+                                ) {
                                     if let url = URL(string: UIApplication.openSettingsURLString) {
                                         UIApplication.shared.open(url)
                                     }
-                                } label: {
-                                    HStack(spacing: 8) {
-                                        Image(systemName: "gear")
-                                            .font(.system(size: 15, weight: .semibold))
-                                        Text(NSLocalizedString("open_settings", comment: ""))
-                                            .font(.system(size: 16, weight: .bold))
-                                    }
-                                    .foregroundColor(.white)
-                                    .padding(.horizontal, 32)
-                                    .padding(.vertical, 14)
-                                    .background(secondaryColor)
-                                    .cornerRadius(14)
                                 }
-                            }
-                            .frame(width: 350, height: 440)
-                            .background(
-                                RoundedRectangle(cornerRadius: 30)
-                                    .fill(Color.white)
-                            )
-                            .shadow(color: Color.black.opacity(0.06), radius: 10, x: 0, y: 5)
-                        } else if vm.permissionStatus == .notDetermined {
-                            VStack(spacing: 20) {
-                                ZStack {
-                                    Circle()
-                                        .fill(Color(red: 1.0, green: 0.87, blue: 0.87))
-                                        .frame(width: 100, height: 100)
-                                    Circle()
-                                        .fill(secondaryColor)
-                                        .frame(width: 68, height: 68)
-                                    Image(systemName: "camera.fill")
-                                        .font(.system(size: 28))
-                                        .foregroundColor(.white)
-                                }
-
-                                Text(NSLocalizedString("ready_to_scan", comment: ""))
-                                    .font(.system(size: 20, weight: .bold))
-                                    .foregroundColor(primaryText)
-
-                                Text(NSLocalizedString("enable_camera_description", comment: ""))
-                                    .font(.system(size: 14))
-                                    .foregroundColor(.gray)
-                                    .multilineTextAlignment(.center)
-                                    .padding(.horizontal, 24)
-
-                                Button {
+                            } else if vm.permissionStatus == .notDetermined {
+                                permissionCard(
+                                    title: NSLocalizedString("ready_to_scan", comment: ""),
+                                    description: NSLocalizedString("enable_camera_description", comment: ""),
+                                    buttonIcon: "camera.fill",
+                                    buttonTitle: NSLocalizedString("enable_camera", comment: ""),
+                                    size: CGSize(width: previewWidth, height: previewHeight)
+                                ) {
                                     vm.requestPermission()
-                                } label: {
-                                    HStack(spacing: 8) {
-                                        Image(systemName: "camera.fill")
-                                            .font(.system(size: 15, weight: .semibold))
-                                        Text(NSLocalizedString("enable_camera", comment: ""))
-                                            .font(.system(size: 16, weight: .bold))
-                                    }
-                                    .foregroundColor(.white)
-                                    .padding(.horizontal, 32)
-                                    .padding(.vertical, 14)
-                                    .background(secondaryColor)
-                                    .cornerRadius(14)
                                 }
+                            } else if let captured = vm.capturedImage {
+                                Image(uiImage: captured)
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: previewWidth, height: previewHeight)
+                                    .cornerRadius(Radius.card)
+                                    .clipped()
+                                    .transition(.opacity)
+                            } else {
+                                CameraPreview(session: vm.session)
+                                    .frame(width: previewWidth, height: previewHeight)
+                                    .cornerRadius(Radius.card)
+                                    .clipped()
+                                    .background(Color.gray.opacity(0.05))
                             }
-                            .frame(width: 350, height: 440)
-                            .background(
-                                RoundedRectangle(cornerRadius: 30)
-                                    .fill(Color.white)
-                            )
-                            .shadow(color: Color.black.opacity(0.06), radius: 10, x: 0, y: 5)
-                        } else if let captured = vm.capturedImage {
-                            Image(uiImage: captured)
-                                .resizable()
-                                .scaledToFill()
-                                .frame(width: 350, height: 440)
-                                .cornerRadius(30)
+                        }
+
+                        // 2. Scanning UI (Lottie Animation)
+                        if vm.isAnalyzing {
+                            LottieView(animation: .named("scanning"))
+                                .playing(loopMode: .loop)
+                                .configure { animationView in
+                                    let color = ColorValueProvider(UIColor(Color.brandPrimary).lottieColorValue)
+                                    animationView.setValueProvider(color, keypath: AnimationKeypath(keypath: "**.Color"))
+                                    animationView.setValueProvider(color, keypath: AnimationKeypath(keypath: "**.Fill.Color"))
+                                    animationView.setValueProvider(color, keypath: AnimationKeypath(keypath: "**.Stroke.Color"))
+                                    animationView.contentMode = .scaleAspectFill
+                                }
+                                .frame(width: previewWidth, height: previewHeight)
+                                .scaleEffect(1.1) // Force a slight overflow to ensure full coverage
                                 .clipped()
                                 .transition(.opacity)
-                        } else {
-                            CameraPreview(session: vm.session)
-                                .frame(width: 350, height: 440)
-                                .cornerRadius(30)
-                                .clipped()
-                                .background(Color.gray.opacity(0.05))
                         }
-                    }
 
-                    // 2. Scanning UI (Lottie Animation)
-                    if vm.isAnalyzing {
-                        LottieView(animation: .named("scanning"))
-                            .playing(loopMode: .loop)
-                            .configure { animationView in
-                                let color = ColorValueProvider(UIColor(red: 0.47, green: 0.11, blue: 0.17, alpha: 1.0).lottieColorValue)
-                                animationView.setValueProvider(color, keypath: AnimationKeypath(keypath: "**.Color"))
-                                animationView.setValueProvider(color, keypath: AnimationKeypath(keypath: "**.Fill.Color"))
-                                animationView.setValueProvider(color, keypath: AnimationKeypath(keypath: "**.Stroke.Color"))
-                                animationView.contentMode = .scaleAspectFill
-                            }
-                            .frame(width: 360, height: 450)
-                            .scaleEffect(1.1) // Force a slight overflow to ensure full coverage
-                            .clipped()
-                            .transition(.opacity)
-                    }
-
-
-                    // Static Guides & Center Indicators
-                    if vm.permissionStatus == .authorized {
-                        RoundedRectangle(cornerRadius: 35)
-                            .stroke(secondaryColor, lineWidth: 4)
-                            .frame(width: 360, height: 450)
-                            .mask(
-                                ZStack {
-                                    VStack {
-                                        HStack {
-                                            Rectangle().frame(width: 60, height: 60)
+                        // Static Guides & Center Indicators
+                        if vm.permissionStatus == .authorized {
+                            RoundedRectangle(cornerRadius: Radius.card)
+                                .stroke(Color.brandPrimary, lineWidth: 4)
+                                .frame(width: previewWidth, height: previewHeight)
+                                .mask(
+                                    ZStack {
+                                        VStack {
+                                            HStack {
+                                                Rectangle().frame(width: 60, height: 60)
+                                                Spacer()
+                                                Rectangle().frame(width: 60, height: 60)
+                                            }
                                             Spacer()
-                                            Rectangle().frame(width: 60, height: 60)
-                                        }
-                                        Spacer()
-                                        HStack {
-                                            Rectangle().frame(width: 60, height: 60)
-                                            Spacer()
-                                            Rectangle().frame(width: 60, height: 60)
+                                            HStack {
+                                                Rectangle().frame(width: 60, height: 60)
+                                                Spacer()
+                                                Rectangle().frame(width: 60, height: 60)
+                                            }
                                         }
                                     }
-                                }
-                            )
+                                )
 
-                        if !vm.isAnalyzing && vm.capturedImage == nil {
-                            Ellipse()
-                                .stroke(secondaryColor, style: StrokeStyle(lineWidth: 2, dash: [6]))
-                                .frame(width: 220, height: 300)
+                            if !vm.isAnalyzing && vm.capturedImage == nil {
+                                Ellipse()
+                                    .stroke(Color.brandPrimary, style: StrokeStyle(lineWidth: 2, dash: [6]))
+                                    .frame(width: previewWidth * 0.61, height: previewHeight * 0.67)
 
-                            Image(systemName: "camera.fill")
-                                .font(.system(size: 50))
-                                .foregroundColor(secondaryColor.opacity(0.2))
+                                Image(systemName: "camera.fill")
+                                    .font(.system(size: 50))
+                                    .foregroundColor(Color.brandPrimary.opacity(0.2))
+                            }
                         }
                     }
-                }
-                .frame(width: 360, height: 450)
-                .frame(maxWidth: .infinity)
-                .animation(.easeInOut, value: vm.isAnalyzing)
-                
-                Spacer()
-                
-                Button(action: {
-                    guard !vm.isAnalyzing else { return }
-                    guard subscriptionManager.canScan else {
-                        showQuotaAlert = true
-                        return
-                    }
-                    
-                    vm.capturePhoto()
-                }) {
-                    HStack(spacing: 12) {
-                        Image(systemName: vm.isAnalyzing ? "hourglass" : "viewfinder")
-                            .font(.system(size: 20, weight: .bold))
-
-                        Text(vm.isAnalyzing ? AppStrings.analyzing : AppStrings.startAnalysis)
-                            .font(.system(size: 18, weight: .bold))
-                    }
-                    .foregroundColor(.white)
+                    .frame(width: previewWidth, height: previewHeight)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 20)
-                    .background(
-                        (vm.isAnalyzing || !vm.isPermissionGranted) 
-                        ? secondaryColor.opacity(0.5) 
-                        : secondaryColor
-                    )
-                    .cornerRadius(16)
-                    .shadow(color: secondaryColor.opacity(vm.isPermissionGranted ? 0.3 : 0), radius: 10, x: 0, y: 5)
+                    .animation(.easeInOut(duration: 0.25), value: vm.isAnalyzing)
+
+                    Spacer()
+
+                    Button(action: {
+                        guard !vm.isAnalyzing else { return }
+                        guard subscriptionManager.canScan else {
+                            showQuotaAlert = true
+                            return
+                        }
+
+                        vm.capturePhoto()
+                    }) {
+                        HStack(spacing: 12) {
+                            Image(systemName: vm.isAnalyzing ? "hourglass" : "viewfinder")
+                                .font(.system(size: 20, weight: .bold))
+
+                            Text(vm.isAnalyzing ? AppStrings.analyzing : AppStrings.startAnalysis)
+                        }
+                    }
+                    .buttonStyle(PrimaryButtonStyle(isEnabled: !vm.isAnalyzing && vm.isPermissionGranted))
+                    .disabled(vm.isAnalyzing || !vm.isPermissionGranted)
+                    .padding(.bottom, 12)
+
+                    Text(AppStrings.cloudAnalysisDisclosure)
+                        .font(.system(size: 12, weight: .regular))
+                        .foregroundColor(.gray.opacity(0.8))
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 20)
+                        .padding(.bottom, 20)
                 }
-                .disabled(vm.isAnalyzing || !vm.isPermissionGranted)
-                .padding(.bottom, 12)
-                
-                Text(AppStrings.cloudAnalysisDisclosure)
-                    .font(.system(size: 11, weight: .regular))
-                    .foregroundColor(.gray.opacity(0.8))
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 20)
-                    .padding(.bottom, 20)
+                .padding(.horizontal, 24)
             }
-            .padding(.horizontal, 24)
         }
-        
+        .alert(NSLocalizedString("analysis_failed_title", comment: ""), isPresented: Binding(
+            get: { vm.errorMessage != nil },
+            set: { if !$0 { vm.errorMessage = nil } }
+        )) {
+            Button(AppStrings.ok, role: .cancel) {}
+        } message: {
+            Text(vm.errorMessage ?? "")
+        }
         .alert(AppStrings.scanLimitReached, isPresented: $showQuotaAlert) {
             Button(AppStrings.goPro) { showUpgrade = true }
             Button(AppStrings.ok, role: .cancel) {}
@@ -282,7 +207,6 @@ struct CameraView: View {
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
             vm.checkPermission()
         }
-        .preferredColorScheme(.light)
         .fullScreenCover(isPresented: $showGuide, onDismiss: {
             if vm.permissionStatus == .notDetermined {
                 vm.requestPermission()
@@ -304,10 +228,54 @@ struct CameraView: View {
             }
         }
     }
-    
+
+    @ViewBuilder
+    private func permissionCard(
+        title: String,
+        description: String,
+        buttonIcon: String,
+        buttonTitle: String,
+        size: CGSize,
+        action: @escaping () -> Void
+    ) -> some View {
+        VStack(spacing: 20) {
+            BrandCircleIcon(systemImage: "camera.fill", size: 100)
+
+            Text(title)
+                .font(.system(size: 20, weight: .bold))
+                .foregroundColor(.brandText)
+
+            Text(description)
+                .font(.system(size: 14))
+                .foregroundColor(.gray)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 24)
+
+            Button(action: action) {
+                HStack(spacing: 8) {
+                    Image(systemName: buttonIcon)
+                        .font(.system(size: 15, weight: .semibold))
+                    Text(buttonTitle)
+                        .font(.system(size: 16, weight: .bold))
+                }
+                .foregroundColor(.white)
+                .padding(.horizontal, 32)
+                .padding(.vertical, 14)
+                .background(Color.brandPrimary)
+                .cornerRadius(Radius.card)
+            }
+        }
+        .frame(width: size.width, height: size.height)
+        .background(
+            RoundedRectangle(cornerRadius: Radius.card)
+                .fill(Color.white)
+        )
+        .cardShadow()
+    }
+
     struct CameraPreview: UIViewRepresentable {
         let session: AVCaptureSession
-        
+
         func makeUIView(context: Context) -> UIView {
             let view = VideoPreviewView()
             view.backgroundColor = .lightGray
@@ -315,14 +283,14 @@ struct CameraView: View {
             view.videoPreviewLayer.videoGravity = .resizeAspectFill
             return view
         }
-        
+
         func updateUIView(_ uiView: UIView, context: Context) {}
-        
+
         class VideoPreviewView: UIView {
             override class var layerClass: AnyClass {
                 return AVCaptureVideoPreviewLayer.self
             }
-            
+
             var videoPreviewLayer: AVCaptureVideoPreviewLayer {
                 return layer as! AVCaptureVideoPreviewLayer
             }

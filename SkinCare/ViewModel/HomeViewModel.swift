@@ -40,7 +40,8 @@ class HomeViewModel: ObservableObject {
     
     @MainActor
     func fetchAllCloudData() async {
-        guard products.isEmpty && articles.isEmpty else { return }
+        guard !isLoading else { return }
+        guard products.isEmpty || articles.isEmpty else { return }
 
         isLoading = true
         errorMessage = nil
@@ -55,7 +56,6 @@ class HomeViewModel: ObservableObject {
             self.articles = a
         } catch {
             self.errorMessage = AppStrings.internetConnectionRequired
-            print("Supabase error: \(error)")
         }
 
         isLoading = false
@@ -93,17 +93,6 @@ class HomeViewModel: ObservableObject {
 
     func fetchNames() {
         let profile = LocalPersistenceManager.shared.fetchUserProfile()
-        if let profile = profile {
-            self.userName = profile.name ?? ""
-            print("--- CORE DATA DEBUG ---")
-            print("User Name: \(profile.name ?? "No Name")")
-            print("Skin Type: \(profile.skinType ?? "No Type")")
-            print("Gender: \(profile.gender ?? "No Gender")")
-            print("-----------------------")
-        } else {
-            print("--- CORE DATA DEBUG ---")
-            print("No User Profile found in Core Data.")
-            print("-----------------------")
-        }
+        self.userName = profile?.name ?? ""
     }
 }

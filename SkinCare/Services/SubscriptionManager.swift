@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 import RevenueCat
 internal import Combine
 
@@ -6,9 +7,19 @@ class SubscriptionManager: ObservableObject {
     static let shared = SubscriptionManager()
     private init() {
         checkSubscriptionStatus()
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(appWillEnterForeground),
+            name: UIApplication.willEnterForegroundNotification,
+            object: nil
+        )
     }
-    
-    private func checkSubscriptionStatus() {
+
+    @objc private func appWillEnterForeground() {
+        checkSubscriptionStatus()
+    }
+
+    func checkSubscriptionStatus() {
         Purchases.shared.getCustomerInfo { info, _ in
             guard let info = info else { return }
             DispatchQueue.main.async {
@@ -29,6 +40,7 @@ class SubscriptionManager: ObservableObject {
         }
     }
 
+    // Stored as year * 100 + month so the quota resets across year boundaries.
     private var storedMonth: Int {
         get { UserDefaults.standard.integer(forKey: "scanMonth") }
         set { UserDefaults.standard.set(newValue, forKey: "scanMonth") }
@@ -39,9 +51,13 @@ class SubscriptionManager: ObservableObject {
         set { UserDefaults.standard.set(newValue, forKey: "monthlyScansCount") }
     }
 
+    private var currentMonthKey: Int {
+        let components = Calendar.current.dateComponents([.year, .month], from: Date())
+        return (components.year ?? 0) * 100 + (components.month ?? 0)
+    }
+
     var scansUsedThisMonth: Int {
-        let current = Calendar.current.component(.month, from: Date())
-        return storedMonth == current ? storedCount : 0
+        storedMonth == currentMonthKey ? storedCount : 0
     }
 
     var scansRemaining: Int {
@@ -53,7 +69,7 @@ class SubscriptionManager: ObservableObject {
     }
 
     func recordScan() {
-        let current = Calendar.current.component(.month, from: Date())
+        let current = currentMonthKey
         if storedMonth != current {
             storedMonth = current
             storedCount = 1

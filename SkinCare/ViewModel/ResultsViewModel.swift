@@ -14,6 +14,7 @@ class ResultsViewModel: ObservableObject {
     @Published var recommendation: [String] = []
     @Published var recommendProduct: [Product] = []
     @Published var isLoading: Bool = false
+    @Published var errorMessage: String?
     
     init(record: AnalysisRecord?) {
         self.record = record
@@ -50,7 +51,7 @@ class ResultsViewModel: ObservableObject {
         do {
             self.recommendProduct = try await SupabaseService.shared.fetchRecommendedProducts(for: condition)
         } catch {
-            print("Failed to fetch recommended products: \(error.localizedDescription)")
+            self.errorMessage = AppStrings.internetConnectionRequired
         }
 
         if let record = self.record {
