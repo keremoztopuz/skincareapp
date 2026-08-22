@@ -34,7 +34,7 @@ internal import CoreData
 
 @Test @MainActor func testAnalysisScoringAndRecentsIntegration() {
     let engine = ScoringEngine()
-    let score = engine.calculateScore(acne: 0.7, redness: 0.3, pigmentation: 0.0, hydration: 0.2, skinType: "oily")
+    let score = engine.calculateScore(acne: 0.7, redness: 0.3, pigmentation: 0.0, skinType: "oily")
 
     let olderDate = Date().addingTimeInterval(-86400 * 3)
     let newerDate = Date()
@@ -45,7 +45,6 @@ internal import CoreData
         wrinkleScore: 0.0,
         eyebagScore: 0.0,
         pigmentationScore: 0.0,
-        hydrationScore: 0.2,
         date: olderDate,
         drynessScore: score.drynessScore,
         inflammationScore: score.inflammationScore,
@@ -57,7 +56,7 @@ internal import CoreData
         imageData: nil
     )
 
-    let score2 = engine.calculateScore(acne: 0.1, redness: 0.0, pigmentation: 0.0, hydration: 0.8, skinType: "oily")
+    let score2 = engine.calculateScore(acne: 0.1, redness: 0.0, pigmentation: 0.0, skinType: "oily")
 
     LocalPersistenceManager.shared.saveAnalysisRecord(
         condition: "Healthy",
@@ -65,7 +64,6 @@ internal import CoreData
         wrinkleScore: 0.0,
         eyebagScore: 0.0,
         pigmentationScore: 0.0,
-        hydrationScore: 0.8,
         date: newerDate,
         drynessScore: score2.drynessScore,
         inflammationScore: score2.inflammationScore,
