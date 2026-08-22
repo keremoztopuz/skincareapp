@@ -102,7 +102,7 @@ internal import CoreData
     let oilyResult = engine.calculateScore(acne: 0.5, redness: 0, psoriasis: 0, pigmentation: 0, hydration: 0, skinType: "oily")
     let dryResult = engine.calculateScore(acne: 0.5, redness: 0, psoriasis: 0, pigmentation: 0, hydration: 0, skinType: "dry")
     let normalResult = engine.calculateScore(acne: 0.5, redness: 0, psoriasis: 0, pigmentation: 0, hydration: 0, skinType: "normal")
-    let combinationResult = engine.calculateScore(acne: 0.5, redness: 0, psoriasis: 0, pigmentation: 0, hydration: 0, skinType: "combo")
+    let combinationResult = engine.calculateScore(acne: 0.5, redness: 0, psoriasis: 0, pigmentation: 0, hydration: 0, skinType: "combination")
     let sensitiveResult = engine.calculateScore(acne: 0.5, redness: 0, psoriasis: 0, pigmentation: 0, hydration: 0, skinType: "sensitive")
     
     XCTAssertGreaterThanOrEqual(oilyResult.overallScore, 0)
@@ -129,4 +129,30 @@ internal import CoreData
 
     XCTAssertGreaterThanOrEqual(maxResult.overallScore, 0)
     XCTAssertLessThanOrEqual(maxResult.overallScore, 100)
+}
+
+@Test func testScoringEngineWrinklesLowerOverall() {
+    let engine = ScoringEngine()
+    let without = engine.calculateScore(acne: 0.2, redness: 0.1, psoriasis: 0, pigmentation: 0.1, hydration: 0.7, skinType: "normal")
+    let with_ = engine.calculateScore(acne: 0.2, redness: 0.1, psoriasis: 0, pigmentation: 0.1, hydration: 0.7, wrinkles: 0.8, eyebags: 0.6, skinType: "normal")
+
+    XCTAssertLessThan(with_.overallScore, without.overallScore)
+}
+
+@Test func testScoringEngineHydrationMonotonic() {
+    let engine = ScoringEngine()
+    let dehydrated = engine.calculateScore(acne: 0.3, redness: 0.2, psoriasis: 0, pigmentation: 0, hydration: 0.1, skinType: "normal")
+    let hydrated = engine.calculateScore(acne: 0.3, redness: 0.2, psoriasis: 0, pigmentation: 0, hydration: 0.9, skinType: "normal")
+
+    XCTAssertGreaterThan(hydrated.overallScore, dehydrated.overallScore)
+    XCTAssertGreaterThan(dehydrated.drynessScore, hydrated.drynessScore)
+}
+
+@Test func testScoringEngineSensitiveSkinRednessSusceptibility() {
+    let engine = ScoringEngine()
+    let sensitive = engine.calculateScore(acne: 0, redness: 0.6, psoriasis: 0, pigmentation: 0, hydration: 0.5, skinType: "sensitive")
+    let normal = engine.calculateScore(acne: 0, redness: 0.6, psoriasis: 0, pigmentation: 0, hydration: 0.5, skinType: "normal")
+
+    XCTAssertGreaterThan(sensitive.inflammationScore, normal.inflammationScore)
+    XCTAssertLessThan(sensitive.overallScore, normal.overallScore)
 }
