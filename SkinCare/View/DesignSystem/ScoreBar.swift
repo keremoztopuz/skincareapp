@@ -15,11 +15,11 @@ struct ScoreBar: View {
         VStack(alignment: .leading, spacing: 4) {
             HStack {
                 Text(label)
-                    .font(.system(size: 14))
+                    .font(.scaled(size: 14))
                     .foregroundColor(.gray)
                 Spacer()
                 Text("\(Int(value))%")
-                    .font(.system(size: 14, weight: .medium))
+                    .font(.scaled(size: 14, weight: .medium))
                     .foregroundColor(.brandText)
             }
             GeometryReader { geo in
