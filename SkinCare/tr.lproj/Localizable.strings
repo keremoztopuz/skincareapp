@@ -271,3 +271,13 @@
 "analysis_failed_title" = "Analiz Başarısız";
 "analysis_error_photo" = "Fotoğraf işlenemedi. Lütfen tekrar deneyin.";
 "analysis_error_model" = "Analiz tamamlanamadı. Lütfen tekrar deneyin.";
+
+/* Score visualization additions */
+"score_trend" = "Skor Trendi";
+"overall_band_excellent" = "Çok iyi";
+"overall_band_good" = "İyi";
+"overall_band_fair" = "Bakım gerekli";
+"overall_band_poor" = "İlgi gerekli";
+"severity_low" = "Düşük";
+"severity_moderate" = "Orta";
+"severity_high" = "Yüksek";
