@@ -1,4 +1,5 @@
 import SwiftUI
+import Charts
 import AVFoundation
 internal import Combine
 
@@ -108,13 +109,62 @@ struct HomeView: View {
                                 ],
                                 spacing: 12
                             ) {
-                                MetricCard(value: "\(vm.avgOverallScore)", label: AppStrings.overallScore, icon: "heart.text.square.fill")
-                                MetricCard(value: "\(vm.avgDryness)%", label: AppStrings.dryness, icon: "drop.triangle.fill")
-                                MetricCard(value: "\(vm.avgOiliness)%", label: AppStrings.oiliness, icon: "drop.halffull")
-                                MetricCard(value: "\(vm.avgInflammation)%", label: AppStrings.inflammation, icon: "flame.fill")
+                                MetricCard(value: "\(vm.avgOverallScore)", label: AppStrings.overallScore, icon: "heart.text.square.fill", progress: Double(vm.avgOverallScore))
+                                MetricCard(value: "\(vm.avgDryness)%", label: AppStrings.dryness, icon: "drop.triangle.fill", progress: Double(vm.avgDryness))
+                                MetricCard(value: "\(vm.avgOiliness)%", label: AppStrings.oiliness, icon: "drop.halffull", progress: Double(vm.avgOiliness))
+                                MetricCard(value: "\(vm.avgInflammation)%", label: AppStrings.inflammation, icon: "flame.fill", progress: Double(vm.avgInflammation))
                             }
                         }
                         .padding(.horizontal, 20)
+
+                        // score trend
+                        if vm.scoreTrend.count >= 2 {
+                            VStack(alignment: .leading, spacing: 16) {
+                                Text(NSLocalizedString("score_trend", comment: ""))
+                                    .font(.system(size: 18, weight: .bold))
+                                    .foregroundColor(.brandText)
+
+                                Chart(vm.scoreTrend) { point in
+                                    LineMark(
+                                        x: .value("Date", point.date),
+                                        y: .value("Score", point.score)
+                                    )
+                                    .foregroundStyle(Color.brandPrimary)
+                                    .interpolationMethod(.catmullRom)
+                                    .lineStyle(StrokeStyle(lineWidth: 2.5, lineCap: .round))
+
+                                    PointMark(
+                                        x: .value("Date", point.date),
+                                        y: .value("Score", point.score)
+                                    )
+                                    .foregroundStyle(Color.brandPrimary)
+                                    .symbolSize(36)
+                                }
+                                .chartYScale(domain: 0...100)
+                                .chartXAxis {
+                                    AxisMarks(values: .automatic(desiredCount: 4)) { _ in
+                                        AxisValueLabel(format: .dateTime.day().month(), centered: false)
+                                            .font(.system(size: 11))
+                                            .foregroundStyle(Color.gray)
+                                    }
+                                }
+                                .chartYAxis {
+                                    AxisMarks(position: .leading, values: [0, 50, 100]) { value in
+                                        AxisGridLine()
+                                            .foregroundStyle(Color.brandBlush)
+                                        AxisValueLabel()
+                                            .font(.system(size: 11))
+                                            .foregroundStyle(Color.gray)
+                                    }
+                                }
+                                .frame(height: 160)
+                                .padding(16)
+                                .background(Color.white)
+                                .cornerRadius(Radius.card)
+                                .cardShadow()
+                            }
+                            .padding(.horizontal, 20)
+                        }
                         
                         // routine card
                         VStack(alignment: .leading, spacing: 16) {
@@ -265,6 +315,7 @@ struct HomeView: View {
         }
         .onAppear {
             vm.fetchNames()
+            vm.fetchStatistics()
             vm.fetchRoutineSummary()
         }
     }
@@ -275,6 +326,7 @@ struct MetricCard: View {
     let value: String
     let label: String
     let icon: String
+    var progress: Double? = nil
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -302,10 +354,24 @@ struct MetricCard: View {
                     .lineLimit(2)
                     .minimumScaleFactor(0.8)
             }
+
+            if let progress {
+                GeometryReader { geo in
+                    ZStack(alignment: .leading) {
+                        RoundedRectangle(cornerRadius: Radius.small)
+                            .fill(Color.brandBlush)
+                            .frame(height: 4)
+                        RoundedRectangle(cornerRadius: Radius.small)
+                            .fill(Color.brandPrimary)
+                            .frame(width: geo.size.width * (min(max(progress, 0), 100) / 100), height: 4)
+                    }
+                }
+                .frame(height: 4)
+            }
         }
         .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .frame(height: 118)
+        .frame(height: 130)
         .background(Color.white)
         .clipShape(RoundedRectangle(cornerRadius: Radius.card))
         .cardShadow()
