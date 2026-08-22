@@ -103,6 +103,13 @@ struct ResultView: View {
                                 .foregroundColor(.brandText)
                                 .padding(.horizontal, 20)
 
+                            if let error = vm.errorMessage, vm.recommendProduct.isEmpty, !vm.isLoading {
+                                Text(error)
+                                    .font(.system(size: 14))
+                                    .foregroundColor(.gray)
+                                    .padding(.horizontal, 20)
+                            }
+
                             ScrollView(.horizontal, showsIndicators: false) {
                                 HStack(spacing: 16) {
                                     if vm.isLoading {
