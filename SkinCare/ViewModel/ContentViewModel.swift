@@ -45,12 +45,6 @@ class ContentViewModel: ObservableObject {
     @Published var showSplash = true
     @Published var showLoading = false
     
-    @Published var isPremium: Bool {
-        didSet {
-            UserDefaults.standard.set(isPremium, forKey: "isPremium")
-        }
-    }
-    
     var currentState: AppState {
         if showSplash {
             return .splash
@@ -74,7 +68,6 @@ class ContentViewModel: ObservableObject {
         self.hasAcceptedDisclaimer = UserDefaults.standard.bool(forKey: "hasAcceptedDisclaimer")
         self.hasCompletedProfile = UserDefaults.standard.bool(forKey: "hasCompletedProfile")
         self.hasCompletedSubscription = UserDefaults.standard.bool(forKey: "hasCompletedSubscription")
-        self.isPremium = SubscriptionManager.shared.isPremium
         
         // splash shows 4.5 sec
         DispatchQueue.main.asyncAfter(deadline: .now() + 4.5) { [weak self] in
@@ -99,8 +92,11 @@ class ContentViewModel: ObservableObject {
     }
     
     func completePurchaseStep(isPremium: Bool) {
-        SubscriptionManager.shared.isPremium = isPremium
-        self.isPremium = isPremium
+        // Only grant premium here; never revoke it. The free path must not
+        // overwrite an entitlement RevenueCat may already have restored.
+        if isPremium {
+            SubscriptionManager.shared.isPremium = true
+        }
         self.showLoading = true
         DispatchQueue.main.asyncAfter(deadline: .now() + 3.5) { [weak self] in
             self?.showLoading = false
