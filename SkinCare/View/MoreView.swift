@@ -1,10 +1,14 @@
 import SwiftUI
+import RevenueCat
 
 struct MoreView: View {
     @StateObject private var vm = MoreViewModel()
     @StateObject private var subscriptionManager = SubscriptionManager.shared
     @State private var showEditProfile = false
     @State private var showUpgrade = false
+    @State private var showDeleteConfirm = false
+    @State private var isRestoring = false
+    @State private var restoreMessage: String?
 
     private var isPremium: Bool { subscriptionManager.isPremium }
 
@@ -154,9 +158,68 @@ struct MoreView: View {
                         .cardShadow()
                     }
 
+                    VStack(alignment: .leading, spacing: 16) {
+                        Text(NSLocalizedString("settings", comment: ""))
+                            .font(.system(size: 18, weight: .bold))
+                            .foregroundColor(.brandText)
+                            .padding(.horizontal, 20)
+
+                        VStack(spacing: 12) {
+                            Button { restorePurchases() } label: {
+                                SettingsRow(
+                                    icon: "arrow.clockwise",
+                                    title: NSLocalizedString("restore_purchases", comment: ""),
+                                    showsProgress: isRestoring
+                                )
+                            }
+                            .buttonStyle(.plain)
+                            .disabled(isRestoring)
+
+                            Button { showDeleteConfirm = true } label: {
+                                SettingsRow(
+                                    icon: "trash",
+                                    title: NSLocalizedString("delete_all_data", comment: ""),
+                                    isDestructive: true
+                                )
+                            }
+                            .buttonStyle(.plain)
+
+                            SettingsRow(
+                                icon: "info.circle",
+                                title: NSLocalizedString("version", comment: ""),
+                                value: appVersion,
+                                showsChevron: false
+                            )
+                        }
+
+                        HStack {
+                            Spacer()
+                            LegalFooter()
+                            Spacer()
+                        }
+                        .padding(.top, 4)
+                    }
+
                     Color.clear.frame(height: 20)
                 }
             }
+        }
+        .alert(NSLocalizedString("delete_all_data", comment: ""), isPresented: $showDeleteConfirm) {
+            Button(NSLocalizedString("cancel", comment: ""), role: .cancel) {}
+            Button(NSLocalizedString("delete", comment: ""), role: .destructive) {
+                LocalPersistenceManager.shared.deleteAllUserData()
+                vm.loadProfile()
+            }
+        } message: {
+            Text(NSLocalizedString("delete_all_data_message", comment: ""))
+        }
+        .alert(NSLocalizedString("restore_purchases", comment: ""), isPresented: Binding(
+            get: { restoreMessage != nil },
+            set: { if !$0 { restoreMessage = nil } }
+        )) {
+            Button(NSLocalizedString("ok", comment: "")) { restoreMessage = nil }
+        } message: {
+            Text(restoreMessage ?? "")
         }
         .sheet(isPresented: $showEditProfile, onDismiss: { vm.loadProfile() }) {
             ProfileEditSheet()
@@ -164,6 +227,72 @@ struct MoreView: View {
         .sheet(isPresented: $showUpgrade) {
             UpgradeSheetView()
         }
+    }
+
+    private var appVersion: String {
+        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "-"
+    }
+
+    private func restorePurchases() {
+        isRestoring = true
+        Purchases.shared.restorePurchases { info, error in
+            DispatchQueue.main.async {
+                isRestoring = false
+                if let error = error {
+                    restoreMessage = String(format: NSLocalizedString("purchase_error_restore_failed_%@", comment: ""), error.localizedDescription)
+                    return
+                }
+                if info?.entitlements["pro"]?.isActive == true {
+                    SubscriptionManager.shared.isPremium = true
+                } else {
+                    restoreMessage = NSLocalizedString("restore_no_subscription", comment: "")
+                }
+            }
+        }
+    }
+}
+
+struct SettingsRow: View {
+    let icon: String
+    let title: String
+    var value: String? = nil
+    var isDestructive: Bool = false
+    var showsChevron: Bool = true
+    var showsProgress: Bool = false
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: icon)
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundColor(isDestructive ? .brandNegative : .brandPrimary)
+                .frame(width: 24)
+                .accessibilityHidden(true)
+
+            Text(title)
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundColor(isDestructive ? .brandNegative : .brandText)
+
+            Spacer()
+
+            if showsProgress {
+                ProgressView()
+            } else if let value {
+                Text(value)
+                    .font(.system(size: 15, weight: .medium))
+                    .foregroundColor(.gray)
+            } else if showsChevron {
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundColor(.gray.opacity(0.5))
+                    .accessibilityHidden(true)
+            }
+        }
+        .padding(.horizontal, 20)
+        .padding(.vertical, 16)
+        .background(Color.white)
+        .cornerRadius(Radius.card)
+        .cardShadow()
+        .padding(.horizontal, 20)
     }
 }
 
