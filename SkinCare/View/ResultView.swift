@@ -12,11 +12,7 @@ struct ResultView: View {
     @Environment(\.dismiss) var dismiss
     @StateObject private var vm: ResultsViewModel
     var onDismiss: (() -> Void)? = nil
-    
-    let mainColor = Color(red: 1.0, green: 0.97, blue: 0.97)
-    let secondaryColor = Color(red: 0.47, green: 0.11, blue: 0.17)
-    let primaryText = Color(red: 0.1, green: 0.1, blue: 0.2)
-    
+
     let record: AnalysisRecord?
     let isFromRecents: Bool
     @State private var showRecommendations = false
@@ -34,11 +30,11 @@ struct ResultView: View {
         self.onDismiss = onDismiss
         self._vm = StateObject(wrappedValue: ResultsViewModel(record: record))
     }
-    
+
     var body: some View {
         ZStack(alignment: .topLeading) {
-            mainColor.ignoresSafeArea()
-            
+            Color.brandBackground.ignoresSafeArea()
+
             ScrollView(.vertical, showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 32) {
 
@@ -46,73 +42,67 @@ struct ResultView: View {
                     VStack(alignment: .leading, spacing: 14) {
                         Text(NSLocalizedString("scanned_image", comment: ""))
                             .font(.system(size: 18, weight: .bold))
-                            .foregroundColor(primaryText)
-                        
+                            .foregroundColor(.brandText)
+
                         ZStack {
                             if let data = record?.imageData, let uiImage = UIImage(data: data) {
                                 Image(uiImage: uiImage)
                                     .resizable()
                                     .scaledToFill()
                             } else {
-                                RoundedRectangle(cornerRadius: 25)
-                                    .fill(
-                                        LinearGradient(
-                                            colors: [secondaryColor.opacity(0.1), secondaryColor.opacity(0.2)],
-                                            startPoint: .topLeading,
-                                            endPoint: .bottomTrailing
-                                        )
-                                    )
+                                RoundedRectangle(cornerRadius: Radius.card)
+                                    .fill(Color.brandPrimary.opacity(0.12))
                                     .overlay {
                                         Image(systemName: "camera.viewfinder")
                                             .font(.system(size: 50))
-                                            .foregroundColor(secondaryColor.opacity(0.3))
+                                            .foregroundColor(Color.brandPrimary.opacity(0.3))
                                     }
                             }
                         }
                         .frame(maxWidth: .infinity)
                         .frame(height: 370)
-                        .cornerRadius(25)
-                        .shadow(color: Color.black.opacity(0.08), radius: 15, x: 0, y: 8)
+                        .cornerRadius(Radius.card)
+                        .cardShadow()
                     }
                     .padding(.horizontal, 20)
                     .padding(.top, isFromRecents ? 0 : 20)
-                    
+
                     // MARK: - Results Section
                     VStack(alignment: .leading, spacing: 16) {
                         Text(NSLocalizedString("results", comment: ""))
                             .font(.system(size: 18, weight: .bold))
-                            .foregroundColor(primaryText)
+                            .foregroundColor(.brandText)
                             .padding(.horizontal, 20)
-                        
+
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: 16) {
-                                ResultBar(title: AppStrings.acne,    score: record?.acneScore   ?? 0, icon: "face.dashed", color: secondaryColor)
-                                ResultBar(title: AppStrings.redness, score: record?.eczemaScore ?? 0, icon: "drop.fill",   color: secondaryColor)
-                                ResultBar(title: AppStrings.psoriasis, score: record?.psoriasisScore ?? 0, icon: "bandage.fill", color: secondaryColor)
+                                ResultBar(title: AppStrings.acne,    score: record?.acneScore   ?? 0, icon: "face.dashed")
+                                ResultBar(title: AppStrings.redness, score: record?.eczemaScore ?? 0, icon: "drop.fill")
+                                ResultBar(title: AppStrings.psoriasis, score: record?.psoriasisScore ?? 0, icon: "bandage.fill")
                                 if isPremium {
-                                    ResultBar(title: AppStrings.wrinkles,     score: record?.wrinkleScore      ?? 0, icon: "sun.max.fill",       color: secondaryColor)
-                                    ResultBar(title: AppStrings.eyebags,      score: record?.eyebagScore       ?? 0, icon: "eye.fill",           color: secondaryColor)
-                                    ResultBar(title: AppStrings.pigmentation, score: record?.pigmentationScore ?? 0, icon: "circle.hexagongrid",  color: secondaryColor)
-                                    ResultBar(title: AppStrings.hydration,    score: record?.hydrationScore    ?? 0, icon: "drop.degreesign",    color: secondaryColor)
+                                    ResultBar(title: AppStrings.wrinkles,     score: record?.wrinkleScore      ?? 0, icon: "sun.max.fill")
+                                    ResultBar(title: AppStrings.eyebags,      score: record?.eyebagScore       ?? 0, icon: "eye.fill")
+                                    ResultBar(title: AppStrings.pigmentation, score: record?.pigmentationScore ?? 0, icon: "circle.hexagongrid")
+                                    ResultBar(title: AppStrings.hydration,    score: record?.hydrationScore    ?? 0, icon: "drop.degreesign")
                                 } else {
-                                    Button { showUpgrade = true } label: { lockedBar(title: AppStrings.wrinkles) }.buttonStyle(.plain)
-                                    Button { showUpgrade = true } label: { lockedBar(title: AppStrings.eyebags) }.buttonStyle(.plain)
-                                    Button { showUpgrade = true } label: { lockedBar(title: AppStrings.pigmentation) }.buttonStyle(.plain)
-                                    Button { showUpgrade = true } label: { lockedBar(title: AppStrings.hydration) }.buttonStyle(.plain)
+                                    Button { showUpgrade = true } label: { ResultBar(title: AppStrings.wrinkles, score: 0, icon: "lock.fill", locked: true) }.buttonStyle(.plain)
+                                    Button { showUpgrade = true } label: { ResultBar(title: AppStrings.eyebags, score: 0, icon: "lock.fill", locked: true) }.buttonStyle(.plain)
+                                    Button { showUpgrade = true } label: { ResultBar(title: AppStrings.pigmentation, score: 0, icon: "lock.fill", locked: true) }.buttonStyle(.plain)
+                                    Button { showUpgrade = true } label: { ResultBar(title: AppStrings.hydration, score: 0, icon: "lock.fill", locked: true) }.buttonStyle(.plain)
                                 }
                             }
                             .padding(.horizontal, 20)
                         }
                     }
-                    
+
                     // MARK: - Recommended Products
                     if isFromRecents || showRecommendations {
                         VStack(alignment: .leading, spacing: 16) {
                             Text(NSLocalizedString("recommended_products", comment: ""))
                                 .font(.system(size: 18, weight: .bold))
-                                .foregroundColor(primaryText)
+                                .foregroundColor(.brandText)
                                 .padding(.horizontal, 20)
-                            
+
                             ScrollView(.horizontal, showsIndicators: false) {
                                 HStack(spacing: 16) {
                                     if vm.isLoading {
@@ -131,27 +121,22 @@ struct ResultView: View {
                                     }
                                 }
                                 .padding(.horizontal, 20)
-                            }                        }
+                            }
+                        }
                     }
-                    
+
                     // MARK: - Action Buttons
                     if !isFromRecents && !showRecommendations {
                         Button(action: {
                             withAnimation { showRecommendations = true }
                         }) {
                             HStack(spacing: 12) {
-                                Image(systemName: "sparkles")
+                                Image(systemName: "bag.fill")
                                     .font(.system(size: 20))
                                 Text(NSLocalizedString("see_recommendations", comment: ""))
-                                    .font(.system(size: 16, weight: .bold))
                             }
-                            .foregroundColor(.white)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 22)
-                            .background(secondaryColor)
-                            .cornerRadius(20)
-                            .shadow(color: secondaryColor.opacity(0.3), radius: 10, x: 0, y: 8)
                         }
+                        .buttonStyle(PrimaryButtonStyle())
                         .padding(.horizontal, 20)
                         .padding(.top, 10)
                         .padding(.bottom, 40)
@@ -163,15 +148,9 @@ struct ResultView: View {
                                 Image(systemName: routineCreated ? "checkmark.circle.fill" : "calendar.badge.plus")
                                     .font(.system(size: 20))
                                 Text(routineCreated ? AppStrings.routineCreated : AppStrings.createRoutine)
-                                    .font(.system(size: 16, weight: .bold))
                             }
-                            .foregroundColor(.white)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 22)
-                            .background(secondaryColor)
-                            .cornerRadius(20)
-                            .shadow(color: secondaryColor.opacity(0.3), radius: 10, x: 0, y: 8)
                         }
+                        .buttonStyle(PrimaryButtonStyle())
                         .disabled(routineCreated)
                         .padding(.horizontal, 20)
                         .padding(.top, 10)
@@ -188,12 +167,12 @@ struct ResultView: View {
                     .font(.system(size: 16, weight: .bold))
                     .foregroundColor(.white)
                     .frame(width: 44, height: 44)
-                    .background(secondaryColor)
+                    .background(Color.brandPrimary)
                     .clipShape(Circle())
-                    .shadow(color: secondaryColor.opacity(0.3), radius: 5, x: 0, y: 3)
             }
             .buttonStyle(.plain)
             .contentShape(Circle())
+            .accessibilityLabel(Text(NSLocalizedString("back", comment: "")))
             .padding(.leading, 20)
             .padding(.top, 10)
             .zIndex(10)
@@ -259,43 +238,6 @@ struct ResultView: View {
             showRoutine = true
         }
     }
-
-    @ViewBuilder
-    private func lockedBar(title: String) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
-            ZStack {
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(Color.gray.opacity(0.15))
-                    .frame(width: 44, height: 44)
-                Image(systemName: "lock.fill")
-                    .font(.system(size: 18))
-                    .foregroundColor(.gray.opacity(0.5))
-            }
-            Text(title)
-                .font(.system(size: 16, weight: .bold))
-                .foregroundColor(.gray.opacity(0.5))
-            HStack(alignment: .firstTextBaseline, spacing: 2) {
-                Text("—")
-                    .font(.system(size: 28, weight: .bold))
-                    .foregroundColor(.gray.opacity(0.4))
-                Text(AppStrings.pro)
-                    .font(.system(size: 12, weight: .bold))
-                    .foregroundColor(secondaryColor)
-                    .padding(.horizontal, 6)
-                    .padding(.vertical, 2)
-                    .background(Color(red: 1.0, green: 0.87, blue: 0.87))
-                    .cornerRadius(6)
-            }
-            RoundedRectangle(cornerRadius: 3)
-                .fill(Color.gray.opacity(0.12))
-                .frame(height: 6)
-        }
-        .padding(20)
-        .frame(width: 170)
-        .background(Color.white)
-        .cornerRadius(25)
-        .shadow(color: Color.black.opacity(0.04), radius: 10, x: 0, y: 5)
-    }
 }
 
 // MARK: - ResultBar Struct
@@ -303,44 +245,55 @@ struct ResultBar: View {
     let title: String
     let score: Double
     let icon: String
-    let color: Color
-    
-    let primaryText = Color(red: 0.1, green: 0.1, blue: 0.2)
-    
+    var locked: Bool = false
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             ZStack {
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(color)
+                RoundedRectangle(cornerRadius: Radius.small)
+                    .fill(locked ? Color.gray.opacity(0.15) : Color.brandPrimary)
                     .frame(width: 44, height: 44)
-                
+
                 Image(systemName: icon)
                     .font(.system(size: 20))
-                    .foregroundColor(.white)
+                    .foregroundColor(locked ? .gray.opacity(0.5) : .white)
             }
-            
+
             Text(title)
                 .font(.system(size: 16, weight: .bold))
-                .foregroundColor(primaryText)
-            
+                .foregroundColor(locked ? .gray.opacity(0.5) : .brandText)
+
             HStack(alignment: .firstTextBaseline, spacing: 2) {
-                Text("\(Int(score))")
-                    .font(.system(size: 28, weight: .bold))
-                    .foregroundColor(color)
-                
-                Text("/100")
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundColor(.gray)
+                if locked {
+                    Text(AppStrings.pro)
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundColor(.brandPrimary)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(Color.brandBlush)
+                        .cornerRadius(Radius.small)
+                } else {
+                    Text("\(Int(score))")
+                        .font(.system(size: 28, weight: .bold))
+                        .foregroundColor(.brandPrimary)
+
+                    Text("/100")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundColor(.gray)
+                }
             }
-            
+            .frame(height: 34)
+
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
-                    RoundedRectangle(cornerRadius: 3)
-                        .fill(color.opacity(0.1))
+                    RoundedRectangle(cornerRadius: Radius.small)
+                        .fill(locked ? Color.gray.opacity(0.12) : Color.brandPrimary.opacity(0.1))
                         .frame(height: 6)
-                    RoundedRectangle(cornerRadius: 3)
-                        .fill(color)
-                        .frame(width: geo.size.width * (score / 100), height: 6)
+                    if !locked {
+                        RoundedRectangle(cornerRadius: Radius.small)
+                            .fill(Color.brandPrimary)
+                            .frame(width: geo.size.width * (score / 100), height: 6)
+                    }
                 }
             }
             .frame(height: 6)
@@ -348,8 +301,8 @@ struct ResultBar: View {
         .padding(20)
         .frame(width: 170)
         .background(Color.white)
-        .cornerRadius(25)
-        .shadow(color: Color.black.opacity(0.06), radius: 10, x: 0, y: 5)
+        .cornerRadius(Radius.card)
+        .cardShadow()
     }
 }
 
