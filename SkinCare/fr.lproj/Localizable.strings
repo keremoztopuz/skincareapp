@@ -12,6 +12,8 @@
 "your_routine" = "Votre routine";
 "steps_configured_%lld" = "%lld étapes configurées";
 "tap_to_setup_routine" = "Appuyez pour configurer votre routine de soins";
+"routine_steps_done_%lld_%lld" = "%1$lld sur %2$lld terminés";
+"new_suggestions_%lld" = "%lld nouvelles suggestions";
 "recommended_products" = "Produits recommandés";
 "latest_articles" = "Derniers articles";
 "morning_routine" = "Routine du matin";
