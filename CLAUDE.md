@@ -50,17 +50,14 @@ Splash (4.5s) → OnBoarding (4 pages) → Profile Setup → Loading (3.5s) → 
 - **Recents:** Recent Analyses list, score + trend, progress bars.
 - **More:** Subscription status + Settings.
 
-## Analysis Architecture (hybrid engine)
-### Local Engine (CoreML/Vision)
-- **Primary Conditions:** Acne and redness detection are handled strictly on-device.
-- **Initial Processing:** Face detection and cropping are performed locally.
-
-### Cloud Engine (Gemini VLM)
-- **Advanced Metrics:** Wrinkles, eyebags, pigmentation, and hydration are analyzed via Google Gemini API.
-- **Requirement:** This phase requires an internet connection and transmits face crops securely for analysis.
+## Analysis Architecture (cloud)
+- **All six metrics** (breakouts/acne, redness, wrinkles, eyebags, pigmentation, hydration) come from **Gemini 2.5 Flash on Vertex AI**, called through a FastAPI proxy (`~/Desktop/skincare-proxy/`, outside this repo).
+- The app holds no cloud credential. `AnalysisConfig.swift` (gitignored) carries only the proxy URL and a shared client token.
+- Face detection and cropping stay on-device (Vision); the crop is JPEG-encoded and sent to the proxy, which strips EXIF, downscales to 768px, enforces rate limits and a daily spend ceiling.
+- There is **no on-device model** and **no offline analysis**. A failed network call must never persist a record or burn a scan (`didProduceModelScores` guard in `CameraViewModel.buildRecord`).
 
 ## Data & Privacy
 - **Core Data:** all user data (profile, analysis history) — stays on device.
 - **Supabase (PostgreSQL):** articles, product recommendations, routine content (fetch only).
-- **Privacy-by-design:** Face crops for advanced analysis are sent securely to Google Gemini for real-time processing. No biometric data is stored permanently by our backend services.
-- **Hybrid Support:** Basic analysis (acne/redness) and history access work offline. Advanced metrics (VLM) require an active internet connection.
+- **Privacy-by-design:** Face crops are sent securely to the analysis proxy (Vertex AI / Gemini) for real-time processing and are not stored permanently by our services. Google retains requests briefly for abuse monitoring; they are not used to train models.
+- **Connectivity:** Analysis requires an internet connection. History, profile and routines work offline.
