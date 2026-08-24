@@ -42,7 +42,7 @@ class LocalPersistenceManager {
     }
     // Analysis Records
     @discardableResult
-    func saveAnalysisRecord(condition: String, confidence: Double, wrinkleScore: Double, eyebagScore: Double, pigmentationScore: Double, date: Date, drynessScore: Double, inflammationScore: Double, oilinessScore: Double, overallScore: Double, userFeedback: Bool, acneScore: Double, eczemaScore: Double, imageData: Data?) -> AnalysisRecord {
+    func saveAnalysisRecord(condition: String, confidence: Double, wrinkleScore: Double, eyebagScore: Double, pigmentationScore: Double, date: Date, drynessScore: Double, inflammationScore: Double, oilinessScore: Double, overallScore: Double, userFeedback: Bool, acneScore: Double, eczemaScore: Double, hydrationScore: Double = 0, imageData: Data?) -> AnalysisRecord {
         let record = AnalysisRecord(context: context)
         record.condition = condition
         record.confidence = confidence
@@ -57,6 +57,9 @@ class LocalPersistenceManager {
         record.pigmentationScore = pigmentationScore
         record.wrinkleScore = wrinkleScore
         record.eyebagScore = eyebagScore
+        // Column existed through the offline era but was always 0; the cloud
+        // analysis measures it again. No store migration needed.
+        record.hydrationScore = hydrationScore
         record.imageData = imageData
 
         do {
