@@ -23,7 +23,7 @@
 "face_analysis" = "Yüz Analizi";
 "position_face" = "Yüzünüzü oval çerçevenin içine yerleştirin";
 "camera_access_required" = "Kamera Erişimi Gerekli";
-"camera_access_description" = "Cildinizi analiz etmek için kameranıza erişim gerekiyor. Yüz verileriniz analiz için güvenli şekilde işlenir.";
+"camera_access_description" = "Cildinizi analiz etmek için kameranıza erişmemiz gerekiyor. Yüz fotoğrafınız analiz için güvenli şekilde iletilir ve kalıcı olarak saklanmaz.";
 "open_settings" = "Ayarları Aç";
 "ready_to_scan" = "Taramaya Hazır mısınız?";
 "enable_camera_description" = "Cilt analizi yolculuğunuza başlamak için kamera erişimini etkinleştirin.";
@@ -58,7 +58,7 @@
 "free_trial_included" = "3 günlük ücretsiz deneme dahil";
 "popular" = "POPÜLER";
 "5_analysis_per_month" = "Ayda 5 cilt analizi";
-"basic_insights" = "Temel bilgiler (Akne ve Kızarıklık)";
+"basic_insights" = "Temel analizler (Sivilce ve Kızarıklık)";
 "limited_recommendations" = "Sınırlı öneriler";
 "last_5_scans" = "Son 5 tarama";
 "unlimited_analysis" = "Sınırsız analiz";
@@ -67,11 +67,11 @@
 "complete_history" = "Tam geçmiş ve takip";
 "purchase_error" = "Satın Alma Hatası";
 "onboarding_title_1" = "SkinCare AI'ya Hoş Geldiniz";
-"onboarding_desc_1" = "Gelişmiş hibrit yapay zeka teknolojisi ile desteklenen kişisel dermatoloji asistanınız.";
+"onboarding_desc_1" = "Gelişmiş yapay zeka destekli kişisel cilt bakımı yardımcınız.";
 "onboarding_title_2" = "Yapay Zeka Destekli Cilt Analizi";
-"onboarding_desc_2" = "Cildinizi saniyeler içinde analiz edin. Derinlemesine içgörüler için cihaz üstü ML ile bulut tabanlı görme modellerini birleştiriyoruz.";
+"onboarding_desc_2" = "Bulut tabanlı yapay zeka ile cildinizi saniyeler içinde analiz edin.";
 "onboarding_title_3" = "Güvenli ve Özel";
-"onboarding_desc_3" = "Profiliniz ve geçmişiniz cihazınızda kalır. Yüz kesitleri analiz için gerçek zamanlı ve güvenli şekilde işlenir.";
+"onboarding_desc_3" = "Profiliniz ve geçmişiniz cihazınızda kalır. Yüz fotoğrafınız analiz için güvenli şekilde iletilir ve kalıcı olarak saklanmaz.";
 "onboarding_title_4" = "İlerlemenizi Takip Edin";
 "onboarding_desc_4" = "Her analizi kaydedin ve zamanla nasıl geliştiğinizi görün.";
 "back" = "Geri";
@@ -175,7 +175,7 @@
 "routine_created" = "Rutin Oluşturuldu!";
 "create_routine" = "Rutin Oluştur";
 
-"condition_acne" = "Akne";
+"condition_acne" = "Sivilce";
 "condition_redness" = "Kızarıklık";
 "condition_pigmentation" = "Pigmentasyon";
 "condition_hydration" = "Nem";
@@ -214,8 +214,8 @@
 
 "compare_insight_overall_improved" = "Genel cilt skorunuz %lld puan iyileşti.";
 "compare_insight_overall_decreased" = "Genel cilt skorunuz %lld puan düştü.";
-"compare_insight_acne_decreased" = "Akne belirtileri önceye göre daha düşük görünüyor.";
-"compare_insight_acne_increased" = "Akne belirtileri önceye göre daha yüksek görünüyor.";
+"compare_insight_acne_decreased" = "Sivilce belirtileri öncekinden düşük görünüyor.";
+"compare_insight_acne_increased" = "Sivilce belirtileri öncekinden yüksek görünüyor.";
 "compare_insight_wrinkles_decreased" = "Kırışıklık belirtileri önceye göre daha düşük görünüyor.";
 "compare_insight_no_significant_change" = "Bu analizler arasında belirgin bir değişiklik algılanmadı.";
 
@@ -263,7 +263,7 @@
 "upgrade_feature_full_history" = "Tüm geçmiş taramalara erişim";
 "upgrade_feature_unlimited_recommendations" = "Sınırsız ürün önerisi";
 "free_feature_5_scans" = "Ayda 5 tarama";
-"free_feature_conditions" = "Akne ve kızarıklık tespiti";
+"free_feature_conditions" = "Sivilce ve kızarıklık tespiti";
 "free_feature_last_5" = "Son 5 analiz görünür";
 "terms_of_use" = "Kullanım Koşulları";
 "privacy_policy" = "Gizlilik Politikası";
@@ -271,7 +271,7 @@
 "analysis_failed_title" = "Analiz Başarısız";
 "analysis_error_photo" = "Fotoğraf işlenemedi. Lütfen tekrar deneyin.";
 "analysis_error_model" = "Analiz tamamlanamadı. Lütfen tekrar deneyin.";
-
+"analysis_error_network" = "Analiz servisine ulaşılamadı. Bağlantınızı kontrol edip tekrar deneyin.";
 /* Score visualization additions */
 "score_trend" = "Skor Trendi";
 "overall_band_excellent" = "Çok iyi";
