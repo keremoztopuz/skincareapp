@@ -23,7 +23,7 @@
 "face_analysis" = "Analisi del viso";
 "position_face" = "Posiziona il viso nel riquadro ovale";
 "camera_access_required" = "Accesso fotocamera richiesto";
-"camera_access_description" = "Per analizzare la tua pelle, abbiamo bisogno di accedere alla fotocamera. Le tue foto non lasciano mai il dispositivo.";
+"camera_access_description" = "Per analizzare la tua pelle ci serve l'accesso alla fotocamera. La foto del viso viene inviata in modo sicuro per l'analisi e non viene conservata in modo permanente.";
 "open_settings" = "Apri impostazioni";
 "ready_to_scan" = "Pronto per la scansione?";
 "enable_camera_description" = "Abilita l'accesso alla fotocamera per iniziare l'analisi della pelle.";
@@ -58,7 +58,7 @@
 "free_trial_included" = "Prova gratuita di 3 giorni inclusa";
 "popular" = "POPOLARE";
 "5_analysis_per_month" = "5 analisi della pelle al mese";
-"basic_insights" = "Informazioni base (Acne & Rossore)";
+"basic_insights" = "Analisi di base (Brufoli e Rossori)";
 "limited_recommendations" = "Raccomandazioni limitate";
 "last_5_scans" = "Ultime 5 scansioni";
 "unlimited_analysis" = "Analisi illimitate";
@@ -67,11 +67,11 @@
 "complete_history" = "Cronologia completa e monitoraggio";
 "purchase_error" = "Errore di acquisto";
 "onboarding_title_1" = "Benvenuto in SkinCare AI";
-"onboarding_desc_1" = "Il tuo assistente dermatologico personale con tecnologia IA avanzata.";
+"onboarding_desc_1" = "Il tuo compagno di skincare basato su IA avanzata.";
 "onboarding_title_2" = "Analisi della pelle con IA";
-"onboarding_desc_2" = "Analizza la tua pelle in pochi secondi con la fotocamera. Ottieni risultati istantanei.";
+"onboarding_desc_2" = "Analizza la tua pelle in pochi secondi con la visione IA nel cloud.";
 "onboarding_title_3" = "I dati restano sul dispositivo";
-"onboarding_desc_3" = "I dati del tuo viso non lasciano mai il dispositivo. Priorizziamo la tua privacy.";
+"onboarding_desc_3" = "Il tuo profilo e la cronologia restano sul tuo dispositivo. La foto del viso viene inviata in modo sicuro per l'analisi e non viene conservata in modo permanente.";
 "onboarding_title_4" = "Monitora i tuoi progressi";
 "onboarding_desc_4" = "Salva ogni analisi e vedi come migliori nel tempo.";
 "back" = "Indietro";
@@ -171,7 +171,7 @@
 "scan_limit_reached" = "Limite di scansioni raggiunto";
 "routine_created" = "Routine creata!";
 "create_routine" = "Crea una routine";
-"condition_acne" = "Acne";
+"condition_acne" = "Brufoli";
 "condition_redness" = "Rossore";
 "condition_pigmentation" = "Pigmentazione";
 "condition_hydration" = "Idratazione";
@@ -207,8 +207,8 @@
 "feature_full_history_progress_tracking" = "Cronologia completa e monitoraggio progressi";
 "compare_insight_overall_improved" = "Il tuo punteggio generale è migliorato di %lld punti.";
 "compare_insight_overall_decreased" = "Il tuo punteggio generale è diminuito di %lld punti.";
-"compare_insight_acne_decreased" = "I segni di acne sembrano inferiori rispetto a prima.";
-"compare_insight_acne_increased" = "I segni di acne sembrano superiori rispetto a prima.";
+"compare_insight_acne_decreased" = "I segni di brufoli sembrano inferiori rispetto a prima.";
+"compare_insight_acne_increased" = "I segni di brufoli sembrano superiori rispetto a prima.";
 "compare_insight_wrinkles_decreased" = "I segni di rughe sembrano inferiori rispetto a prima.";
 "compare_insight_no_significant_change" = "Nessun cambiamento significativo rilevato tra queste analisi.";
 "guide_do_position_face" = "Posiziona chiaramente il viso nel riquadro.";
@@ -251,7 +251,7 @@
 "upgrade_feature_full_history" = "Cronologia completa di tutte le scansioni";
 "upgrade_feature_unlimited_recommendations" = "Consigli sui prodotti illimitati";
 "free_feature_5_scans" = "5 scansioni al mese";
-"free_feature_conditions" = "Rilevamento di acne e rossore";
+"free_feature_conditions" = "Rilevamento di brufoli e rossori";
 "free_feature_last_5" = "Ultime 5 analisi visibili";
 "terms_of_use" = "Termini di utilizzo";
 "privacy_policy" = "Informativa sulla privacy";
@@ -259,6 +259,7 @@
 "analysis_failed_title" = "Analisi non riuscita";
 "analysis_error_photo" = "Impossibile elaborare la foto. Riprova.";
 "analysis_error_model" = "Impossibile completare l'analisi. Riprova.";
+"analysis_error_network" = "Servizio di analisi non raggiungibile. Controlla la connessione e riprova.";
 "score_trend" = "Andamento del punteggio";
 "overall_band_excellent" = "Eccellente";
 "overall_band_good" = "Buono";
