@@ -23,7 +23,7 @@
 "face_analysis" = "Análisis facial";
 "position_face" = "Coloca tu rostro dentro del marco ovalado";
 "camera_access_required" = "Se requiere acceso a la cámara";
-"camera_access_description" = "Para analizar tu piel, necesitamos acceso a tu cámara. Tus fotos nunca salen de tu dispositivo.";
+"camera_access_description" = "Para analizar tu piel necesitamos acceso a tu cámara. Tu foto facial se envía de forma segura para el análisis y no se almacena de forma permanente.";
 "open_settings" = "Abrir ajustes";
 "ready_to_scan" = "¿Listo para escanear?";
 "enable_camera_description" = "Habilita el acceso a la cámara para comenzar tu análisis de piel.";
@@ -58,7 +58,7 @@
 "free_trial_included" = "Prueba gratuita de 3 días incluida";
 "popular" = "POPULAR";
 "5_analysis_per_month" = "5 análisis de piel por mes";
-"basic_insights" = "Información básica (Acné y Rojez)";
+"basic_insights" = "Análisis básicos (Granitos y Rojeces)";
 "limited_recommendations" = "Recomendaciones limitadas";
 "last_5_scans" = "Últimos 5 escaneos";
 "unlimited_analysis" = "Análisis ilimitados";
@@ -67,11 +67,11 @@
 "complete_history" = "Historial completo y seguimiento";
 "purchase_error" = "Error de compra";
 "onboarding_title_1" = "Bienvenido a SkinCare AI";
-"onboarding_desc_1" = "Tu asistente dermatológico personal con tecnología de IA avanzada.";
+"onboarding_desc_1" = "Tu compañero de cuidado de la piel impulsado por IA avanzada.";
 "onboarding_title_2" = "Análisis de piel con IA";
-"onboarding_desc_2" = "Analiza tu piel en segundos con tu cámara. Obtén información al instante.";
+"onboarding_desc_2" = "Analiza tu piel en segundos con visión de IA en la nube.";
 "onboarding_title_3" = "Los datos permanecen en el dispositivo";
-"onboarding_desc_3" = "Tus datos faciales nunca salen de tu dispositivo. Priorizamos tu privacidad.";
+"onboarding_desc_3" = "Tu perfil y tu historial permanecen en tu dispositivo. Tu foto facial se envía de forma segura para el análisis y no se almacena de forma permanente.";
 "onboarding_title_4" = "Sigue tu progreso";
 "onboarding_desc_4" = "Guarda cada análisis y mira cómo mejoras con el tiempo.";
 "back" = "Atrás";
@@ -171,7 +171,7 @@
 "scan_limit_reached" = "Límite de análisis alcanzado";
 "routine_created" = "¡Rutina creada!";
 "create_routine" = "Crear rutina";
-"condition_acne" = "Acné";
+"condition_acne" = "Granitos";
 "condition_redness" = "Enrojecimiento";
 "condition_pigmentation" = "Pigmentación";
 "condition_hydration" = "Hidratación";
@@ -207,8 +207,8 @@
 "feature_full_history_progress_tracking" = "Historial completo y seguimiento del progreso";
 "compare_insight_overall_improved" = "Tu puntuación general mejoró %lld puntos.";
 "compare_insight_overall_decreased" = "Tu puntuación general bajó %lld puntos.";
-"compare_insight_acne_decreased" = "Los signos de acné parecen menores que antes.";
-"compare_insight_acne_increased" = "Los signos de acné parecen mayores que antes.";
+"compare_insight_acne_decreased" = "Los signos de granitos parecen menores que antes.";
+"compare_insight_acne_increased" = "Los signos de granitos parecen mayores que antes.";
 "compare_insight_wrinkles_decreased" = "Los signos de arrugas parecen menores que antes.";
 "compare_insight_no_significant_change" = "No se detectó un cambio significativo entre estos análisis.";
 "guide_do_position_face" = "Coloca tu rostro claramente dentro del marco.";
@@ -251,7 +251,7 @@
 "upgrade_feature_full_history" = "Historial completo de todos tus escaneos";
 "upgrade_feature_unlimited_recommendations" = "Recomendaciones de productos ilimitadas";
 "free_feature_5_scans" = "5 escaneos al mes";
-"free_feature_conditions" = "Detección de acné y enrojecimiento";
+"free_feature_conditions" = "Detección de granitos y rojeces";
 "free_feature_last_5" = "Últimos 5 análisis visibles";
 "terms_of_use" = "Términos de uso";
 "privacy_policy" = "Política de privacidad";
@@ -259,6 +259,7 @@
 "analysis_failed_title" = "Análisis fallido";
 "analysis_error_photo" = "No se pudo procesar la foto. Inténtalo de nuevo.";
 "analysis_error_model" = "No se pudo completar el análisis. Inténtalo de nuevo.";
+"analysis_error_network" = "No se pudo conectar con el servicio de análisis. Comprueba tu conexión e inténtalo de nuevo.";
 "score_trend" = "Tendencia de la puntuación";
 "overall_band_excellent" = "Excelente";
 "overall_band_good" = "Bueno";
