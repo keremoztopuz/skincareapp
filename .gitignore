@@ -35,3 +35,4 @@ SkinCare/Model/SupabaseConfig.swift
 *.swp
 *.swo
 *~
+SkinCare/Model/AnalysisConfig.swift
