@@ -30,7 +30,7 @@
 "face_analysis" = "Face Analysis";
 "position_face" = "Position your face within the oval frame";
 "camera_access_required" = "Camera Access Required";
-"camera_access_description" = "To analyze your skin, we need access to your camera. Face data is processed securely to provide insights.";
+"camera_access_description" = "To analyze your skin, we need access to your camera. Your face photo is sent securely for analysis and is not stored permanently.";
 "open_settings" = "Open Settings";
 "ready_to_scan" = "Ready to Scan?";
 "enable_camera_description" = "Enable camera access to start your skin analysis journey.";
@@ -71,7 +71,7 @@
 "free_trial_included" = "3-day free trial included";
 "popular" = "POPULAR";
 "5_analysis_per_month" = "5 skin analysis per month";
-"basic_insights" = "Basic insights (Acne & Redness)";
+"basic_insights" = "Basic insights (Breakouts & Redness)";
 "limited_recommendations" = "Limited recommendations";
 "last_5_scans" = "Last 5 recent scans";
 "unlimited_analysis" = "Unlimited analysis";
@@ -82,11 +82,11 @@
 
 /* Onboarding */
 "onboarding_title_1" = "Welcome to SkinCare AI";
-"onboarding_desc_1" = "Your personal dermatological assistant powered by advanced hybrid AI technology.";
+"onboarding_desc_1" = "Your personal skincare companion powered by advanced AI.";
 "onboarding_title_2" = "AI-Powered Skin Analysis";
-"onboarding_desc_2" = "Analyze your skin in seconds. We combine on-device ML with cloud-based vision models for deep insights.";
+"onboarding_desc_2" = "Analyze your skin in seconds with cloud-based AI vision.";
 "onboarding_title_3" = "Secure & Private";
-"onboarding_desc_3" = "Your profile and history stay on your device. Face crops are processed securely for real-time analysis.";
+"onboarding_desc_3" = "Your profile and history stay on your device. Your face photo is sent securely for analysis and is not stored permanently.";
 "onboarding_title_4" = "Track Your Progress";
 "onboarding_desc_4" = "Save every analysis and see how you improve over time.";
 "back" = "Back";
@@ -215,7 +215,7 @@
 "create_routine" = "Create a Routine";
 
 /* Conditions and Metrics */
-"condition_acne" = "Acne";
+"condition_acne" = "Breakouts";
 "condition_redness" = "Redness";
 "condition_pigmentation" = "Pigmentation";
 "condition_hydration" = "Hydration";
@@ -258,8 +258,8 @@
 /* Compare Insights */
 "compare_insight_overall_improved" = "Your overall skin score improved by %lld points.";
 "compare_insight_overall_decreased" = "Your overall skin score decreased by %lld points.";
-"compare_insight_acne_decreased" = "Acne signs appear lower than before.";
-"compare_insight_acne_increased" = "Acne signs appear higher than before.";
+"compare_insight_acne_decreased" = "Breakout signs appear lower than before.";
+"compare_insight_acne_increased" = "Breakout signs appear higher than before.";
 "compare_insight_wrinkles_decreased" = "Wrinkle signs appear lower than before.";
 "compare_insight_no_significant_change" = "No significant change detected between these analyses.";
 
@@ -310,7 +310,7 @@
 "upgrade_feature_full_history" = "Full history of all past scans";
 "upgrade_feature_unlimited_recommendations" = "Unlimited product recommendations";
 "free_feature_5_scans" = "5 scans per month";
-"free_feature_conditions" = "Acne and redness detection";
+"free_feature_conditions" = "Breakout and redness detection";
 "free_feature_last_5" = "Last 5 analyses visible";
 "terms_of_use" = "Terms of Use";
 "privacy_policy" = "Privacy Policy";
@@ -318,7 +318,7 @@
 "analysis_failed_title" = "Analysis Failed";
 "analysis_error_photo" = "The photo could not be processed. Please try again.";
 "analysis_error_model" = "The analysis could not be completed. Please try again.";
-
+"analysis_error_network" = "Could not reach the analysis service. Check your connection and try again.";
 /* Score visualization additions */
 "score_trend" = "Score Trend";
 "overall_band_excellent" = "Excellent";
