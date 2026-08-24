@@ -32,6 +32,7 @@ class ScoringEngine {
         pigmentation: Double,
         wrinkles: Double = 0,
         eyebags: Double = 0,
+        hydration: Double = 0.5,
         skinType: String
     ) -> SkinScore {
         let type = normalizedSkinType(skinType)
@@ -75,10 +76,13 @@ class ScoringEngine {
         case "oily": drynessBase = 0.05
         default: drynessBase = 0.10
         }
-        // Without a hydration measurement, dryness rests on the reported skin
-        // type plus redness, which correlates with a compromised barrier.
+        // Hydration is measured now (0-1, higher = better hydrated), so it
+        // carries most of the weight. The skin-type base and redness stay as
+        // secondary signals: a self-reported type is still informative, and
+        // redness correlates with a compromised barrier.
         let drynessLoad = drynessBase
-            + 0.9 * redness
+            + 0.7 * (1.0 - hydration)
+            + 0.3 * redness
         let drynessScore = clamp(100.0 * (1.0 - exp(-drynessLoad)))
 
         // MARK: Oiliness (higher = worse)
