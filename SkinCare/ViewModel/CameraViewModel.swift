@@ -1,6 +1,5 @@
 import AVFoundation
 import SwiftUI
-import CoreML
 import Vision
 internal import Combine
 
@@ -28,11 +27,11 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
     @Published var isAnalyzing: Bool = false
     @Published var errorMessage: String? = nil
 
-    /// False when the classifier failed, so a broken run never persists a
+    @Published var hydrationScore: Double = 0
+
+    /// False when the analysis failed, so a broken run never persists a
     /// record that would read as a flawless complexion.
     private var didProduceModelScores = false
-    /// The package is ~53 MB; loading it per capture cost seconds.
-    private var cachedModel: MLModel?
 
     private let engine = ScoringEngine()
 
@@ -166,8 +165,7 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
 
             let imageToAnalyze = croppedImage ?? normalizedImage
 
-            self.analyzeWithCoreML(imageToAnalyze)
-            await self.analyzeSecondaryConditions(imageToAnalyze)
+            await self.analyzeWithCloud(imageToAnalyze)
 
             let elapsed = Date().timeIntervalSince(startTime)
             if elapsed < 3.0 {
@@ -234,117 +232,46 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
         }
     }
 
-    func analyzeWithCoreML(_ image: UIImage) {
-        let inputSize = 384
-        let mean: [Float] = [0.5942, 0.4433, 0.3871]
-        let std: [Float]  = [0.2427, 0.2027, 0.1930]
+    /// Sends the face crop to the analysis proxy and fills all six scores.
+    ///
+    /// On any failure it leaves `didProduceModelScores` false, so
+    /// `buildRecord()` refuses to persist: an all-zero record would read as
+    /// flawless skin, and it would still burn one of the user's five monthly
+    /// scans.
+    func analyzeWithCloud(_ image: UIImage) async {
+        let profile = LocalPersistenceManager.shared.fetchUserProfile()
+        let skinType = profile?.skinType?.lowercased()
+        let age = profile?.ageRange.flatMap { Int($0) }
 
-        guard let resized = image.resizedForML(to: inputSize),
-              let cgImage = resized.cgImage else {
-            return
-        }
-
-        var pixels = [UInt8](repeating: 0, count: inputSize * inputSize * 4)
-        let colorSpace = CGColorSpaceCreateDeviceRGB()
-        guard let ctx = CGContext(data: &pixels, width: inputSize, height: inputSize,
-                                  bitsPerComponent: 8, bytesPerRow: inputSize * 4,
-                                  space: colorSpace,
-                                  bitmapInfo: CGImageAlphaInfo.noneSkipLast.rawValue) else {
-            return
-        }
-        ctx.draw(cgImage, in: CGRect(x: 0, y: 0, width: inputSize, height: inputSize))
-
-        guard let tensor = try? MLMultiArray(shape: [1, 3, inputSize, inputSize] as [NSNumber], dataType: .float32) else {
-            return
-        }
-
-        let ptr = UnsafeMutablePointer<Float32>(OpaquePointer(tensor.dataPointer))
-        let hw = inputSize * inputSize
-        for c in 0..<3 {
-            for i in 0..<hw {
-                let raw = Float(pixels[i * 4 + c]) / 255.0
-                ptr[c * hw + i] = (raw - mean[c]) / std[c]
-            }
-        }
-
-        let mlModel: MLModel
         do {
-            guard let modelURL = Bundle.main.url(forResource: "skin_disease", withExtension: "mlmodelc")
-                    ?? Bundle.main.url(forResource: "skin_disease", withExtension: "mlpackage") else {
-                NSLog("ML model file not found in bundle")
-                DispatchQueue.main.async {
-                    self.errorMessage = NSLocalizedString("analysis_error_model", comment: "")
-                }
-                return
+            let scores = try await AnalysisService.shared.analyze(
+                image: image, skinType: skinType, age: age
+            )
+            await MainActor.run {
+                self.currentAcneScore = scores.acne
+                self.currentRednessScore = scores.redness
+                self.wrinkleScore = scores.wrinkles
+                self.eyebagScore = scores.eyebags
+                self.pigmentationScore = scores.pigmentation
+                self.hydrationScore = scores.hydration
+
+                // Same naming rule the calibrated on-device model used: a
+                // condition is called out only above its cut-off, and only
+                // the primary two get a name.
+                let candidates: [(name: String, score: Double, threshold: Double)] = [
+                    ("Acne", scores.acne, AnalysisService.acneThreshold),
+                    ("Redness", scores.redness, AnalysisService.rednessThreshold)
+                ]
+                let detected = candidates
+                    .filter { $0.score >= $0.threshold }
+                    .max(by: { $0.score < $1.score })
+                self.detectedCondition = detected?.name ?? "Healthy"
+                self.didProduceModelScores = true
             }
-            mlModel = try MLModel(contentsOf: modelURL, configuration: MLModelConfiguration())
         } catch {
-            NSLog("ML model could not be loaded: %@", error.localizedDescription)
-            DispatchQueue.main.async {
-                self.errorMessage = NSLocalizedString("analysis_error_model", comment: "")
+            await MainActor.run {
+                self.errorMessage = NSLocalizedString("analysis_error_network", comment: "")
             }
-            return
-        }
-
-        let provider = try? MLDictionaryFeatureProvider(dictionary: ["image": MLFeatureValue(multiArray: tensor)])
-        guard let provider = provider else {
-            return
-        }
-
-        let output: MLFeatureProvider
-        do { output = try mlModel.prediction(from: provider) }
-        catch {
-            NSLog("ML prediction error: %@", error.localizedDescription)
-            DispatchQueue.main.async {
-                self.errorMessage = NSLocalizedString("analysis_error_model", comment: "")
-            }
-            return
-        }
-
-        let outputNames = output.featureNames
-        let scores = output.featureValue(for: "scores")?.multiArrayValue
-            ?? outputNames.compactMap { output.featureValue(for: $0)?.multiArrayValue }.first
-
-        guard let scores else {
-            NSLog("ML multi-array output not found")
-            return
-        }
-
-        func logit(_ index: Int) -> Double {
-            Double(truncating: scores[[0, NSNumber(value: index)] as [NSNumber]])
-        }
-
-        let acne = ModelCalibration.score(fromLogit: logit(ModelCalibration.Index.acne))
-        let redness = ModelCalibration.score(fromLogit: logit(ModelCalibration.Index.redness))
-        let eyebags = ModelCalibration.score(fromLogit: logit(ModelCalibration.Index.eyebags))
-        let wrinkles = ModelCalibration.score(fromLogit: logit(ModelCalibration.Index.wrinkles))
-
-        // A condition is only named when it clears its calibrated threshold,
-        // so a model with no opinion reports Healthy instead of a middling score.
-        let candidates: [(name: String, score: Double, threshold: Double)] = [
-            ("Acne", acne, ModelCalibration.acneThreshold * 100),
-            ("Redness", redness, ModelCalibration.rednessThreshold * 100)
-        ]
-        let detected = candidates
-            .filter { $0.score >= $0.threshold }
-            .max(by: { $0.score < $1.score })
-
-        DispatchQueue.main.async {
-            self.currentAcneScore = acne
-            self.currentRednessScore = redness
-            self.eyebagScore = eyebags
-            self.wrinkleScore = wrinkles
-            self.detectedCondition = detected?.name ?? "Healthy"
-            self.didProduceModelScores = true
-        }
-    }
-
-    /// Pigmentation is derived on device from the same face crop; nothing
-    /// leaves the phone.
-    func analyzeSecondaryConditions(_ image: UIImage) async {
-        let pigmentation = PigmentationAnalyzer.analyze(image)
-        await MainActor.run {
-            self.pigmentationScore = pigmentation
         }
     }
 
@@ -368,6 +295,7 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
             pigmentation: pigmentationScore / 100,
             wrinkles: wrinkleScore / 100,
             eyebags: eyebagScore / 100,
+            hydration: hydrationScore / 100,
             skinType: skinType
         )
 
@@ -387,6 +315,7 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
             userFeedback: false,
             acneScore: currentAcneScore,
             eczemaScore: currentRednessScore,
+            hydrationScore: hydrationScore,
             imageData: imageData
         )
 
@@ -418,14 +347,6 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
 }
 
 extension UIImage {
-    func resizedForML(to size: Int) -> UIImage? {
-        let s = CGSize(width: size, height: size)
-        UIGraphicsBeginImageContextWithOptions(s, false, 1.0)
-        defer { UIGraphicsEndImageContext() }
-        draw(in: CGRect(origin: .zero, size: s))
-        return UIGraphicsGetImageFromCurrentImageContext()
-    }
-
     func fixedOrientation() -> UIImage? {
         if self.imageOrientation == .up { return self }
         UIGraphicsBeginImageContextWithOptions(self.size, false, self.scale)
