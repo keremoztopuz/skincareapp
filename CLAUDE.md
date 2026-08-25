@@ -9,7 +9,7 @@
 
 ## Project Overview
 - **App:** Skinner — iOS SwiftUI skin analysis app (Xcode project/target and bundle ID are still named SkinCare)
-- **Team:** Berat Kerem Ozttopuz + Zeynep Aslan
+- **Maintainer:** Berat Kerem Öztopuz
 - **Min iOS:** 18.0+
 - **Pattern:** MVVM
 

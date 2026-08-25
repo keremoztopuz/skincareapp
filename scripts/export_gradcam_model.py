@@ -100,7 +100,7 @@ def export():
         compute_precision=ct.precision.FLOAT32,
     )
 
-    mlmodel.author = "Berat Kerem Öztopuz, Zeynep Aslan"
+    mlmodel.author = "Berat Kerem Öztopuz"
     mlmodel.license = "MIT"
     mlmodel.short_description = (
         "Skin condition classifier (5 classes) with per-class CAM heatmaps. "
