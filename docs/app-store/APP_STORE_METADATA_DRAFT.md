@@ -2,6 +2,13 @@
 
 Bu taslak App Store Connect'e kopyalanmadan once son urun kararlarina gore kontrol edilmelidir.
 
+Iki kural bu dosyanin tamamini yonetiyor:
+
+1. **Tibbi iddia yok.** Uygulama teshis koymaz. Metinlerde "akne", "egzama", "sedef", "tedavi", "iyilestirir" gibi klinik terimler kullanilmaz; gorunur cilt ozellikleri gundelik dille anlatilir (Breakouts, Redness, Wrinkles, Eye Bags, Pigmentation, Hydration). Uygulama arayuzu de ayni terimleri kullanir.
+2. **Analiz tamamen bulutta calisir.** Cihaz uzerinde model yoktur, "hibrit" bir mimari yoktur. Yuz tespiti (Vision) disinda tum skorlar bulut servisinden gelir. Onceki taslaktaki "on-device CoreML" ifadesi gercek mimariyi yansitmiyordu ve kaldirildi.
+
+---
+
 ## App Name
 
 Skinner
@@ -12,29 +19,31 @@ Personal skin analysis and routine tracker
 
 ## Promotional Text
 
-Understand visible skin concerns, track your progress, and build a simple skincare routine from your iPhone.
+Track visible skin changes over time and build a simple daily routine from your iPhone.
 
 ## Description
 
-Skinner helps you review visible skin concerns, track your analysis history, and organize a personal skincare routine.
+Skinner helps you look at your skin's visible features, follow how they change over time, and organize a personal skincare routine.
 
-Use your iPhone camera to run a powerful skin analysis for visible concerns such as acne, redness, wrinkles, under-eye appearance, pigmentation, and hydration-related signals. Your scan history stays on your device, so you can compare changes over time and follow your progress.
-
-Our hybrid AI engine combines local on-device machine learning with advanced cloud-based vision models (Google Gemini) to provide deep insights into your skin health while maintaining high privacy standards.
+Take a photo with your iPhone camera and Skinner reviews six visible features: breakouts, redness, wrinkles, eye bags, pigmentation, and hydration-related signs. Each scan is saved on your device, so you can compare two scans side by side and see what changed.
 
 Key features:
-- Advanced skin analysis (Acne, Redness, Wrinkles, Eyebags, etc.)
-- Hybrid AI: Securely processed insights with Google Gemini
-- Local scan history and progress tracking
-- Personalized routine builder
-- Product and article discovery
-- Privacy-focused: scan history remains local to your device
+- Six visible-feature readings from a single photo
+- Compare any two scans and see the difference
+- Scan history stored on your device
+- Personal morning and evening routine builder
+- Product and article library
+- Available in English and Turkish
 
-Important: Skinner does not provide medical diagnosis, treatment, or professional medical advice. Results are for informational and cosmetic tracking purposes only. Consult a qualified healthcare professional for medical concerns.
+How analysis works: your photo is cropped to your face on your iPhone, then sent securely to our service for processing. Photos are not stored permanently by us and are never used to build an advertising profile. An internet connection is required to run a scan; your history, profile, and routine work offline.
+
+Important: Skinner is a cosmetic tracking tool. It does not diagnose, treat, or provide medical advice, and it is not a substitute for a dermatologist. If you have a concern about your skin, consult a qualified healthcare professional.
 
 ## Keywords
 
-skincare, skin analysis, acne, redness, routine, beauty, face scan, skin tracker, products, hydration
+skin analysis, face scan, skin tracker, skincare routine, complexion, blemish, redness, wrinkles, hydration, beauty
+
+Note: high-traffic clinical terms (e.g. "acne") are deliberately left out to keep the listing consistent with the non-medical positioning. If discoverability matters more than that consistency, adding them to the keyword field only — never to the description — is the lower-risk compromise.
 
 ## Category
 
@@ -42,13 +51,21 @@ Primary: Health & Fitness
 
 Alternative: Lifestyle
 
+## Age Rating
+
+TODO: Confirm. Expected 4+ / 12+. No user-generated content, no social features, no medical claims.
+
 ## Support URL
 
 TODO: Add public support page URL.
 
+## Marketing URL
+
+TODO: Optional. Leave blank if there is no landing page.
+
 ## Privacy Policy URL
 
-TODO: Publish `PRIVACY_POLICY_DRAFT.md` as a public web page and add its URL.
+TODO: Publish `PRIVACY_POLICY_DRAFT.md` as a public web page and add its URL. The same URL must match the in-app legal links in `LegalLinks.swift`.
 
 ## Terms of Use URL
 
@@ -57,48 +74,112 @@ https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
 
 ## Review Notes
 
-Skinner uses a hybrid analysis engine. Face detection and basic condition analysis (acne, redness) are performed on-device using CoreML. Advanced cosmetic metrics (wrinkles, eyebags, hydration, pigmentation) are processed via Google Gemini API. Face crops are transmitted securely for real-time analysis and are not stored permanently by our services.
+Skinner analyzes visible skin features from a single photo. There is no on-device analysis model.
 
-Supabase is used only to fetch skincare articles, product catalog data, and routine recommendation content. User face images and biometric data are not sent to Supabase.
+Processing flow:
+1. The user takes a photo with the front camera.
+2. The photo is cropped to the detected face on-device using Apple's Vision framework.
+3. The crop is sent over HTTPS to our own backend service, which strips image metadata, downscales the image, and forwards it to Google's Gemini API (Vertex AI) for processing.
+4. Six numeric readings are returned and shown to the user. The crop is not stored permanently by our service. Google retains requests briefly for abuse monitoring only; they are not used to train models.
 
-The app includes a clear medical disclaimer during onboarding. The app does not claim to diagnose or treat medical conditions.
+No account or sign-in is required. Profile details and scan history are stored only on the device using Core Data and are never uploaded. Product and article content is read from our backend; no user data is sent with those requests.
+
+The app shows a medical disclaimer during onboarding that the user must accept before continuing, and repeats a non-diagnostic notice on every result screen.
+
+Free tier: 5 scans per month, breakouts and redness readings only, last 5 analyses visible. Paid tier unlocks unlimited scans, all six readings, full history, and routine recommendations.
 
 ## App Privacy Draft
 
 Confirm these answers against the final implementation before submitting.
 
-Data collected by the app:
-- User profile data: name, age range, gender, skin type, known issues. Stored on device.
-- Photos or videos: camera image used for analysis. Basic analysis is local; advanced metrics are processed via Google Gemini (Cloud AI).
-- Purchase data: handled by Apple and RevenueCat for subscription status.
-- Product interaction/routine data: routine selections and analysis history stored on device.
+Data collected:
+- **Photos** — the face crop is transmitted for processing on each scan. Not linked to an identity, not used for tracking, not stored permanently by us.
+- **Other user content** — self-reported profile (name, age, gender, skin type). Stored on device only; not transmitted.
+- **Purchases** — subscription status handled by Apple and RevenueCat.
+- **Identifiers** — RevenueCat assigns an anonymous app user ID for entitlement lookup.
 
 Data linked to the user:
-- Purchases may be linked by Apple/RevenueCat.
-- Local profile and scan history remain on device.
+- Purchase and entitlement data via Apple / RevenueCat.
+
+Data not collected:
+- No contacts, no location, no browsing history, no advertising identifiers.
 
 Tracking:
-- No third-party advertising tracking.
+- None. No third-party advertising SDKs.
 
 Sensitive data:
-- Face/skin images are used for analysis. Advanced analysis requires secure cloud processing via Gemini.
+- Face images are processed to produce cosmetic readings. Declare under "Photos" with the "App Functionality" purpose. Do not declare a Health purpose — the app makes no health claims.
 
 ## Subscription Metadata
 
-Product ID:
-`skincare_pro_monthly`
+### Monthly
 
-Reference name:
-Monthly Pro
+Product ID: `skincare_pro_monthly`
 
-Display name:
-Skinner Pro
+Reference name: Monthly Pro
 
-Suggested description:
-Unlock unlimited monthly skin analyses, advanced visible-skin metrics, full scan history, and routine recommendations.
+Display name: Skinner Pro
 
-Price:
-TODO: Decide final App Store Connect price. Current UI references `$4.99/month`; local StoreKit file references `9.99`. These must match before review.
+Description: Unlimited monthly scans, all six visible-feature readings, full scan history, and routine recommendations.
 
-Introductory offer:
-TODO: If keeping "3-day free trial" in UI, configure the same 3-day free trial in App Store Connect.
+### Lifetime
+
+Product ID: TODO — confirm the identifier created in App Store Connect. The app reads it through the RevenueCat `$rc_lifetime` package, so that package must be attached to the offering or the lifetime card falls back to placeholder pricing.
+
+Reference name: Lifetime Pro
+
+Display name: Skinner Lifetime
+
+Description: One-time purchase. Everything in Pro, with no subscription and no renewal.
+
+### Entitlement
+
+Both products must unlock the RevenueCat entitlement `skanner_pro`. The app treats this entitlement as the single source of premium status, so a product that is not attached to it takes the user's money without unlocking anything.
+
+### Pricing
+
+The app's placeholder prices — shown only until StoreKit returns the real storefront price — are:
+
+| Storefront | Monthly | Lifetime |
+| --- | --- | --- |
+| US | $3.99 | $17.99 |
+| EU | €4,99 | €19,99 |
+| TR | ₺199,99 | ₺899 |
+
+TODO: These must match App Store Connect exactly. `SkinCare/Resources/SkinCareProducts.storekit` still carries a stale `9.99` monthly price from an earlier draft; update it before local StoreKit testing, otherwise sandbox runs disagree with production.
+
+### Introductory offer
+
+TODO: Decide whether to offer a free trial. Nothing in the app promises one — the paywalls read the offer from StoreKit and mention a trial only when App Store Connect actually carries one, using the store's own unit ("1 month free", not "30 days"). With no offer configured the buttons simply read "Get Pro".
+
+---
+
+## Turkish Localization (tr)
+
+App Store Connect'te tr yerel ayari icin kullanilacak metinler. Uygulama Turkce destekledigi icin magaza metni de Turkce girilmelidir.
+
+**Isim:** Skinner
+
+**Alt Baslik:** Kisisel cilt analizi ve rutin takibi
+
+**Tanitim Metni:** Cildinizdeki gorunur degisimleri zaman icinde takip edin ve gunluk rutininizi olusturun.
+
+**Aciklama:**
+
+Skinner cildinizin gorunur ozelliklerine bakmaniza, bunlarin zaman icinde nasil degistigini izlemenize ve kisisel bir cilt bakim rutini olusturmaniza yardimci olur.
+
+iPhone kameranizla bir fotograf cekin; Skinner alti gorunur ozelligi degerlendirir: sivilce, kizariklik, kirisiklik, goz alti torbalari, leke ve nem belirtileri. Her tarama cihazinizda saklanir, boylece iki taramayi yan yana karsilastirip neyin degistigini gorebilirsiniz.
+
+Ozellikler:
+- Tek fotograftan alti gorunur ozellik olcumu
+- Iki taramayi karsilastirma
+- Cihazda saklanan tarama gecmisi
+- Sabah ve aksam rutini olusturucu
+- Urun ve makale kutuphanesi
+- Turkce ve Ingilizce destegi
+
+Analiz nasil calisir: fotografiniz iPhone'unuzda yuzunuze gore kirpilir, ardindan islenmek uzere guvenli sekilde servisimize gonderilir. Fotograflar tarafimizca kalici olarak saklanmaz. Tarama icin internet baglantisi gerekir; gecmisiniz, profiliniz ve rutininiz cevrimdisi calisir.
+
+Onemli: Skinner kozmetik amacli bir takip aracidir. Teshis koymaz, tedavi onermez ve tibbi tavsiye vermez; dermatolog muayenesinin yerini tutmaz. Cildinizle ilgili bir endiseniz varsa saglik uzmanina basvurun.
+
+**Anahtar Kelimeler:** cilt analizi, cilt bakimi, yuz tarama, cilt takibi, kizariklik, kirisiklik, leke, nem, rutin, guzellik
