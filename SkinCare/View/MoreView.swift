@@ -48,6 +48,56 @@ struct MoreView: View {
                         Spacer()
                     }
 
+                    VStack(spacing: 12) {
+                        HStack(spacing: 12) {
+                            StatCard(
+                                value: "\(vm.totalAnalyses)",
+                                label: NSLocalizedString("stat_total_analyses", comment: ""),
+                                icon: "sparkles"
+                            )
+                            StatCard(
+                                value: vm.latestScore.map(String.init) ?? "-",
+                                label: NSLocalizedString("stat_latest_score", comment: ""),
+                                icon: "heart.text.square.fill"
+                            )
+                            StatCard(
+                                value: vm.memberSince,
+                                label: NSLocalizedString("stat_member_since", comment: ""),
+                                icon: "calendar"
+                            )
+                        }
+
+                        HStack(spacing: 14) {
+                            ZStack {
+                                Circle()
+                                    .fill(Color.brandBlush)
+                                    .frame(width: 48, height: 48)
+                                Image(systemName: "flame.fill")
+                                    .font(.scaled(size: 22))
+                                    .foregroundColor(.brandPrimary)
+                                    .accessibilityHidden(true)
+                            }
+
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(String(format: NSLocalizedString("routine_streak_days_%lld", comment: ""), vm.routineStreak))
+                                    .font(.scaled(size: 18, weight: .bold))
+                                    .foregroundColor(.brandText)
+                                Text(NSLocalizedString("routine_streak", comment: ""))
+                                    .font(.scaled(size: 13))
+                                    .foregroundColor(.gray)
+                            }
+
+                            Spacer()
+                        }
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 16)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(Color.white)
+                        .cornerRadius(Radius.card)
+                        .cardShadow()
+                    }
+                    .padding(.horizontal, 20)
+
                     VStack(alignment: .leading, spacing: 16) {
                         Text(NSLocalizedString("personal_information", comment: ""))
                             .font(.scaled(size: 18, weight: .bold))
@@ -226,6 +276,9 @@ struct MoreView: View {
         }
         .sheet(isPresented: $showUpgrade) {
             UpgradeSheetView()
+        }
+        .onAppear {
+            vm.loadProfile()
         }
     }
 
@@ -474,6 +527,37 @@ struct InfoCard: View {
         .cornerRadius(Radius.card)
         .cardShadow()
         .padding(.horizontal, 20)
+    }
+}
+
+struct StatCard: View {
+    let value: String
+    let label: String
+    let icon: String
+
+    var body: some View {
+        VStack(spacing: 6) {
+            Image(systemName: icon)
+                .font(.scaled(size: 16))
+                .foregroundColor(.brandPrimary)
+                .accessibilityHidden(true)
+            Text(value)
+                .font(.scaled(size: 17, weight: .bold))
+                .foregroundColor(.brandText)
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+            Text(label)
+                .font(.scaled(size: 12))
+                .foregroundColor(.gray)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 14)
+        .padding(.horizontal, 8)
+        .background(Color.white)
+        .cornerRadius(Radius.card)
+        .cardShadow()
     }
 }
 
