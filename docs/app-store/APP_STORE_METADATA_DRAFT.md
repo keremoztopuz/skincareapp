@@ -4,7 +4,7 @@ Bu taslak App Store Connect'e kopyalanmadan once son urun kararlarina gore kontr
 
 ## App Name
 
-SkinCare
+Skinner
 
 ## Subtitle
 
@@ -16,7 +16,7 @@ Understand visible skin concerns, track your progress, and build a simple skinca
 
 ## Description
 
-SkinCare helps you review visible skin concerns, track your analysis history, and organize a personal skincare routine.
+Skinner helps you review visible skin concerns, track your analysis history, and organize a personal skincare routine.
 
 Use your iPhone camera to run a powerful skin analysis for visible concerns such as acne, redness, wrinkles, under-eye appearance, pigmentation, and hydration-related signals. Your scan history stays on your device, so you can compare changes over time and follow your progress.
 
@@ -30,7 +30,7 @@ Key features:
 - Product and article discovery
 - Privacy-focused: scan history remains local to your device
 
-Important: SkinCare does not provide medical diagnosis, treatment, or professional medical advice. Results are for informational and cosmetic tracking purposes only. Consult a qualified healthcare professional for medical concerns.
+Important: Skinner does not provide medical diagnosis, treatment, or professional medical advice. Results are for informational and cosmetic tracking purposes only. Consult a qualified healthcare professional for medical concerns.
 
 ## Keywords
 
@@ -57,7 +57,7 @@ https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
 
 ## Review Notes
 
-SkinCare uses a hybrid analysis engine. Face detection and basic condition analysis (acne, redness) are performed on-device using CoreML. Advanced cosmetic metrics (wrinkles, eyebags, hydration, pigmentation) are processed via Google Gemini API. Face crops are transmitted securely for real-time analysis and are not stored permanently by our services.
+Skinner uses a hybrid analysis engine. Face detection and basic condition analysis (acne, redness) are performed on-device using CoreML. Advanced cosmetic metrics (wrinkles, eyebags, hydration, pigmentation) are processed via Google Gemini API. Face crops are transmitted securely for real-time analysis and are not stored permanently by our services.
 
 Supabase is used only to fetch skincare articles, product catalog data, and routine recommendation content. User face images and biometric data are not sent to Supabase.
 
@@ -92,7 +92,7 @@ Reference name:
 Monthly Pro
 
 Display name:
-SkinCare Pro
+Skinner Pro
 
 Suggested description:
 Unlock unlimited monthly skin analyses, advanced visible-skin metrics, full scan history, and routine recommendations.
