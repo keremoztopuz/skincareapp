@@ -67,7 +67,7 @@ struct SplashView: View {
 
 
                     // App name
-                    Text("SkinCareAI")
+                    Text("Skinner")
                         .font(.scaled(size: 28, weight: .bold))
                         .foregroundColor(.brandPrimary)
                         .padding(.top, 12)
