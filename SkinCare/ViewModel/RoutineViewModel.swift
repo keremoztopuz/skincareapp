@@ -9,11 +9,15 @@ class RoutineViewModel: ObservableObject {
     @Published var pendingSuggestions: [RoutineSuggestion] = []
     @Published var isLoading: Bool = false
     @Published var showAddProduct: Bool = false
-    @Published var selectedRoutineTime: String = "morning"
+    @Published var selectedRoutineTime: String = "morning" {
+        didSet { refreshCompletions() }
+    }
     @Published var addingStepOrder: Int16 = 0
     @Published var addingProductType: String = ""
+    @Published var completedIDs: Set<UUID> = []
 
     private let manager = LocalPersistenceManager.shared
+    private let completionStore = RoutineCompletionStore.shared
 
     init() {
         loadRoutine()
@@ -23,6 +27,22 @@ class RoutineViewModel: ObservableObject {
         morningItems = manager.fetchRoutineItems(for: "morning")
         eveningItems = manager.fetchRoutineItems(for: "evening")
         pendingSuggestions = manager.fetchPendingSuggestions()
+        refreshCompletions()
+    }
+
+    func refreshCompletions() {
+        completedIDs = completionStore.completedIDs(time: selectedRoutineTime)
+    }
+
+    func isCompleted(_ item: RoutineItem) -> Bool {
+        guard let id = item.id else { return false }
+        return completedIDs.contains(id)
+    }
+
+    func toggleCompleted(_ item: RoutineItem) {
+        guard let id = item.id else { return }
+        completionStore.toggle(id, time: selectedRoutineTime)
+        refreshCompletions()
     }
 
     func acceptSuggestion(_ suggestion: RoutineSuggestion) {
