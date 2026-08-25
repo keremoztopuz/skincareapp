@@ -24,9 +24,9 @@ Bu dosya App Store'a cikis icin teknik, hesap, gizlilik ve icerik hazirliklarini
 - [x] Kamera reddedilince kullaniciya anlasilir ekran gosteriliyor.
 - [x] Gelismis analiz icin yuz kirpimi Google Gemini'ye gonderiliyor; bu durum uygulama ici aciklamada ve gizlilik politikasinda belirtiliyor. Kalici depolama yapilmiyor.
 - [x] Core Data kayitlari lokal tutuluyor.
-- [x] Supabase sadece urun, makale ve rutin icerigi okumak icin kullaniliyor.
-- [ ] Offline durumda temel analiz akisi calisiyor.
-- [ ] Supabase baglantisi yokken uygulama crash olmuyor.
+- [x] Icerik servisi (urun, makale, rutin icerigi) yalnizca okuma amacli kullaniliyor; kullanici verisi gonderilmiyor.
+- [ ] Internet yokken analiz denemesi kayit olusturmadan ve tarama hakki yakmadan hata veriyor.
+- [ ] Icerik servisine ulasilamadiginda uygulama crash olmuyor; Home ve Search yeniden deneme secenegi gosteriyor.
 - [ ] Abonelik satin alma akisi gercek sandbox hesapla test edildi.
 - [ ] Restore purchases calisiyor.
 - [ ] Free plan secimi kullaniciyi ana uygulamaya goturuyor.
@@ -69,7 +69,7 @@ Bu dosya App Store'a cikis icin teknik, hesap, gizlilik ve icerik hazirliklarini
 - [ ] Yuz bulunamayan fotograf.
 - [ ] Analiz kaydi olusturma.
 - [ ] Recents ekrani analiz gecmisini gosteriyor.
-- [ ] Search/Home Supabase verilerini gosteriyor.
+- [ ] Search/Home icerik servisi verilerini gosteriyor.
 - [ ] Internet kapaliyken uygulama aciliyor.
 - [ ] Satin alma iptal edildi.
 - [ ] Satin alma basarili.
