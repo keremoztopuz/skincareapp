@@ -415,7 +415,7 @@ struct SubscriptionView: View {
                         return
                     }
 
-                    let entitled = info?.entitlements["pro"]?.isActive == true
+                    let entitled = info?.entitlements[SubscriptionManager.proEntitlementID]?.isActive == true
                     if entitled || transaction != nil {
                         SubscriptionManager.shared.isPremium = true
                         appVM.completePurchaseStep(isPremium: true)
@@ -434,7 +434,7 @@ struct SubscriptionView: View {
                     purchaseError = String(format: NSLocalizedString("purchase_error_restore_failed_%@", comment: ""), error.localizedDescription)
                     return
                 }
-                if info?.entitlements["pro"]?.isActive == true {
+                if info?.entitlements[SubscriptionManager.proEntitlementID]?.isActive == true {
                     SubscriptionManager.shared.isPremium = true
                     appVM.completePurchaseStep(isPremium: true)
                 }
