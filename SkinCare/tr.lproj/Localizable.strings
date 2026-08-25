@@ -295,3 +295,12 @@
 "stat_member_since" = "Üyelik";
 "routine_streak" = "Rutin Serisi";
 "routine_streak_days_%lld" = "%lld gün";
+
+/* Ömür boyu plan */
+"lifetime_plan" = "Ömür Boyu";
+"best_value" = "EN AVANTAJLI";
+"one_time" = " tek seferlik";
+"everything_in_pro" = "Pro'daki her şey";
+"pay_once_use_forever" = "Bir kez öde, hep kullan";
+"get_lifetime_access" = "Ömür Boyu Erişim Al";
+"one_time_price_%@" = "Tek seferlik %@. Abonelik yok, yenileme yok.";

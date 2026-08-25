@@ -342,3 +342,12 @@
 "stat_member_since" = "Member Since";
 "routine_streak" = "Routine Streak";
 "routine_streak_days_%lld" = "%lld days";
+
+/* Lifetime plan */
+"lifetime_plan" = "Lifetime";
+"best_value" = "BEST VALUE";
+"one_time" = " one-time";
+"everything_in_pro" = "Everything in Pro";
+"pay_once_use_forever" = "Pay once, use forever";
+"get_lifetime_access" = "Get Lifetime Access";
+"one_time_price_%@" = "%@ once. No subscription, no renewal.";
