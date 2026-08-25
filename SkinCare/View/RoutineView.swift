@@ -5,10 +5,12 @@ struct RoutineView: View {
     @StateObject private var vm = RoutineViewModel()
     @State private var showUpgrade = false
     @State private var selectedProduct: Product? = nil
-    @State private var showProductDetail = false
     @Binding var selectedTab: Int
 
-    private var isPremium: Bool { SubscriptionManager.shared.isPremium }
+    // Observed so the locked screen unlocks the moment the user buys Pro in
+    // the upgrade sheet this very screen presents.
+    @StateObject private var subscriptionManager = SubscriptionManager.shared
+    private var isPremium: Bool { subscriptionManager.isPremium }
 
     var body: some View {
         ZStack {
@@ -24,7 +26,7 @@ struct RoutineView: View {
         .sheet(isPresented: $showUpgrade) { UpgradeSheetView() }
         .sheet(isPresented: $vm.showAddProduct) {
             ProductPickerSheet(
-                productType: vm.addingProductType,
+                productTypes: vm.addingProductTypes,
                 routineTime: vm.selectedRoutineTime,
                 stepOrder: vm.addingStepOrder
             ) { product in
@@ -35,11 +37,11 @@ struct RoutineView: View {
                 )
             }
         }
-        .sheet(isPresented: $showProductDetail) {
-            if let product = selectedProduct {
-                NavigationStack {
-                    DetailView(type: .product(product))
-                }
+        // item-based so the sheet body always carries the tapped product;
+        // the isPresented+if-let form intermittently presents blank.
+        .sheet(item: $selectedProduct) { product in
+            NavigationStack {
+                DetailView(type: .product(product))
             }
         }
     }
@@ -207,8 +209,8 @@ struct RoutineView: View {
             .accessibilityLabel(Text(NSLocalizedString("delete", comment: "")))
         }
         .contentShape(Rectangle())
-        .accessibilityElement(children: .combine)
-        .accessibilityAddTraits(.isButton)
+        // Deliberately NOT combined into one element: merging would swallow
+        // the complete-toggle and delete buttons for VoiceOver users.
         .onTapGesture {
             if let productId = item.productId {
                 selectedProduct = Product(
@@ -225,7 +227,6 @@ struct RoutineView: View {
                     skinTypes: nil,
                     isActive: true
                 )
-                showProductDetail = true
             }
         }
     }
@@ -233,7 +234,9 @@ struct RoutineView: View {
     private func emptyStepContent(step: RoutineViewModel.RoutineStep) -> some View {
         Button {
             vm.addingStepOrder = step.order
-            vm.addingProductType = step.productTypes.first ?? ""
+            // Every type the step accepts, so eye_serum products are as
+            // reachable as eye_cream ones.
+            vm.addingProductTypes = step.productTypes
             vm.showAddProduct = true
         } label: {
             HStack(spacing: 10) {
@@ -370,7 +373,7 @@ struct RoutineView: View {
 // MARK: - Product Picker Sheet
 
 struct ProductPickerSheet: View {
-    let productType: String
+    let productTypes: [String]
     let routineTime: String
     let stepOrder: Int16
     let onSelect: (Product) -> Void
@@ -413,7 +416,7 @@ struct ProductPickerSheet: View {
                     }
                 }
             }
-            .navigationTitle(String(format: NSLocalizedString("choose_product_type_%@", comment: ""), AppStrings.localizedProductType(productType)))
+            .navigationTitle(String(format: NSLocalizedString("choose_product_type_%@", comment: ""), AppStrings.localizedProductType(productTypes.first ?? "")))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -421,11 +424,15 @@ struct ProductPickerSheet: View {
                 }
             }
             .task {
-                do {
-                    products = try await SupabaseService.shared.fetchProductsByType(productType)
-                } catch {
-                    print("Fetch products by type error: \(error)")
+                var fetched: [Product] = []
+                for type in productTypes {
+                    do {
+                        fetched += try await SupabaseService.shared.fetchProductsByType(type)
+                    } catch {
+                        print("Fetch products by type error: \(error)")
+                    }
                 }
+                products = fetched
                 isLoading = false
             }
         }
