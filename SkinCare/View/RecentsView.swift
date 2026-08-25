@@ -4,7 +4,6 @@ struct RecentsView: View {
     @Binding var selectedTab: Int
     @StateObject private var vm = RecentsViewModel()
     @State private var selectedRecord: AnalysisRecord? = nil
-    @State private var showDetail = false
     @State private var isCompareMode = false
     @State private var compareRecords: [AnalysisRecord] = []
     @State private var showCompare = false
@@ -18,10 +17,11 @@ struct RecentsView: View {
                 ScrollView(.vertical, showsIndicators: false) {
                     VStack(alignment: .leading, spacing: 16) {
 
-                        if vm.records.isEmpty {
-                            EmptyStateView(onScanTap: { selectedTab = 2 })
-                        } else {
-                            // MARK: Header
+                        // The header and filter stay visible even when the
+                        // current filter matches nothing — otherwise picking
+                        // "This Week" with no scans this week would hide the
+                        // only control that can switch back to "All Time".
+                        // MARK: Header
                             HStack {
                                 Text(NSLocalizedString("recent_analysis", comment: ""))
                                     .font(.scaled(size: 28, weight: .bold))
@@ -79,12 +79,18 @@ struct RecentsView: View {
                             }
                             .padding(.horizontal, 20)
 
+                        if vm.records.isEmpty {
+                            EmptyStateView(onScanTap: { selectedTab = 2 })
+                        } else {
                             // MARK: Cards
-                            ForEach(Array(vm.records.enumerated()), id: \.element) { index, record in
+                            // objectID stays valid as identity even while a
+                            // deleted row animates out; the record object
+                            // itself must not be hashed after deletion.
+                            ForEach(vm.records, id: \.objectID) { record in
                                 let isSelected = compareRecords.contains(record)
-                                // Records are newest-first; the next index is the previous scan.
-                                let previous = index + 1 < vm.records.count ? vm.records[index + 1] : nil
-                                let delta = previous.map { record.overallScore - $0.overallScore }
+                                // The true previous scan, independent of the
+                                // active filter and the free-tier truncation.
+                                let delta = vm.delta(for: record)
                                 SwipeToDeleteContainer(onDelete: {
                                     withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
                                         vm.deleteRecord(record)
@@ -95,7 +101,6 @@ struct RecentsView: View {
                                             handleCompareSelection(record)
                                         } else {
                                             selectedRecord = record
-                                            showDetail = true
                                         }
                                     } label: {
                                         RecordCard(record: record, isCompareMode: isCompareMode, isSelected: isSelected, delta: delta)
@@ -164,7 +169,11 @@ struct RecentsView: View {
                     }
                 }
 
-                // MARK: Compare bottom button
+            }
+            // MARK: Compare bottom button
+            // safeAreaInset keeps the CTA above the tab bar instead of
+            // under it, and pushes the scroll content out of its way.
+            .safeAreaInset(edge: .bottom) {
                 if isCompareMode && compareRecords.count == 2 {
                     VStack(spacing: 0) {
                         Button {
@@ -181,11 +190,11 @@ struct RecentsView: View {
                 }
             }
             .sheet(isPresented: $showUpgrade) { UpgradeSheetView() }
-            .navigationDestination(isPresented: $showDetail) {
-                if let record = selectedRecord {
-                    ResultView(record: record, isFromRecents: true) {
-                        showDetail = false
-                    }
+            // item-based so the pushed screen always carries the tapped
+            // record; the isPresented+if-let form can push a blank page.
+            .navigationDestination(item: $selectedRecord) { record in
+                ResultView(record: record, isFromRecents: true) {
+                    selectedRecord = nil
                 }
             }
             .navigationDestination(isPresented: $showCompare) {
@@ -244,7 +253,7 @@ struct EmptyStateView: View {
             Spacer()
         }
         .frame(maxWidth: .infinity)
-        .frame(minHeight: 600)
+        .padding(.vertical, 48)
     }
 }
 
@@ -267,6 +276,11 @@ struct SwipeToDeleteContainer<Content: View>: View {
     var body: some View {
         ZStack(alignment: .trailing) {
             Button {
+                // Reset before deleting: SwiftUI may reuse this container
+                // for a different row once the array shrinks, and a stale
+                // -80pt offset would leave that row stuck open.
+                offset = 0
+                showDeleteButton = false
                 onDelete()
             } label: {
                 VStack(spacing: 4) {
