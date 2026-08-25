@@ -295,7 +295,7 @@ struct MoreView: View {
                     restoreMessage = String(format: NSLocalizedString("purchase_error_restore_failed_%@", comment: ""), error.localizedDescription)
                     return
                 }
-                if info?.entitlements["pro"]?.isActive == true {
+                if info?.entitlements[SubscriptionManager.proEntitlementID]?.isActive == true {
                     SubscriptionManager.shared.isPremium = true
                 } else {
                     restoreMessage = NSLocalizedString("restore_no_subscription", comment: "")
