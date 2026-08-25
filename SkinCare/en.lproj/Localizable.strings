@@ -317,6 +317,8 @@
 "analysis_error_photo" = "The photo could not be processed. Please try again.";
 "analysis_error_model" = "The analysis could not be completed. Please try again.";
 "analysis_error_network" = "Could not reach the analysis service. Check your connection and try again.";
+"analysis_error_busy" = "The analysis service is busy right now. Please try again in a little while.";
+"analysis_error_server" = "The analysis service reported a problem. Please try again later.";
 /* Score visualization additions */
 "score_trend" = "Score Trend";
 "overall_band_excellent" = "Excellent";
@@ -333,6 +335,8 @@
 "delete_all_data_message" = "This permanently removes your profile, analysis history, and routine from this device.";
 "version" = "Version";
 "restore_no_subscription" = "No active subscription was found to restore.";
+"restore_success" = "Your purchases were restored. Pro is active.";
+"profile_save_error" = "Your profile could not be saved. Please try again.";
 "purchase_pending_message" = "Your purchase is awaiting confirmation. Pro will unlock automatically once it is approved.";
 
 /* Profile stats */

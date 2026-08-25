@@ -270,6 +270,8 @@
 "analysis_error_photo" = "Fotoğraf işlenemedi. Lütfen tekrar deneyin.";
 "analysis_error_model" = "Analiz tamamlanamadı. Lütfen tekrar deneyin.";
 "analysis_error_network" = "Analiz servisine ulaşılamadı. Bağlantınızı kontrol edip tekrar deneyin.";
+"analysis_error_busy" = "Analiz servisi şu anda yoğun. Lütfen biraz sonra tekrar deneyin.";
+"analysis_error_server" = "Analiz servisi bir sorun bildirdi. Lütfen daha sonra tekrar deneyin.";
 /* Score visualization additions */
 "score_trend" = "Skor Trendi";
 "overall_band_excellent" = "Çok iyi";
@@ -286,6 +288,8 @@
 "delete_all_data_message" = "Profiliniz, analiz geçmişiniz ve rutininiz bu cihazdan kalıcı olarak silinir.";
 "version" = "Sürüm";
 "restore_no_subscription" = "Geri yüklenecek aktif bir abonelik bulunamadı.";
+"restore_success" = "Satın almaların geri yüklendi. Pro aktif.";
+"profile_save_error" = "Profilin kaydedilemedi. Lütfen tekrar deneyin.";
 "purchase_pending_message" = "Satın alma onay bekliyor. Onaylandığında Pro otomatik olarak açılacak.";
 
 /* Profil istatistikleri */
