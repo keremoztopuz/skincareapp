@@ -15,7 +15,7 @@ class SupabaseService {
     func fetchProducts() async throws -> [Product] {
         return try await client
             .from("products")
-            .select("id, name, brand, image_url, is_active")
+            .select("id, name, brand, description, description_tr, image_url, product_type, skin_types, is_active")
             .eq("is_active", value: true)
             .execute()
             .value
@@ -32,7 +32,7 @@ class SupabaseService {
             // products must be !inner: filtering a non-inner embed nulls it
             // instead of dropping the row, and the non-optional JoinRow
             // decode would then fail on every inactive product.
-            .select("products!inner(id, name, brand, image_url, is_active, product_type, skin_types, active_ingredients), conditions!inner(key)")
+            .select("products!inner(id, name, brand, description, description_tr, image_url, is_active, product_type, skin_types, active_ingredients), conditions!inner(key)")
             .eq("conditions.key", value: conditionKey.lowercased())
             .eq("products.is_active", value: true)
             .execute()
@@ -45,7 +45,7 @@ class SupabaseService {
     func fetchArticles() async throws -> [Articles] {
         return try await client
             .from("articles")
-            .select("id, title, image_url, is_active, created_at")
+            .select("id, title, title_tr, content, content_tr, image_url, read_time, article_type, is_active, created_at")
             .eq("is_active", value: true)
             .order("created_at", ascending: false)
             .execute()
@@ -56,7 +56,7 @@ class SupabaseService {
     func fetchProductsByType(_ productType: String) async throws -> [Product] {
         return try await client
             .from("products")
-            .select("id, name, brand, image_url, is_active, product_type, skin_types")
+            .select("id, name, brand, description, description_tr, image_url, is_active, product_type, skin_types")
             .eq("is_active", value: true)
             .eq("product_type", value: productType)
             .execute()
