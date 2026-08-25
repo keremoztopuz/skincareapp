@@ -35,7 +35,7 @@ struct HomeView: View {
                         
                         // greeting Section
                         VStack(alignment: .leading, spacing: 4) {
-                            Text("\(greetingText), \(vm.userName)")
+                            Text(vm.userName.isEmpty ? greetingText : "\(greetingText), \(vm.userName)")
                                 .font(.scaled(size: 31, weight: .bold))
                                 .foregroundColor(.brandText)
                                 .lineLimit(2)
@@ -111,10 +111,10 @@ struct HomeView: View {
                                 ],
                                 spacing: 12
                             ) {
-                                MetricCard(value: "\(vm.avgOverallScore)", label: AppStrings.overallScore, icon: "heart.text.square.fill", progress: Double(vm.avgOverallScore))
-                                MetricCard(value: "\(vm.avgDryness)%", label: AppStrings.dryness, icon: "drop.triangle.fill", progress: Double(vm.avgDryness))
-                                MetricCard(value: "\(vm.avgOiliness)%", label: AppStrings.oiliness, icon: "drop.halffull", progress: Double(vm.avgOiliness))
-                                MetricCard(value: "\(vm.avgInflammation)%", label: AppStrings.inflammation, icon: "flame.fill", progress: Double(vm.avgInflammation))
+                                MetricCard(value: "\(vm.avgOverallScore)", label: AppStrings.overallScore, progress: Double(vm.avgOverallScore))
+                                MetricCard(value: "\(vm.avgDryness)%", label: AppStrings.dryness, progress: Double(vm.avgDryness))
+                                MetricCard(value: "\(vm.avgOiliness)%", label: AppStrings.oiliness, progress: Double(vm.avgOiliness))
+                                MetricCard(value: "\(vm.avgInflammation)%", label: AppStrings.inflammation, progress: Double(vm.avgInflammation))
                             }
                         }
                         .padding(.horizontal, 20)
@@ -315,6 +315,11 @@ struct HomeView: View {
             vm.fetchStatistics()
             vm.fetchRoutineSummary()
         }
+        // An app left open across the 18:00 boundary would otherwise keep
+        // showing the morning routine with stale completion state.
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
+            vm.fetchRoutineSummary()
+        }
     }
 }
 
@@ -322,23 +327,10 @@ struct HomeView: View {
 struct MetricCard: View {
     let value: String
     let label: String
-    let icon: String
     var progress: Double? = nil
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            HStack(alignment: .center, spacing: 10) {
-                Image(systemName: icon)
-                    .font(.scaled(size: 14, weight: .bold))
-                    .foregroundColor(.brandPrimary)
-                    .frame(width: 30, height: 30)
-                    .accessibilityHidden(true)
-                    .background(Color.brandPrimary.opacity(0.10))
-                    .clipShape(Circle())
-
-                Spacer(minLength: 0)
-            }
-
             VStack(alignment: .leading, spacing: 3) {
                 Text(value)
                     .font(.scaled(size: 25, weight: .bold))
@@ -369,7 +361,7 @@ struct MetricCard: View {
         }
         .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .frame(height: 130)
+        .frame(height: 96)
         .background(Color.white)
         .clipShape(RoundedRectangle(cornerRadius: Radius.card))
         .cardShadow()
