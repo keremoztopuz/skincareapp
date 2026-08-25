@@ -219,7 +219,7 @@ struct UpgradeSheetView: View {
                         return
                     }
 
-                    let entitled = info?.entitlements["pro"]?.isActive == true
+                    let entitled = info?.entitlements[SubscriptionManager.proEntitlementID]?.isActive == true
                     if entitled || transaction != nil {
                         SubscriptionManager.shared.isPremium = true
                         withAnimation(.spring(response: 0.4, dampingFraction: 0.6)) { showSuccess = true }
@@ -242,7 +242,7 @@ struct UpgradeSheetView: View {
                     purchaseError = String(format: NSLocalizedString("purchase_error_restore_failed_%@", comment: ""), error.localizedDescription)
                     return
                 }
-                if info?.entitlements["pro"]?.isActive == true {
+                if info?.entitlements[SubscriptionManager.proEntitlementID]?.isActive == true {
                     SubscriptionManager.shared.isPremium = true
                     withAnimation(.spring(response: 0.4, dampingFraction: 0.6)) { showSuccess = true }
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1.8) {
