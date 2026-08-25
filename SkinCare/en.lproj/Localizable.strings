@@ -259,6 +259,7 @@
 "compare_insight_acne_decreased" = "Breakout signs appear lower than before.";
 "compare_insight_acne_increased" = "Breakout signs appear higher than before.";
 "compare_insight_wrinkles_decreased" = "Wrinkle signs appear lower than before.";
+"compare_insight_wrinkles_increased" = "Wrinkle signs appear higher than before.";
 "compare_insight_no_significant_change" = "No significant change detected between these analyses.";
 
 /* Camera Guide Bullets */

@@ -215,6 +215,7 @@
 "compare_insight_acne_decreased" = "Sivilce belirtileri öncekinden düşük görünüyor.";
 "compare_insight_acne_increased" = "Sivilce belirtileri öncekinden yüksek görünüyor.";
 "compare_insight_wrinkles_decreased" = "Kırışıklık belirtileri önceye göre daha düşük görünüyor.";
+"compare_insight_wrinkles_increased" = "Kırışıklık belirtileri önceye göre daha yüksek görünüyor.";
 "compare_insight_no_significant_change" = "Bu analizler arasında belirgin bir değişiklik algılanmadı.";
 
 "guide_do_position_face" = "Yüzünüzü çerçevenin içine net şekilde yerleştirin.";
