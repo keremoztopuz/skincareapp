@@ -29,7 +29,10 @@ class SupabaseService {
 
         let result: [JoinRow] = try await client
             .from("product_conditions")
-            .select("products(id, name, brand, image_url, is_active, product_type, skin_types, active_ingredients), conditions!inner(key)")
+            // products must be !inner: filtering a non-inner embed nulls it
+            // instead of dropping the row, and the non-optional JoinRow
+            // decode would then fail on every inactive product.
+            .select("products!inner(id, name, brand, image_url, is_active, product_type, skin_types, active_ingredients), conditions!inner(key)")
             .eq("conditions.key", value: conditionKey.lowercased())
             .eq("products.is_active", value: true)
             .execute()
