@@ -258,6 +258,12 @@ struct MoreView: View {
             Button(NSLocalizedString("cancel", comment: ""), role: .cancel) {}
             Button(NSLocalizedString("delete", comment: ""), role: .destructive) {
                 LocalPersistenceManager.shared.deleteAllUserData()
+                // User-generated state outside Core Data goes too. The scan
+                // quota deliberately stays: it is a billing control, and
+                // clearing it would turn "delete my data" into a free-scan
+                // reset.
+                RoutineCompletionStore.shared.removeAll()
+                UserDefaults.standard.removeObject(forKey: "hasSeenCameraGuide")
                 vm.loadProfile()
             }
         } message: {
@@ -297,6 +303,7 @@ struct MoreView: View {
                 }
                 if info?.entitlements[SubscriptionManager.proEntitlementID]?.isActive == true {
                     SubscriptionManager.shared.isPremium = true
+                    restoreMessage = NSLocalizedString("restore_success", comment: "")
                 } else {
                     restoreMessage = NSLocalizedString("restore_no_subscription", comment: "")
                 }
@@ -434,12 +441,15 @@ struct ProfileEditSheet: View {
                     Button(AppStrings.save) {
                         // Same contract as ProfileSetupViewModel.completeProfile():
                         // enum raw values keep ScoringEngine and RoutineEngine lookups intact.
+                        // knownIssues is not edited here, so carry the stored
+                        // value through instead of wiping it on every save.
+                        let existingIssues = LocalPersistenceManager.shared.fetchUserProfile()?.knownIssues ?? ""
                         LocalPersistenceManager.shared.saveUserProfile(
-                            name: name,
+                            name: name.trimmingCharacters(in: .whitespacesAndNewlines),
                             skinType: skinType?.rawValue ?? "Normal",
                             ageRange: String(age),
                             gender: gender?.rawValue ?? "Prefer not to say",
-                            knownIssues: ""
+                            knownIssues: existingIssues
                         )
                         dismiss()
                     }
