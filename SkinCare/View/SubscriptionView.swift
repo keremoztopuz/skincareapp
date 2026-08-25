@@ -19,7 +19,7 @@ struct SubscriptionView: View {
     @State private var purchaseError: String?
     @State private var proPriceText: String = SubscriptionManager.FallbackPrice.monthly
     @State private var lifetimePriceText: String = SubscriptionManager.FallbackPrice.lifetime
-    @State private var trialDays: Int?
+    @State private var trial: SubscriptionManager.TrialPeriod?
     @EnvironmentObject var appVM: ContentViewModel
 
     enum Plan {
@@ -32,10 +32,14 @@ struct SubscriptionView: View {
             // status bar, whatever the content height turns out to be.
             Color.brandBackground.ignoresSafeArea()
 
+            // Scrolls only when the content is taller than the screen, so the
+            // CTA, restore and legal footer stay reachable at large text
+            // sizes and on short devices.
             GeometryReader { geo in
                 let m = Metrics.fitting(height: geo.size.height)
                 let outerSize = geo.size.width * m.logoRatio
 
+                ScrollView {
                 VStack(spacing: 0) {
 
                     // MARK: - Logo
@@ -45,7 +49,6 @@ struct SubscriptionView: View {
                             withAnimation(.spring(response: 0.4, dampingFraction: 0.6)) {
                                 logoScale = 1.0
                             }
-                            loadPrices()
                         }
                     .padding(.top, m.topPadding)
 
@@ -184,8 +187,12 @@ struct SubscriptionView: View {
                     .padding(.horizontal, 20)
                     .padding(.bottom, m.bottomPadding)
                 }
+                .frame(minHeight: geo.size.height)
+                }
+                .scrollBounceBehavior(.basedOnSize)
             }
         }
+        .onAppear { loadPrices() }
         .alert(AppStrings.purchaseError, isPresented: Binding(
             get: { purchaseError != nil },
             set: { if !$0 { purchaseError = nil } }
@@ -197,9 +204,9 @@ struct SubscriptionView: View {
     }
 
     // MARK: - Adaptive metrics
-    /// The screen never scrolls, so the layout tightens instead. Two steps are
-    /// enough: the roomy default, and a compact set for short screens
-    /// (iPhone SE and anything else under ~700pt of usable height).
+    /// The layout tightens on short screens so scrolling stays the exception.
+    /// Two steps are enough: the roomy default, and a compact set for short
+    /// screens (iPhone SE and anything else under ~700pt of usable height).
     private struct Metrics {
         let logoRatio: CGFloat
         let titleSize: CGFloat
@@ -236,8 +243,8 @@ struct SubscriptionView: View {
     private var ctaTitle: String {
         switch selectedPlan {
         case .pro:
-            if let days = trialDays {
-                return String(format: NSLocalizedString("start_free_trial_%lld_days", comment: ""), days)
+            if let trial {
+                return trial.startCTA
             }
             return NSLocalizedString("get_pro", comment: "")
         case .lifetime: return NSLocalizedString("get_lifetime_access", comment: "")
@@ -248,7 +255,7 @@ struct SubscriptionView: View {
     private var ctaCaption: String? {
         switch selectedPlan {
         case .pro:
-            if trialDays != nil {
+            if trial != nil {
                 return String(format: NSLocalizedString("then_price_monthly_%@", comment: ""), proPriceText)
             }
             return String(format: NSLocalizedString("price_monthly_%@", comment: ""), proPriceText)
@@ -385,12 +392,16 @@ struct SubscriptionView: View {
     }
 
     // MARK: - Localized Prices
-    /// Prices come from StoreKit, so each storefront shows its own App Store
-    /// Connect price and currency; nothing is hardcoded here.
+    /// Live storefront prices replace the FallbackPrice placeholders as soon
+    /// as the offerings load; the fallbacks only fill the gap until then.
+    /// Only the true `$rc_monthly` package may feed the Pro card — falling
+    /// back to an arbitrary package could show (and charge) the lifetime
+    /// price as if it were monthly.
     private func loadPrices() {
+        guard Purchases.isConfigured else { return }
         Purchases.shared.getOfferings { offerings, _ in
             guard let current = offerings?.current else { return }
-            let monthly = current.monthly ?? current.availablePackages.first
+            let monthly = current.monthly
             let lifetime = current.lifetime
             DispatchQueue.main.async {
                 if let live = monthly?.storeProduct.localizedPriceString {
@@ -399,13 +410,14 @@ struct SubscriptionView: View {
                 if let live = lifetime?.storeProduct.localizedPriceString {
                     lifetimePriceText = live
                 }
-                trialDays = monthly.flatMap { SubscriptionManager.trialDays(in: $0.storeProduct) }
+                trial = monthly.flatMap { SubscriptionManager.trialPeriod(in: $0.storeProduct) }
             }
         }
     }
 
     // MARK: - RevenueCat Purchase
     private func purchase(plan: Plan) {
+        guard plan != .free else { return }
         isPurchasing = true
         purchaseError = nil
 
@@ -423,8 +435,12 @@ struct SubscriptionView: View {
             switch plan {
             case .lifetime:
                 package = current?.lifetime
-            default:
-                package = current?.monthly ?? current?.availablePackages.first
+            case .pro:
+                // Never substitute another package: an offering without a
+                // monthly package must fail loudly, not charge lifetime.
+                package = current?.monthly
+            case .free:
+                package = nil
             }
 
             guard let package = package else {
@@ -444,10 +460,15 @@ struct SubscriptionView: View {
                         return
                     }
 
+                    // Only the entitlement unlocks Pro. A non-nil transaction
+                    // alone can be deferred (Ask to Buy) or not yet synced,
+                    // and would be revoked on the next status check anyway.
                     let entitled = info?.entitlements[SubscriptionManager.proEntitlementID]?.isActive == true
-                    if entitled || transaction != nil {
+                    if entitled {
                         SubscriptionManager.shared.isPremium = true
                         appVM.completePurchaseStep(isPremium: true)
+                    } else if transaction != nil {
+                        purchaseError = NSLocalizedString("purchase_pending_message", comment: "")
                     }
                 }
             }
@@ -466,6 +487,8 @@ struct SubscriptionView: View {
                 if info?.entitlements[SubscriptionManager.proEntitlementID]?.isActive == true {
                     SubscriptionManager.shared.isPremium = true
                     appVM.completePurchaseStep(isPremium: true)
+                } else {
+                    purchaseError = NSLocalizedString("restore_no_subscription", comment: "")
                 }
             }
         }
