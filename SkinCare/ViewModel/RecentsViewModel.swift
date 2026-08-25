@@ -36,9 +36,8 @@ class RecentsViewModel: ObservableObject {
     /// of whatever filter happens to be active.
     private var allRecords: [AnalysisRecord] = []
 
-    init() {
-        fetchRecords()
-    }
+    // No init-time fetch: the view's onAppear fires on first appearance too,
+    // and fetching here as well just doubled the work.
 
     /// How much history a free user sees. Distinct from the monthly scan
     /// quota, which happens to share the same value — the two policies must
