@@ -14,18 +14,20 @@ struct SubscriptionView: View {
     @State private var selectedPlan: Plan = .pro
     @State private var freeCardAppeared = false
     @State private var proCardAppeared = false
+    @State private var lifetimeCardAppeared = false
     @State private var isPurchasing = false
     @State private var purchaseError: String?
     @State private var proPriceText: String?
+    @State private var lifetimePriceText: String?
     @EnvironmentObject var appVM: ContentViewModel
 
     enum Plan {
-        case free, pro
+        case free, pro, lifetime
     }
 
     var body: some View {
         GeometryReader { geo in
-            let outerSize = geo.size.width * 0.28
+            let outerSize = geo.size.width * 0.20
 
             ZStack {
                 Color.brandBackground.ignoresSafeArea()
@@ -39,21 +41,21 @@ struct SubscriptionView: View {
                             withAnimation(.spring(response: 0.4, dampingFraction: 0.6)) {
                                 logoScale = 1.0
                             }
-                            loadProPrice()
+                            loadPrices()
                         }
-                    .padding(.top, 24)
+                    .padding(.top, 12)
 
                     // MARK: - Title
                         VStack(spacing: 8) {
                             Text(NSLocalizedString("unlock_premium", comment: ""))
-                                .font(.scaled(size: 30, weight: .bold))
+                                .font(.scaled(size: 26, weight: .bold))
                                 .foregroundColor(.brandText)
 
                         }
                     .padding(.top, 6)
 
                     // MARK: - Plan Cards
-                    VStack(spacing: 12) {
+                    VStack(spacing: 10) {
                             planCard(
                                 plan: .free,
                                 title: AppStrings.free,
@@ -62,10 +64,9 @@ struct SubscriptionView: View {
                                 features: [
                                     ("camera.viewfinder", NSLocalizedString("5_analysis_per_month", comment: "")),
                                     ("chart.bar", NSLocalizedString("basic_insights", comment: "")),
-                                    ("bag", NSLocalizedString("limited_recommendations", comment: "")),
                                     ("clock.arrow.circlepath", NSLocalizedString("last_5_scans", comment: ""))
                                 ],
-                                isPopular: false
+                                style: .plain
                             )
                             .scaleEffect(freeCardAppeared ? 1.0 : 0.8)
                             .opacity(freeCardAppeared ? 1.0 : 0)
@@ -78,33 +79,52 @@ struct SubscriptionView: View {
                                 features: [
                                     ("infinity", NSLocalizedString("unlimited_analysis", comment: "")),
                                     ("chart.bar.fill", NSLocalizedString("all_conditions_detected", comment: "")),
-                                    ("bag.fill", NSLocalizedString("full_recommendations", comment: "")),
-                                    ("chart.line.uptrend.xyaxis", NSLocalizedString("complete_history", comment: ""))
+                                    ("bag.fill", NSLocalizedString("full_recommendations", comment: ""))
                                 ],
-                                isPopular: true
+                                style: .featured
                             )
                             .scaleEffect(proCardAppeared ? 1.0 : 0.8)
                             .opacity(proCardAppeared ? 1.0 : 0)
+
+                            planCard(
+                                plan: .lifetime,
+                                title: NSLocalizedString("lifetime_plan", comment: ""),
+                                price: lifetimePriceText ?? "",
+                                period: lifetimePriceText == nil ? "" : NSLocalizedString("one_time", comment: ""),
+                                features: [
+                                    ("crown.fill", NSLocalizedString("everything_in_pro", comment: "")),
+                                    ("checkmark.seal.fill", NSLocalizedString("pay_once_use_forever", comment: ""))
+                                ],
+                                style: .accented
+                            )
+                            .scaleEffect(lifetimeCardAppeared ? 1.0 : 0.8)
+                            .opacity(lifetimeCardAppeared ? 1.0 : 0)
                         }
                     .padding(.horizontal, 20)
-                    .padding(.top, 16)
+                    .padding(.top, 14)
                     .onAppear {
                             withAnimation(.spring(response: 0.4, dampingFraction: 0.6).delay(0.15)) {
                                 freeCardAppeared = true
                             }
-                            withAnimation(.spring(response: 0.4, dampingFraction: 0.6).delay(0.3)) {
+                            withAnimation(.spring(response: 0.4, dampingFraction: 0.6).delay(0.29)) {
                                 proCardAppeared = true
+                            }
+                            withAnimation(.spring(response: 0.4, dampingFraction: 0.6).delay(0.43)) {
+                                lifetimeCardAppeared = true
                             }
                     }
 
-                    Spacer()
+                    Spacer(minLength: 8)
 
                     // MARK: - CTA Button
-                    VStack(spacing: 10) {
+                    VStack(spacing: 8) {
                             Button(action: {
-                                if selectedPlan == .pro {
-                                    purchasePro()
-                                } else {
+                                switch selectedPlan {
+                                case .pro:
+                                    purchase(plan: .pro)
+                                case .lifetime:
+                                    purchase(plan: .lifetime)
+                                case .free:
                                     appVM.completePurchaseStep(isPremium: false)
                                 }
                             }) {
@@ -114,11 +134,11 @@ struct SubscriptionView: View {
                                             .progressViewStyle(CircularProgressViewStyle(tint: .white))
                                             .padding(.vertical, 6)
                                     } else {
-                                        Text(selectedPlan == .pro ? NSLocalizedString("start_free_trial", comment: "") : NSLocalizedString("continue_with_free", comment: ""))
+                                        Text(ctaTitle)
                                             .font(.scaled(size: 18, weight: .bold))
 
-                                        if selectedPlan == .pro, let price = proPriceText {
-                                            Text(String(format: NSLocalizedString("then_price_monthly_%@", comment: ""), price))
+                                        if let caption = ctaCaption {
+                                            Text(caption)
                                                 .font(.scaled(size: 12, weight: .regular))
                                                 .opacity(0.85)
                                         }
@@ -126,13 +146,13 @@ struct SubscriptionView: View {
                                 }
                                 .foregroundColor(.white)
                                 .frame(maxWidth: .infinity)
-                                .padding(.vertical, 16)
+                                .padding(.vertical, 15)
                                 .background(Color.brandPrimary)
                                 .cornerRadius(Radius.card)
                             }
                             .disabled(isPurchasing)
 
-                            if selectedPlan == .pro {
+                            if selectedPlan != .free {
                                 Button(action: {
                                     withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
                                         selectedPlan = .free
@@ -155,7 +175,7 @@ struct SubscriptionView: View {
                             LegalFooter()
                         }
                     .padding(.horizontal, 20)
-                    .padding(.bottom, 16)
+                    .padding(.bottom, 12)
                 }
             }
             .alert(AppStrings.purchaseError, isPresented: Binding(
@@ -169,41 +189,83 @@ struct SubscriptionView: View {
         }
     }
 
+    // MARK: - CTA copy
+    private var ctaTitle: String {
+        switch selectedPlan {
+        case .pro: return NSLocalizedString("start_free_trial", comment: "")
+        case .lifetime: return NSLocalizedString("get_lifetime_access", comment: "")
+        case .free: return NSLocalizedString("continue_with_free", comment: "")
+        }
+    }
+
+    private var ctaCaption: String? {
+        switch selectedPlan {
+        case .pro:
+            guard let price = proPriceText else { return nil }
+            return String(format: NSLocalizedString("then_price_monthly_%@", comment: ""), price)
+        case .lifetime:
+            guard let price = lifetimePriceText else { return nil }
+            return String(format: NSLocalizedString("one_time_price_%@", comment: ""), price)
+        case .free:
+            return nil
+        }
+    }
+
+    // MARK: - Card style
+    /// `featured` is the filled burgundy card (Pro); `accented` keeps the white
+    /// body but carries the burgundy border and badge (Lifetime).
+    private enum CardStyle {
+        case plain, featured, accented
+
+        var isFilled: Bool { self == .featured }
+
+        var badgeKey: String? {
+            switch self {
+            case .featured: return "popular"
+            case .accented: return "best_value"
+            case .plain: return nil
+            }
+        }
+    }
+
     // MARK: - Plan Card
-    func planCard(plan: Plan, title: String, price: String, period: String, features: [(String, String)], isPopular: Bool) -> some View {
+    private func planCard(plan: Plan, title: String, price: String, period: String, features: [(String, String)], style: CardStyle) -> some View {
         let isSelected = selectedPlan == plan
+        let isFilled = style.isFilled
 
         return Button(action: {
             withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
                 selectedPlan = plan
             }
         }) {
-            VStack(alignment: .leading, spacing: 12) {
+            VStack(alignment: .leading, spacing: 10) {
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
                         HStack(spacing: 6) {
                             Text(title)
-                                .font(.scaled(size: 22, weight: .bold))
-                                .foregroundColor(isPopular ? .white : .brandText)
+                                .font(.scaled(size: 20, weight: .bold))
+                                .foregroundColor(isFilled ? .white : .brandText)
 
-                            if isPopular {
-                                Text(NSLocalizedString("popular", comment: ""))
+                            if let badgeKey = style.badgeKey {
+                                Text(NSLocalizedString(badgeKey, comment: ""))
                                     .font(.scaled(size: 10, weight: .bold))
-                                    .foregroundColor(.brandPrimary)
+                                    .foregroundColor(isFilled ? .brandPrimary : .white)
                                     .padding(.horizontal, 8)
                                     .padding(.vertical, 3)
-                                    .background(Color.white)
+                                    .background(isFilled ? Color.white : Color.brandPrimary)
                                     .cornerRadius(Radius.small)
                             }
                         }
 
                         HStack(alignment: .firstTextBaseline, spacing: 0) {
                             Text(price)
-                                .font(.scaled(size: 24, weight: .bold))
-                                .foregroundColor(isPopular ? .white : .brandPrimary)
+                                .font(.scaled(size: 22, weight: .bold))
+                                .foregroundColor(isFilled ? .white : .brandPrimary)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.8)
                             Text(period)
                                 .font(.scaled(size: 14, weight: .regular))
-                                .foregroundColor(isPopular ? .white.opacity(0.7) : .gray)
+                                .foregroundColor(isFilled ? .white.opacity(0.7) : .gray)
                         }
                     }
 
@@ -211,38 +273,40 @@ struct SubscriptionView: View {
 
                     ZStack {
                         Circle()
-                            .stroke(isPopular ? .white : (isSelected ? Color.brandPrimary : Color.gray.opacity(0.3)), lineWidth: 2)
+                            .stroke(isFilled ? .white : (isSelected ? Color.brandPrimary : Color.gray.opacity(0.3)), lineWidth: 2)
                             .frame(width: 24, height: 24)
 
                         if isSelected {
                             Circle()
-                                .fill(isPopular ? .white : Color.brandPrimary)
+                                .fill(isFilled ? .white : Color.brandPrimary)
                                 .frame(width: 14, height: 14)
                         }
                     }
                 }
 
                 Divider()
-                    .padding(.vertical, 4)
+                    .padding(.vertical, 2)
 
-                VStack(spacing: 10) {
+                VStack(spacing: 8) {
                     ForEach(features, id: \.1) { icon, text in
                         HStack(spacing: 10) {
                             Image(systemName: icon)
-                                .font(.scaled(size: 14))
-                                .foregroundColor(isPopular ? .white.opacity(0.9) : .brandPrimary)
+                                .font(.scaled(size: 13))
+                                .foregroundColor(isFilled ? .white.opacity(0.9) : .brandPrimary)
                                 .frame(width: 20)
 
                             Text(text)
-                                .font(.scaled(size: 14, weight: .regular))
-                                .foregroundColor(isPopular ? .white.opacity(0.9) : .brandText)
+                                .font(.scaled(size: 13, weight: .regular))
+                                .foregroundColor(isFilled ? .white.opacity(0.9) : .brandText)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.85)
 
                             Spacer()
                         }
                     }
                 }
 
-                if isPopular {
+                if isFilled {
                     HStack {
                         Spacer()
                         Text(NSLocalizedString("free_trial_included", comment: ""))
@@ -250,35 +314,51 @@ struct SubscriptionView: View {
                             .foregroundColor(.white.opacity(0.8))
                         Spacer()
                     }
-                    .padding(.top, 4)
+                    .padding(.top, 2)
                 }
             }
-            .padding(16)
+            .padding(14)
             .background(
                 RoundedRectangle(cornerRadius: Radius.card)
-                    .fill(isPopular ? Color.brandPrimary : Color.white)
+                    .fill(isFilled ? Color.brandPrimary : Color.white)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: Radius.card)
-                    .stroke(isSelected && !isPopular ? Color.brandPrimary : Color.gray.opacity(isPopular ? 0 : 0.15), lineWidth: isSelected ? 2 : 1)
+                    .stroke(borderColor(style: style, isSelected: isSelected), lineWidth: isSelected ? 2 : 1)
             )
             .cardShadow()
         }
         .buttonStyle(PlainButtonStyle())
     }
 
-    // MARK: - Localized Price
-    private func loadProPrice() {
+    private func borderColor(style: CardStyle, isSelected: Bool) -> Color {
+        switch style {
+        case .featured:
+            return .clear
+        case .accented:
+            return isSelected ? Color.brandPrimary : Color.brandPrimary.opacity(0.35)
+        case .plain:
+            return isSelected ? Color.brandPrimary : Color.gray.opacity(0.15)
+        }
+    }
+
+    // MARK: - Localized Prices
+    /// Prices come from StoreKit, so each storefront shows its own App Store
+    /// Connect price and currency; nothing is hardcoded here.
+    private func loadPrices() {
         Purchases.shared.getOfferings { offerings, _ in
-            guard let package = offerings?.current?.monthly ?? offerings?.current?.availablePackages.first else { return }
+            guard let current = offerings?.current else { return }
+            let monthly = current.monthly ?? current.availablePackages.first
+            let lifetime = current.lifetime
             DispatchQueue.main.async {
-                proPriceText = package.storeProduct.localizedPriceString
+                proPriceText = monthly?.storeProduct.localizedPriceString
+                lifetimePriceText = lifetime?.storeProduct.localizedPriceString
             }
         }
     }
 
     // MARK: - RevenueCat Purchase
-    private func purchasePro() {
+    private func purchase(plan: Plan) {
         isPurchasing = true
         purchaseError = nil
 
@@ -291,7 +371,16 @@ struct SubscriptionView: View {
                 return
             }
 
-            guard let package = offerings?.current?.monthly ?? offerings?.current?.availablePackages.first else {
+            let current = offerings?.current
+            let package: Package?
+            switch plan {
+            case .lifetime:
+                package = current?.lifetime
+            default:
+                package = current?.monthly ?? current?.availablePackages.first
+            }
+
+            guard let package = package else {
                 DispatchQueue.main.async {
                     isPurchasing = false
                     purchaseError = NSLocalizedString("purchase_error_package_not_found", comment: "")
