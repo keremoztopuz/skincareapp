@@ -22,7 +22,8 @@ class MoreViewModel: ObservableObject {
     @Published var memberSince: String = "-"
     @Published var routineStreak: Int = 0
 
-    init() { loadProfile() }
+    // No init-time load: the view's onAppear fires on first appearance too,
+    // and loading here as well just doubled the work.
 
     func loadProfile() {
         let profile = LocalPersistenceManager.shared.fetchUserProfile()
@@ -57,6 +58,7 @@ class MoreViewModel: ObservableObject {
     /// keeps 7 days of history, so the streak naturally caps at 7.
     private func computeRoutineStreak() -> Int {
         let store = RoutineCompletionStore.shared
+        store.pruneOldEntries()
         let calendar = Calendar.current
 
         func hasTicks(on date: Date) -> Bool {
@@ -71,7 +73,7 @@ class MoreViewModel: ObservableObject {
         }
 
         var streak = 0
-        while hasTicks(on: day), streak < 7 {
+        while hasTicks(on: day), streak < store.keepDays {
             streak += 1
             guard let previous = calendar.date(byAdding: .day, value: -1, to: day) else { break }
             day = previous
