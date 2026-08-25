@@ -20,20 +20,22 @@ struct ProfileSetupView: View {
             Color.brandBackground
                 .ignoresSafeArea()
             VStack(alignment: .leading, spacing: 0) {
-                if vm.currentPage > 0 {
-                    Button(action: {
-                        vm.currentPage -= 1
-                    }) {
-                        HStack(spacing: 4) {
-                            Image(systemName: "chevron.left")
-                            Text(NSLocalizedString("back", comment: ""))
-                        }
-                        .font(.scaled(size: 16, weight: .medium))
-                        .foregroundColor(.brandPrimary)
+                // Always occupies its space (hidden on page 0) so the page
+                // content does not jump vertically between pages.
+                Button(action: {
+                    vm.currentPage -= 1
+                }) {
+                    HStack(spacing: 4) {
+                        Image(systemName: "chevron.left")
+                        Text(NSLocalizedString("back", comment: ""))
                     }
-                    .padding(.horizontal, 28)
-                    .padding(.top, 16)
+                    .font(.scaled(size: 16, weight: .medium))
+                    .foregroundColor(.brandPrimary)
                 }
+                .padding(.horizontal, 28)
+                .padding(.top, 16)
+                .opacity(vm.currentPage > 0 ? 1 : 0)
+                .disabled(vm.currentPage == 0)
                 // Scrolls when a page is taller than the screen (the skin-type
                 // page has five options) and when the keyboard covers the
                 // name field; the Continue button stays pinned below. The
