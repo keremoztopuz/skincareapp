@@ -6,25 +6,38 @@ struct CompareView: View {
     let record1: AnalysisRecord
     let record2: AnalysisRecord
 
+    // Callers pass records in tap order, which is arbitrary; every diff and
+    // layout decision derives from these so the insight can never invert.
+    private var older: AnalysisRecord {
+        (record1.date ?? .distantPast) <= (record2.date ?? .distantPast) ? record1 : record2
+    }
+    private var newer: AnalysisRecord {
+        (record1.date ?? .distantPast) <= (record2.date ?? .distantPast) ? record2 : record1
+    }
+
+    /// The rebuilt scoring formula spans a wider 0-100 range, so an 8-point
+    /// deadband keeps the insight copy as selective as the old 5 was.
+    private static let deadband: Double = 8
+
     private var analysisInsight: String {
-        let overallDiff = record1.overallScore - record2.overallScore
-        let acneDiff    = record1.acneScore    - record2.acneScore
-        let wrinkleDiff = record1.wrinkleScore - record2.wrinkleScore
+        let overallDiff = newer.overallScore - older.overallScore
+        let acneDiff    = newer.acneScore    - older.acneScore
+        let wrinkleDiff = newer.wrinkleScore - older.wrinkleScore
         var parts: [String] = []
-        // The rebuilt scoring formula spans a wider 0-100 range, so an 8-point
-        // deadband keeps the insight copy as selective as the old 5 was.
-        if overallDiff > 8 {
+        if overallDiff > Self.deadband {
             parts.append(String(format: NSLocalizedString("compare_insight_overall_improved", comment: ""), Int(overallDiff)))
-        } else if overallDiff < -8 {
+        } else if overallDiff < -Self.deadband {
             parts.append(String(format: NSLocalizedString("compare_insight_overall_decreased", comment: ""), Int(abs(overallDiff))))
         }
-        if acneDiff < -5 {
+        if acneDiff < -Self.deadband {
             parts.append(NSLocalizedString("compare_insight_acne_decreased", comment: ""))
-        } else if acneDiff > 5 {
+        } else if acneDiff > Self.deadband {
             parts.append(NSLocalizedString("compare_insight_acne_increased", comment: ""))
         }
-        if wrinkleDiff < -5 {
+        if wrinkleDiff < -Self.deadband {
             parts.append(NSLocalizedString("compare_insight_wrinkles_decreased", comment: ""))
+        } else if wrinkleDiff > Self.deadband {
+            parts.append(NSLocalizedString("compare_insight_wrinkles_increased", comment: ""))
         }
         return parts.isEmpty
             ? NSLocalizedString("compare_insight_no_significant_change", comment: "")
@@ -43,7 +56,7 @@ struct CompareView: View {
 
                     // MARK: Date labels
                     HStack {
-                        dateLabel(record: record1, isLeft: true)
+                        dateLabel(record: older, isLeft: true)
                         Spacer()
                         ZStack {
                             Circle()
@@ -55,23 +68,23 @@ struct CompareView: View {
                                 .foregroundColor(.brandPrimary)
                         }
                         Spacer()
-                        dateLabel(record: record2, isLeft: false)
+                        dateLabel(record: newer, isLeft: false)
                     }
                     .padding(.horizontal, 24)
 
                     // MARK: Photos
                     HStack(spacing: 0) {
-                        photoCard(record: record1)
+                        photoCard(record: older)
                         Spacer()
-                        photoCard(record: record2)
+                        photoCard(record: newer)
                     }
                     .padding(.horizontal, 24)
 
                     // MARK: Overall Score
                     metricRow(
                         label: AppStrings.overallScore,
-                        val1: record1.overallScore,
-                        val2: record2.overallScore,
+                        val1: older.overallScore,
+                        val2: newer.overallScore,
                         unit: "",
                         higherIsBetter: true
                     )
@@ -94,14 +107,14 @@ struct CompareView: View {
 
                     // MARK: Detail rows with progress bars
                     VStack(spacing: 10) {
-                        detailRow(label: AppStrings.acne,         val1: record1.acneScore,         val2: record2.acneScore,         higherIsBetter: false)
-                        detailRow(label: AppStrings.redness,      val1: record1.eczemaScore,       val2: record2.eczemaScore,       higherIsBetter: false)
-                        detailRow(label: AppStrings.pigmentation, val1: record1.pigmentationScore, val2: record2.pigmentationScore, higherIsBetter: false)
-                        detailRow(label: AppStrings.wrinkles,     val1: record1.wrinkleScore,      val2: record2.wrinkleScore,      higherIsBetter: false)
-                        detailRow(label: AppStrings.eyeBags,      val1: record1.eyebagScore,       val2: record2.eyebagScore,       higherIsBetter: false)
-                        detailRow(label: AppStrings.dryness,      val1: record1.drynessScore,      val2: record2.drynessScore,      higherIsBetter: false)
-                        detailRow(label: AppStrings.inflammation, val1: record1.inflammationScore, val2: record2.inflammationScore, higherIsBetter: false)
-                        detailRow(label: AppStrings.oiliness,     val1: record1.oilinessScore,     val2: record2.oilinessScore,     higherIsBetter: false)
+                        detailRow(label: AppStrings.acne,         val1: older.acneScore,         val2: newer.acneScore,         higherIsBetter: false)
+                        detailRow(label: AppStrings.redness,      val1: older.eczemaScore,       val2: newer.eczemaScore,       higherIsBetter: false)
+                        detailRow(label: AppStrings.pigmentation, val1: older.pigmentationScore, val2: newer.pigmentationScore, higherIsBetter: false)
+                        detailRow(label: AppStrings.wrinkles,     val1: older.wrinkleScore,      val2: newer.wrinkleScore,      higherIsBetter: false)
+                        detailRow(label: AppStrings.eyeBags,      val1: older.eyebagScore,       val2: newer.eyebagScore,       higherIsBetter: false)
+                        detailRow(label: AppStrings.dryness,      val1: older.drynessScore,      val2: newer.drynessScore,      higherIsBetter: false)
+                        detailRow(label: AppStrings.inflammation, val1: older.inflammationScore, val2: newer.inflammationScore, higherIsBetter: false)
+                        detailRow(label: AppStrings.oiliness,     val1: older.oilinessScore,     val2: newer.oilinessScore,     higherIsBetter: false)
                     }
                     .padding(.horizontal, 20)
 
@@ -153,13 +166,15 @@ struct CompareView: View {
                 Image(uiImage: uiImage)
                     .resizable()
                     .scaledToFill()
-                    .frame(width: 148, height: 180)
+                    .frame(maxWidth: 148)
+                    .frame(height: 180)
                     .clipShape(RoundedRectangle(cornerRadius: Radius.card))
                     .cardShadow()
             } else {
                 RoundedRectangle(cornerRadius: Radius.card)
                     .fill(Color.brandBlush)
-                    .frame(width: 148, height: 180)
+                    .frame(maxWidth: 148)
+                    .frame(height: 180)
                     .overlay(
                         Image(systemName: "person.crop.rectangle")
                             .font(.scaled(size: 26))
@@ -255,7 +270,7 @@ struct CompareView: View {
                 GeometryReader { geo in
                     ZStack(alignment: .leading) {
                         RoundedRectangle(cornerRadius: Radius.small).fill(Color.brandPrimary.opacity(0.12)).frame(height: 5)
-                        RoundedRectangle(cornerRadius: Radius.small).fill(Color.brandPrimary).frame(width: geo.size.width * min(val1 / 100, 1.0), height: 5)
+                        RoundedRectangle(cornerRadius: Radius.small).fill(Color.brandPrimary).frame(width: geo.size.width * min(max(val1, 0) / 100, 1.0), height: 5)
                     }
                 }
                 .frame(height: 5)
@@ -263,7 +278,7 @@ struct CompareView: View {
                 GeometryReader { geo in
                     ZStack(alignment: .leading) {
                         RoundedRectangle(cornerRadius: Radius.small).fill(Color.gray.opacity(0.15)).frame(height: 5)
-                        RoundedRectangle(cornerRadius: Radius.small).fill(Color.gray).frame(width: geo.size.width * min(val2 / 100, 1.0), height: 5)
+                        RoundedRectangle(cornerRadius: Radius.small).fill(Color.gray).frame(width: geo.size.width * min(max(val2, 0) / 100, 1.0), height: 5)
                     }
                 }
                 .frame(height: 5)
