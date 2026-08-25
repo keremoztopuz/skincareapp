@@ -7,7 +7,14 @@ struct UpgradeSheetView: View {
     @State private var isPurchasing = false
     @State private var showSuccess = false
     @State private var purchaseError: String?
-    @State private var priceText: String?
+    @State private var priceText: String = SubscriptionManager.FallbackPrice.monthly
+    @State private var lifetimePriceText: String = SubscriptionManager.FallbackPrice.lifetime
+    @State private var trialDays: Int?
+    @State private var selectedPlan: Plan = .monthly
+
+    enum Plan {
+        case monthly, lifetime
+    }
 
     var body: some View {
         ZStack {
@@ -75,19 +82,38 @@ struct UpgradeSheetView: View {
 
                 Spacer()
 
-                // MARK: Price and renewal disclosure
-                if let price = priceText {
-                    Text(String(format: NSLocalizedString("price_monthly_%@", comment: ""), price))
-                        .font(.scaled(size: 13))
-                        .foregroundColor(.gray)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, 24)
-                        .padding(.bottom, 12)
+                // MARK: Plan picker
+                VStack(spacing: 10) {
+                    planRow(
+                        plan: .monthly,
+                        title: AppStrings.pro,
+                        price: priceText,
+                        period: AppStrings.perMonth,
+                        badgeKey: nil
+                    )
+                    planRow(
+                        plan: .lifetime,
+                        title: NSLocalizedString("lifetime_plan", comment: ""),
+                        price: lifetimePriceText,
+                        period: NSLocalizedString("one_time", comment: ""),
+                        badgeKey: "best_value"
+                    )
                 }
+                .padding(.horizontal, 20)
+                .padding(.top, 16)
+                .padding(.bottom, 12)
+
+                // MARK: Price and renewal disclosure
+                Text(disclosureText)
+                    .font(.scaled(size: 13))
+                    .foregroundColor(.gray)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 24)
+                    .padding(.bottom, 12)
 
                 // MARK: Buy button
                 Button {
-                    purchase()
+                    purchase(plan: selectedPlan)
                 } label: {
                     HStack(spacing: 10) {
                         if isPurchasing {
@@ -97,7 +123,7 @@ struct UpgradeSheetView: View {
                         } else {
                             Image(systemName: "crown.fill")
                                 .font(.scaled(size: 17))
-                            Text(NSLocalizedString("upgrade_now", comment: ""))
+                            Text(buyButtonTitle)
                         }
                     }
                 }
@@ -135,7 +161,7 @@ struct UpgradeSheetView: View {
             }
         }
         .presentationDetents([.large])
-        .onAppear { loadPrice() }
+        .onAppear { loadPrices() }
         .alert(AppStrings.purchaseError, isPresented: Binding(
             get: { purchaseError != nil },
             set: { if !$0 { purchaseError = nil } }
@@ -149,6 +175,95 @@ struct UpgradeSheetView: View {
                 successOverlay
             }
         }
+    }
+
+    // MARK: - Plan copy
+    /// Trial wording only appears when the App Store actually offers one.
+    private var buyButtonTitle: String {
+        switch selectedPlan {
+        case .lifetime:
+            return NSLocalizedString("get_lifetime_access", comment: "")
+        case .monthly:
+            if let days = trialDays {
+                return String(format: NSLocalizedString("start_free_trial_%lld_days", comment: ""), days)
+            }
+            return NSLocalizedString("upgrade_now", comment: "")
+        }
+    }
+
+    private var disclosureText: String {
+        switch selectedPlan {
+        case .lifetime:
+            return String(format: NSLocalizedString("one_time_price_%@", comment: ""), lifetimePriceText)
+        case .monthly:
+            let key = trialDays == nil ? "price_monthly_%@" : "then_price_monthly_%@"
+            return String(format: NSLocalizedString(key, comment: ""), priceText)
+        }
+    }
+
+    // MARK: - Plan Row
+    private func planRow(plan: Plan, title: String, price: String, period: String, badgeKey: String?) -> some View {
+        let isSelected = selectedPlan == plan
+
+        return Button {
+            withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                selectedPlan = plan
+            }
+        } label: {
+            HStack(spacing: 12) {
+                ZStack {
+                    Circle()
+                        .stroke(isSelected ? Color.brandPrimary : Color.gray.opacity(0.3), lineWidth: 2)
+                        .frame(width: 22, height: 22)
+                    if isSelected {
+                        Circle()
+                            .fill(Color.brandPrimary)
+                            .frame(width: 12, height: 12)
+                    }
+                }
+
+                VStack(alignment: .leading, spacing: 2) {
+                    HStack(spacing: 6) {
+                        Text(title)
+                            .font(.scaled(size: 16, weight: .bold))
+                            .foregroundColor(.brandText)
+
+                        if let badgeKey {
+                            Text(NSLocalizedString(badgeKey, comment: ""))
+                                .font(.scaled(size: 10, weight: .bold))
+                                .foregroundColor(.white)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 3)
+                                .background(Color.brandPrimary)
+                                .cornerRadius(Radius.small)
+                        }
+                    }
+
+                    HStack(alignment: .firstTextBaseline, spacing: 0) {
+                        Text(price)
+                            .font(.scaled(size: 17, weight: .bold))
+                            .foregroundColor(.brandPrimary)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.8)
+                        Text(period)
+                            .font(.scaled(size: 13))
+                            .foregroundColor(.gray)
+                    }
+                }
+
+                Spacer()
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 14)
+            .background(Color.white)
+            .cornerRadius(Radius.card)
+            .overlay(
+                RoundedRectangle(cornerRadius: Radius.card)
+                    .stroke(isSelected ? Color.brandPrimary : Color.gray.opacity(0.15), lineWidth: isSelected ? 2 : 1)
+            )
+            .cardShadow()
+        }
+        .buttonStyle(PlainButtonStyle())
     }
 
     // MARK: - Feature Row
@@ -188,18 +303,28 @@ struct UpgradeSheetView: View {
         }
     }
 
-    // MARK: - Localized price
-    private func loadPrice() {
+    // MARK: - Localized prices
+    /// Prices come from StoreKit, so each storefront shows its own App Store
+    /// Connect price and currency; the fallbacks only fill the gap until then.
+    private func loadPrices() {
         Purchases.shared.getOfferings { offerings, _ in
-            guard let package = offerings?.current?.monthly ?? offerings?.current?.availablePackages.first else { return }
+            guard let current = offerings?.current else { return }
+            let monthly = current.monthly ?? current.availablePackages.first
+            let lifetime = current.lifetime
             DispatchQueue.main.async {
-                priceText = package.storeProduct.localizedPriceString
+                if let live = monthly?.storeProduct.localizedPriceString {
+                    priceText = live
+                }
+                if let live = lifetime?.storeProduct.localizedPriceString {
+                    lifetimePriceText = live
+                }
+                trialDays = monthly.flatMap { SubscriptionManager.trialDays(in: $0.storeProduct) }
             }
         }
     }
 
     // MARK: - Purchase logic
-    private func purchase() {
+    private func purchase(plan: Plan) {
         isPurchasing = true
         purchaseError = nil
 
@@ -212,7 +337,12 @@ struct UpgradeSheetView: View {
                 return
             }
 
-            guard let package = offerings?.current?.monthly ?? offerings?.current?.availablePackages.first else {
+            let current = offerings?.current
+            let selected: Package? = plan == .lifetime
+                ? current?.lifetime
+                : (current?.monthly ?? current?.availablePackages.first)
+
+            guard let package = selected else {
                 DispatchQueue.main.async {
                     isPurchasing = false
                     purchaseError = NSLocalizedString("purchase_error_package_not_found", comment: "")
