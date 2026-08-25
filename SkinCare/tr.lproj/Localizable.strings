@@ -51,11 +51,9 @@
 "unlock_advanced_features" = "Tüm gelişmiş özellikleri açın";
 "upgrade_now" = "Şimdi Yükselt";
 "unlock_premium" = "Premium'u Aç";
-"start_free_trial" = "3 Günlük Ücretsiz Denemeyi Başlat";
 "continue_with_free" = "Ücretsiz Devam Et";
 "no_thanks_free" = "Hayır, ücretsiz devam et";
 "restore_purchases" = "Satın Alımları Geri Yükle";
-"free_trial_included" = "3 günlük ücretsiz deneme dahil";
 "popular" = "POPÜLER";
 "5_analysis_per_month" = "Ayda 5 cilt analizi";
 "basic_insights" = "Temel analizler (Sivilce ve Kızarıklık)";
@@ -304,3 +302,7 @@
 "pay_once_use_forever" = "Bir kez öde, hep kullan";
 "get_lifetime_access" = "Ömür Boyu Erişim Al";
 "one_time_price_%@" = "Tek seferlik %@. Abonelik yok, yenileme yok.";
+
+/* Ücretsiz deneme (yalnızca App Store sunduğunda gösterilir) */
+"start_free_trial_%lld_days" = "%lld Günlük Ücretsiz Denemeyi Başlat";
+"get_pro" = "Pro'ya Geç";

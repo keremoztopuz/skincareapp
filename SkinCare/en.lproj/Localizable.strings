@@ -64,11 +64,9 @@
 
 /* Subscription */
 "unlock_premium" = "Unlock Premium";
-"start_free_trial" = "Start 3-Day Free Trial";
 "continue_with_free" = "Continue with Free";
 "no_thanks_free" = "No thanks, continue with Free";
 "restore_purchases" = "Restore Purchases";
-"free_trial_included" = "3-day free trial included";
 "popular" = "POPULAR";
 "5_analysis_per_month" = "5 skin analysis per month";
 "basic_insights" = "Basic insights (Breakouts & Redness)";
@@ -351,3 +349,7 @@
 "pay_once_use_forever" = "Pay once, use forever";
 "get_lifetime_access" = "Get Lifetime Access";
 "one_time_price_%@" = "%@ once. No subscription, no renewal.";
+
+/* Free trial (shown only when the App Store offers one) */
+"start_free_trial_%lld_days" = "Start %lld-Day Free Trial";
+"get_pro" = "Get Pro";
