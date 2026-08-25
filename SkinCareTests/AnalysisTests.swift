@@ -87,6 +87,15 @@ private func performOrSkip(_ handler: VNImageRequestHandler, _ request: VNDetect
     #expect(result.inflammationScore < 40)
 }
 
+@Test func testScoringEngineHydrationAffectsOverall() {
+    let engine = ScoringEngine()
+    let hydrated = engine.calculateScore(acne: 0, redness: 0, pigmentation: 0, hydration: 1.0, skinType: "normal")
+    let dehydrated = engine.calculateScore(acne: 0, redness: 0, pigmentation: 0, hydration: 0.0, skinType: "normal")
+
+    #expect(dehydrated.overallScore < hydrated.overallScore)
+    #expect(dehydrated.drynessScore > hydrated.drynessScore)
+}
+
 @Test func testScoringEngineMultipleConditions() {
 
     let engine = ScoringEngine()
