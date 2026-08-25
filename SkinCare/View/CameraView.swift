@@ -16,12 +16,18 @@ struct CameraView: View {
     @State private var isCameraVisible = false
 
     var body: some View {
-        GeometryReader { geo in
-            let previewWidth = min(geo.size.width - 48, 360)
-            let previewHeight = previewWidth * 1.25
+        ZStack {
+            // Outside the GeometryReader so the fill always reaches the status bar.
+            Color.brandBackground.ignoresSafeArea()
 
-            ZStack {
-                Color.brandBackground.ignoresSafeArea()
+            GeometryReader { geo in
+                // The preview keeps its 4:5 shape but yields to the available
+                // height, so the shutter button is never pushed off-screen —
+                // free users carry an extra quota badge above it.
+                let chrome: CGFloat = subscriptionManager.isPremium ? 195 : 245
+                let maxWidth = min(geo.size.width - 48, 360)
+                let previewHeight = min(maxWidth * 1.25, max(geo.size.height - chrome, 220))
+                let previewWidth = previewHeight / 1.25
 
                 VStack(alignment: .leading, spacing: 12) {
                     VStack(alignment: .leading, spacing: 4) {
