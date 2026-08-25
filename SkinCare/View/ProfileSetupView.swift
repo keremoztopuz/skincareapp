@@ -34,7 +34,12 @@ struct ProfileSetupView: View {
                     .padding(.horizontal, 28)
                     .padding(.top, 16)
                 }
-                Spacer()
+                // Scrolls when a page is taller than the screen (the skin-type
+                // page has five options) and when the keyboard covers the
+                // name field; the Continue button stays pinned below.
+                ScrollView {
+                VStack(alignment: .leading, spacing: 0) {
+                Spacer(minLength: 16)
 
                 Group {
                     if vm.currentPage == 0 {
@@ -66,7 +71,12 @@ struct ProfileSetupView: View {
                     }
                 }
 
-                Spacer()
+                Spacer(minLength: 16)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .scrollBounceBehavior(.basedOnSize)
+                .scrollDismissesKeyboard(.interactively)
 
                 Button(action: {
                     vm.handleContinue()
@@ -76,7 +86,7 @@ struct ProfileSetupView: View {
                 .buttonStyle(PrimaryButtonStyle(isEnabled: vm.isCurrentPageValid))
                 .disabled(!vm.isCurrentPageValid)
                 .padding(.horizontal, 28)
-                .padding(.bottom, 48)
+                .padding(.bottom, 24)
             }
 
         }
@@ -204,7 +214,7 @@ private func warningLabel(_ text: String, visible: Bool) -> some View {
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
-    .frame(height: 20)
+    .frame(minHeight: 20)
     .padding(.top, 8)
 }
 
