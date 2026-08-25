@@ -51,6 +51,13 @@ final class RoutineCompletionStore {
         defaults.set(ids.map(\.uuidString), forKey: key(for: date, time: time))
     }
 
+    /// Wipes every stored completion; used by "delete all data".
+    func removeAll() {
+        for storedKey in defaults.dictionaryRepresentation().keys where storedKey.hasPrefix("\(keyPrefix).") {
+            defaults.removeObject(forKey: storedKey)
+        }
+    }
+
     /// Drops per-day keys older than `keepDays` so the store cannot grow forever.
     private func pruneOldEntries() {
         guard let cutoff = Calendar.current.date(byAdding: .day, value: -keepDays, to: Date()) else { return }
