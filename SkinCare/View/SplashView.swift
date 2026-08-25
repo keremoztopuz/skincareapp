@@ -26,7 +26,7 @@ struct SplashView: View {
 
     var body: some View {
         GeometryReader { geo in
-            let outerSize = geo.size.width * 0.42
+            let outerSize = geo.size.width * 0.48
 
             ZStack {
                 Color.brandBackground
