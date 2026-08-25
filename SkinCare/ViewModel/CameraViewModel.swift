@@ -63,6 +63,14 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
     }
 
     func setupSession() {
+        // checkPermission() runs on every appear and foreground; once the
+        // session is configured, only make sure it is running again instead
+        // of re-locking the device and re-adding inputs on the main thread.
+        guard session.inputs.isEmpty else {
+            startSessionIfNeeded()
+            return
+        }
+
         guard let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front) else {
             print("no front camera")
             return
@@ -81,17 +89,19 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
             if device.isFocusModeSupported(.continuousAutoFocus) {
                 try device.lockForConfiguration()
                 device.focusMode = .continuousAutoFocus
-                if device.isSubjectAreaChangeMonitoringEnabled {
-                    device.isSubjectAreaChangeMonitoringEnabled = true
-                }
+                device.isSubjectAreaChangeMonitoringEnabled = true
                 device.unlockForConfiguration()
             }
         } catch {
             print("camera setup error: \(error.localizedDescription)")
         }
-        
+
         session.commitConfiguration()
-        
+
+        startSessionIfNeeded()
+    }
+
+    private func startSessionIfNeeded() {
         DispatchQueue.global(qos: .background).async {
             if !self.session.isRunning {
                 self.session.startRunning()
@@ -118,6 +128,7 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
             self.wrinkleScore = 0
             self.eyebagScore = 0
             self.pigmentationScore = 0
+            self.hydrationScore = 0
             self.didProduceModelScores = false
             self.isAnalyzing = true
         }
@@ -179,7 +190,17 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
         }
     }
 
-    private func detectFaceAndCrop(_ image: UIImage, completion: @escaping (UIImage?, CGRect) -> Void) {
+    private func detectFaceAndCrop(_ image: UIImage, completion rawCompletion: @escaping (UIImage?, CGRect) -> Void) {
+        // Vision can invoke the request's completion handler with an error
+        // and then still make perform() throw, which would fire completion
+        // twice — fatal for the checked continuation awaiting it.
+        var hasFired = false
+        let completion: (UIImage?, CGRect) -> Void = { image, rect in
+            guard !hasFired else { return }
+            hasFired = true
+            rawCompletion(image, rect)
+        }
+
         guard let cgImage = image.cgImage else {
             completion(nil, .zero)
             return
@@ -239,9 +260,16 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
     /// flawless skin, and it would still burn one of the user's five monthly
     /// scans.
     func analyzeWithCloud(_ image: UIImage) async {
-        let profile = LocalPersistenceManager.shared.fetchUserProfile()
-        let skinType = profile?.skinType?.lowercased()
-        let age = profile?.ageRange.flatMap { Int($0) }
+        // The persistence manager wraps the main-queue viewContext; fetching
+        // from this background task would be a Core Data threading violation.
+        let (skinType, age) = await MainActor.run { () -> (String?, Int?) in
+            let profile = LocalPersistenceManager.shared.fetchUserProfile()
+            // ageRange can be a bare number ("30") or a range ("25-34");
+            // Int() on the whole string silently drops the range form.
+            let age = profile?.ageRange
+                .flatMap { Int($0.prefix(while: \.isNumber)) }
+            return (profile?.skinType?.lowercased(), age)
+        }
 
         do {
             let scores = try await AnalysisService.shared.analyze(
@@ -269,8 +297,21 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
                 self.didProduceModelScores = true
             }
         } catch {
+            NSLog("Cloud analysis failed: %@", String(describing: error))
+            let messageKey: String
+            switch error {
+            case AnalysisError.encodingFailed:
+                messageKey = "analysis_error_photo"
+            case AnalysisError.server(let code):
+                // Rate limits and the daily spend ceiling are "try later",
+                // not "check your connection".
+                let busyCodes = ["http_429", "rate_limited", "daily_budget_exceeded"]
+                messageKey = busyCodes.contains(code) ? "analysis_error_busy" : "analysis_error_server"
+            default:
+                messageKey = "analysis_error_network"
+            }
             await MainActor.run {
-                self.errorMessage = NSLocalizedString("analysis_error_network", comment: "")
+                self.errorMessage = NSLocalizedString(messageKey, comment: "")
             }
         }
     }
@@ -319,6 +360,14 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
             imageData: imageData
         )
 
+        // A record that failed to persist would vanish on the next launch;
+        // treat it like any other failed analysis and spare the scan quota.
+        guard let record else {
+            self.isAnalyzing = false
+            self.errorMessage = NSLocalizedString("analysis_error_model", comment: "")
+            return
+        }
+
         SubscriptionManager.shared.recordScan()
         self.isAnalyzing = false
         self.analysisRecord = record
@@ -335,6 +384,7 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
             self.wrinkleScore = 0
             self.eyebagScore = 0
             self.pigmentationScore = 0
+            self.hydrationScore = 0
             self.didProduceModelScores = false
             self.isAnalyzing = false
         }
