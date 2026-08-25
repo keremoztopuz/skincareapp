@@ -143,7 +143,19 @@ struct RoutineView: View {
     }
 
     private func filledStepContent(item: RoutineItem, step: RoutineViewModel.RoutineStep) -> some View {
-        HStack(spacing: 14) {
+        let done = vm.isCompleted(item)
+        return HStack(spacing: 14) {
+            Button {
+                withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                    vm.toggleCompleted(item)
+                }
+            } label: {
+                Image(systemName: done ? "checkmark.circle.fill" : "circle")
+                    .font(.scaled(size: 24))
+                    .foregroundColor(done ? .brandPrimary : .gray.opacity(0.4))
+            }
+            .accessibilityLabel(Text(step.label))
+
             if let url = item.productImageUrl, let imageUrl = URL(string: url) {
                 AsyncImage(url: imageUrl) { image in
                     image.resizable().aspectRatio(contentMode: .fill)
@@ -172,7 +184,8 @@ struct RoutineView: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(item.productName ?? AppStrings.unknownProduct)
                     .font(.scaled(size: 16, weight: .semibold))
-                    .foregroundColor(.brandText)
+                    .foregroundColor(done ? .gray : .brandText)
+                    .strikethrough(done)
                     .lineLimit(1)
                 if let brand = item.productBrand {
                     Text(brand)
