@@ -3,13 +3,12 @@ import RevenueCat
 
 struct UpgradeSheetView: View {
     @Environment(\.dismiss) var dismiss
-    @StateObject private var manager = SubscriptionManager.shared
     @State private var isPurchasing = false
     @State private var showSuccess = false
     @State private var purchaseError: String?
     @State private var priceText: String = SubscriptionManager.FallbackPrice.monthly
     @State private var lifetimePriceText: String = SubscriptionManager.FallbackPrice.lifetime
-    @State private var trialDays: Int?
+    @State private var trial: SubscriptionManager.TrialPeriod?
     @State private var selectedPlan: Plan = .monthly
 
     enum Plan {
@@ -184,8 +183,8 @@ struct UpgradeSheetView: View {
         case .lifetime:
             return NSLocalizedString("get_lifetime_access", comment: "")
         case .monthly:
-            if let days = trialDays {
-                return String(format: NSLocalizedString("start_free_trial_%lld_days", comment: ""), days)
+            if let trial {
+                return trial.startCTA
             }
             return NSLocalizedString("upgrade_now", comment: "")
         }
@@ -196,7 +195,7 @@ struct UpgradeSheetView: View {
         case .lifetime:
             return String(format: NSLocalizedString("one_time_price_%@", comment: ""), lifetimePriceText)
         case .monthly:
-            let key = trialDays == nil ? "price_monthly_%@" : "then_price_monthly_%@"
+            let key = trial == nil ? "price_monthly_%@" : "then_price_monthly_%@"
             return String(format: NSLocalizedString(key, comment: ""), priceText)
         }
     }
@@ -307,9 +306,13 @@ struct UpgradeSheetView: View {
     /// Prices come from StoreKit, so each storefront shows its own App Store
     /// Connect price and currency; the fallbacks only fill the gap until then.
     private func loadPrices() {
+        guard Purchases.isConfigured else { return }
         Purchases.shared.getOfferings { offerings, _ in
             guard let current = offerings?.current else { return }
-            let monthly = current.monthly ?? current.availablePackages.first
+            // Only the true $rc_monthly package may feed the monthly row —
+            // falling back to an arbitrary package could show the lifetime
+            // price as if it were monthly.
+            let monthly = current.monthly
             let lifetime = current.lifetime
             DispatchQueue.main.async {
                 if let live = monthly?.storeProduct.localizedPriceString {
@@ -318,7 +321,7 @@ struct UpgradeSheetView: View {
                 if let live = lifetime?.storeProduct.localizedPriceString {
                     lifetimePriceText = live
                 }
-                trialDays = monthly.flatMap { SubscriptionManager.trialDays(in: $0.storeProduct) }
+                trial = monthly.flatMap { SubscriptionManager.trialPeriod(in: $0.storeProduct) }
             }
         }
     }
@@ -338,9 +341,11 @@ struct UpgradeSheetView: View {
             }
 
             let current = offerings?.current
+            // Never substitute another package for monthly: an offering
+            // without a monthly package must fail loudly, not charge lifetime.
             let selected: Package? = plan == .lifetime
                 ? current?.lifetime
-                : (current?.monthly ?? current?.availablePackages.first)
+                : current?.monthly
 
             guard let package = selected else {
                 DispatchQueue.main.async {
@@ -359,13 +364,18 @@ struct UpgradeSheetView: View {
                         return
                     }
 
+                    // Only the entitlement unlocks Pro. A non-nil transaction
+                    // alone can be deferred (Ask to Buy) or not yet synced,
+                    // and would be revoked on the next status check anyway.
                     let entitled = info?.entitlements[SubscriptionManager.proEntitlementID]?.isActive == true
-                    if entitled || transaction != nil {
+                    if entitled {
                         SubscriptionManager.shared.isPremium = true
                         withAnimation(.spring(response: 0.4, dampingFraction: 0.6)) { showSuccess = true }
                         DispatchQueue.main.asyncAfter(deadline: .now() + 1.8) {
                             dismiss()
                         }
+                    } else if transaction != nil {
+                        purchaseError = NSLocalizedString("purchase_pending_message", comment: "")
                     }
                 }
             }
@@ -388,6 +398,8 @@ struct UpgradeSheetView: View {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1.8) {
                         dismiss()
                     }
+                } else {
+                    purchaseError = NSLocalizedString("restore_no_subscription", comment: "")
                 }
             }
         }
