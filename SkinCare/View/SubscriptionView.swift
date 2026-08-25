@@ -19,6 +19,7 @@ struct SubscriptionView: View {
     @State private var purchaseError: String?
     @State private var proPriceText: String = FallbackPrice.monthly
     @State private var lifetimePriceText: String = FallbackPrice.lifetime
+    @State private var trialDays: Int?
     @EnvironmentObject var appVM: ContentViewModel
 
     enum Plan {
@@ -80,7 +81,7 @@ struct SubscriptionView: View {
                             planCard(
                                 plan: .free,
                                 title: AppStrings.free,
-                                price: NSLocalizedString("price_free", comment: ""),
+                                price: "",
                                 period: "",
                                 features: [
                                     ("camera.viewfinder", NSLocalizedString("5_analysis_per_month", comment: "")),
@@ -246,9 +247,15 @@ struct SubscriptionView: View {
     }
 
     // MARK: - CTA copy
+    /// Trial wording only appears when the App Store actually offers one, so
+    /// the button can never promise a trial the subscription does not carry.
     private var ctaTitle: String {
         switch selectedPlan {
-        case .pro: return NSLocalizedString("start_free_trial", comment: "")
+        case .pro:
+            if let days = trialDays {
+                return String(format: NSLocalizedString("start_free_trial_%lld_days", comment: ""), days)
+            }
+            return NSLocalizedString("get_pro", comment: "")
         case .lifetime: return NSLocalizedString("get_lifetime_access", comment: "")
         case .free: return NSLocalizedString("continue_with_free", comment: "")
         }
@@ -257,11 +264,28 @@ struct SubscriptionView: View {
     private var ctaCaption: String? {
         switch selectedPlan {
         case .pro:
-            return String(format: NSLocalizedString("then_price_monthly_%@", comment: ""), proPriceText)
+            if trialDays != nil {
+                return String(format: NSLocalizedString("then_price_monthly_%@", comment: ""), proPriceText)
+            }
+            return String(format: NSLocalizedString("price_monthly_%@", comment: ""), proPriceText)
         case .lifetime:
             return String(format: NSLocalizedString("one_time_price_%@", comment: ""), lifetimePriceText)
         case .free:
             return nil
+        }
+    }
+
+    /// Length of the monthly plan's introductory free trial, in days, or nil
+    /// when App Store Connect has no free-trial introductory offer on it.
+    static func trialDays(in product: StoreProduct) -> Int? {
+        guard let intro = product.introductoryDiscount, intro.paymentMode == .freeTrial else { return nil }
+        let period = intro.subscriptionPeriod
+        switch period.unit {
+        case .day: return period.value
+        case .week: return period.value * 7
+        case .month: return period.value * 30
+        case .year: return period.value * 365
+        @unknown default: return period.value
         }
     }
 
@@ -311,15 +335,19 @@ struct SubscriptionView: View {
                             }
                         }
 
-                        HStack(alignment: .firstTextBaseline, spacing: 0) {
-                            Text(price)
-                                .font(.scaled(size: 22, weight: .bold))
-                                .foregroundColor(isFilled ? .white : .brandPrimary)
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.8)
-                            Text(period)
-                                .font(.scaled(size: 14, weight: .regular))
-                                .foregroundColor(isFilled ? .white.opacity(0.7) : .gray)
+                        // The free plan has no price to state; its title
+                        // already says so, and repeating it read as a bug.
+                        if !price.isEmpty {
+                            HStack(alignment: .firstTextBaseline, spacing: 0) {
+                                Text(price)
+                                    .font(.scaled(size: 22, weight: .bold))
+                                    .foregroundColor(isFilled ? .white : .brandPrimary)
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.8)
+                                Text(period)
+                                    .font(.scaled(size: 14, weight: .regular))
+                                    .foregroundColor(isFilled ? .white.opacity(0.7) : .gray)
+                            }
                         }
                     }
 
@@ -400,6 +428,7 @@ struct SubscriptionView: View {
                 if let live = lifetime?.storeProduct.localizedPriceString {
                     lifetimePriceText = live
                 }
+                trialDays = monthly.flatMap { Self.trialDays(in: $0.storeProduct) }
             }
         }
     }
