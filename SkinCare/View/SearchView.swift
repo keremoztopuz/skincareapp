@@ -51,6 +51,31 @@ struct SearchView: View {
                         Spacer()
                     }
                     .frame(maxWidth: .infinity)
+                } else if vm.loadFailed {
+                    // A failed fetch is not "no products": say so and offer
+                    // a retry, or the tab stays empty until the app restarts.
+                    VStack(spacing: 16) {
+                        Spacer()
+                        BrandCircleIcon(systemImage: "wifi.slash", size: 120)
+                        Text(AppStrings.internetConnectionRequired)
+                            .font(.scaled(size: 16))
+                            .foregroundColor(.gray)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 40)
+                        Button {
+                            Task { await vm.fetchProducts() }
+                        } label: {
+                            Text(NSLocalizedString("try_again", comment: ""))
+                                .font(.scaled(size: 16, weight: .semibold))
+                                .foregroundColor(.white)
+                                .padding(.horizontal, 32)
+                                .padding(.vertical, 12)
+                                .background(Color.brandPrimary)
+                                .cornerRadius(Radius.card)
+                        }
+                        Spacer()
+                    }
+                    .frame(maxWidth: .infinity)
                 } else if vm.filteredProducts.isEmpty {
                     VStack(spacing: 16) {
                         Spacer()
