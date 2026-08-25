@@ -31,7 +31,12 @@ struct PersistenceController {
     init(inMemory: Bool = false) {
         container = NSPersistentContainer(name: "SkinCare")
         if inMemory {
-            container.persistentStoreDescriptions.first!.url = URL(fileURLWithPath: "/dev/null")
+            // A true in-memory store, not SQLite-at-/dev/null: the /dev/null
+            // form is shared between concurrently running tests, which makes
+            // parallel saves fail with "store not compatible" (134020).
+            let description = container.persistentStoreDescriptions.first!
+            description.url = URL(fileURLWithPath: "/dev/null")
+            description.type = NSInMemoryStoreType
         }
         let container = self.container
         container.loadPersistentStores(completionHandler: { (storeDescription, error) in
