@@ -64,10 +64,16 @@ private func resetAppFlowDefaults() {
 
     try context.save()
 
+    // Relative order only: "/dev/null" SQLite stores are shared between
+    // concurrently running tests, so the fetch may contain records saved
+    // by other tests too.
     let sorted = manager.fetchAnalysisRecords()
+    let newest = try #require(sorted.firstIndex(of: record2))
+    let middle = try #require(sorted.firstIndex(of: record1))
+    let oldest = try #require(sorted.firstIndex(of: record3))
 
-    #expect(sorted.first == record2)
-    #expect(sorted.last == record3)
+    #expect(newest < middle)
+    #expect(middle < oldest)
 }
 
 @Test @MainActor func testResultsViewModelRecommendations() async {
