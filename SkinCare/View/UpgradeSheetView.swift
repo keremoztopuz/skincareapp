@@ -13,6 +13,11 @@ struct UpgradeSheetView: View {
         ZStack {
             Color.brandBackground.ignoresSafeArea()
 
+            // Scrolls only when the content is taller than the sheet, so the
+            // tail (restore / continue free / legal) stays reachable on short
+            // screens without changing how it feels on tall ones.
+            GeometryReader { proxy in
+            ScrollView {
             VStack(spacing: 0) {
 
                 // MARK: Drag handle
@@ -124,7 +129,12 @@ struct UpgradeSheetView: View {
 
                 Color.clear.frame(height: 8)
             }
+            .frame(minHeight: proxy.size.height)
+            }
+            .scrollBounceBehavior(.basedOnSize)
+            }
         }
+        .presentationDetents([.large])
         .onAppear { loadPrice() }
         .alert(AppStrings.purchaseError, isPresented: Binding(
             get: { purchaseError != nil },
