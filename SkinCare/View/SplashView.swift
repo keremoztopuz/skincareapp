@@ -25,12 +25,15 @@ struct SplashView: View {
     @State private var tipScale: CGFloat = 0
 
     var body: some View {
-        GeometryReader { geo in
-            let outerSize = geo.size.width * 0.48
+        ZStack {
+            // Outside the GeometryReader so the fill always reaches the status bar.
+            Color.brandBackground
+                .ignoresSafeArea()
 
-            ZStack {
-                Color.brandBackground
-                    .ignoresSafeArea()
+            GeometryReader { geo in
+                let outerSize = geo.size.width * 0.48
+
+                ZStack {
 
                 VStack {
                     Spacer()
@@ -38,6 +41,7 @@ struct SplashView: View {
                     // Logo
                     BrandCircleIcon(assetImage: "AppLogo", size: outerSize, animated: true)
                         .scaleEffect(logoScale)
+                    
 
                     // App name
                     Text("SkinCareAI")
@@ -73,6 +77,7 @@ struct SplashView: View {
                         .padding(.bottom, 50)
                 }
                 .frame(width: geo.size.width)
+            }
             }
             .onAppear {
                 currentTip = tips.randomElement() ?? ""
