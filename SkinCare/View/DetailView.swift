@@ -60,7 +60,9 @@ struct DetailView: View {
     
     private func loadFullDetail() {
         isLoadingFullDetail = true
-        Task {
+        // @MainActor: the task writes view @State, and a task created in a
+        // nonisolated method would otherwise run off the main actor.
+        Task { @MainActor in
             do {
                 switch type {
                 case .product(let product):
