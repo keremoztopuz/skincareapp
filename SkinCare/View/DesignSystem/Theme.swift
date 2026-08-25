@@ -9,6 +9,10 @@ import UIKit
 extension Color {
     /// Burgundy brand color: buttons, accents, icons.
     static let brandPrimary = Color(red: 0.47, green: 0.11, blue: 0.17)
+    /// Softer rose sitting between the burgundy and the blush, for large
+    /// filled surfaces that would read too heavy in full burgundy.
+    /// Still dark enough for white text (7.2:1).
+    static let brandPrimarySoft = Color(red: 0.60, green: 0.20, blue: 0.27)
     /// Very light pink app background.
     static let brandBackground = Color(red: 1.0, green: 0.97, blue: 0.97)
     /// Soft pink: icon backgrounds, badges, skeletons.
