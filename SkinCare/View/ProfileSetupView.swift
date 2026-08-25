@@ -36,7 +36,9 @@ struct ProfileSetupView: View {
                 }
                 // Scrolls when a page is taller than the screen (the skin-type
                 // page has five options) and when the keyboard covers the
-                // name field; the Continue button stays pinned below.
+                // name field; the Continue button stays pinned below. The
+                // minHeight keeps the Spacers centring the content when it fits.
+                GeometryReader { proxy in
                 ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
                 Spacer(minLength: 16)
@@ -73,10 +75,11 @@ struct ProfileSetupView: View {
 
                 Spacer(minLength: 16)
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(maxWidth: .infinity, minHeight: proxy.size.height, alignment: .leading)
                 }
                 .scrollBounceBehavior(.basedOnSize)
                 .scrollDismissesKeyboard(.interactively)
+                }
 
                 Button(action: {
                     vm.handleContinue()
