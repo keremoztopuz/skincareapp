@@ -17,29 +17,13 @@ struct SubscriptionView: View {
     @State private var lifetimeCardAppeared = false
     @State private var isPurchasing = false
     @State private var purchaseError: String?
-    @State private var proPriceText: String = FallbackPrice.monthly
-    @State private var lifetimePriceText: String = FallbackPrice.lifetime
+    @State private var proPriceText: String = SubscriptionManager.FallbackPrice.monthly
+    @State private var lifetimePriceText: String = SubscriptionManager.FallbackPrice.lifetime
     @State private var trialDays: Int?
     @EnvironmentObject var appVM: ContentViewModel
 
     enum Plan {
         case free, pro, lifetime
-    }
-
-    /// Shown until StoreKit returns the storefront price (and if it never does).
-    /// Keep these in step with the App Store Connect price tiers — the live
-    /// price always wins once `loadPrices()` answers.
-    private enum FallbackPrice {
-        static var monthly: String { forCurrency(turkish: "₺199,99", usd: "$3.99", eur: "€4,99") }
-        static var lifetime: String { forCurrency(turkish: "₺899", usd: "$17.99", eur: "€19,99") }
-
-        private static func forCurrency(turkish: String, usd: String, eur: String) -> String {
-            switch Locale.current.currency?.identifier {
-            case "TRY": return turkish
-            case "EUR": return eur
-            default: return usd
-            }
-        }
     }
 
     var body: some View {
@@ -275,19 +259,6 @@ struct SubscriptionView: View {
         }
     }
 
-    /// Length of the monthly plan's introductory free trial, in days, or nil
-    /// when App Store Connect has no free-trial introductory offer on it.
-    static func trialDays(in product: StoreProduct) -> Int? {
-        guard let intro = product.introductoryDiscount, intro.paymentMode == .freeTrial else { return nil }
-        let period = intro.subscriptionPeriod
-        switch period.unit {
-        case .day: return period.value
-        case .week: return period.value * 7
-        case .month: return period.value * 30
-        case .year: return period.value * 365
-        @unknown default: return period.value
-        }
-    }
 
     // MARK: - Card style
     /// `featured` is the filled burgundy card (Pro); `accented` keeps the white
@@ -428,7 +399,7 @@ struct SubscriptionView: View {
                 if let live = lifetime?.storeProduct.localizedPriceString {
                     lifetimePriceText = live
                 }
-                trialDays = monthly.flatMap { Self.trialDays(in: $0.storeProduct) }
+                trialDays = monthly.flatMap { SubscriptionManager.trialDays(in: $0.storeProduct) }
             }
         }
     }
