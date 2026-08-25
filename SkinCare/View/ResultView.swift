@@ -17,18 +17,20 @@ struct ResultView: View {
     let isFromRecents: Bool
     @State private var showRecommendations = false
     @State private var selectedProduct: Product? = nil
-    @State private var showProductDetail = false
     @State private var showUpgrade = false
     @State private var showRoutine = false
     @State private var routineCreated = false
 
-    private var isPremium: Bool { SubscriptionManager.shared.isPremium }
+    // Observed so the locked bars unlock the moment the user buys Pro in
+    // the upgrade sheet this very screen presents.
+    @StateObject private var subscriptionManager = SubscriptionManager.shared
+    private var isPremium: Bool { subscriptionManager.isPremium }
 
     init(record: AnalysisRecord?, isFromRecents: Bool, onDismiss: (() -> Void)? = nil) {
         self.record = record
         self.isFromRecents = isFromRecents
         self.onDismiss = onDismiss
-        self._vm = StateObject(wrappedValue: ResultsViewModel(record: record))
+        self._vm = StateObject(wrappedValue: ResultsViewModel(record: record, isHistorical: isFromRecents))
     }
 
     var body: some View {
@@ -136,7 +138,6 @@ struct ResultView: View {
                                         ForEach(isPremium ? vm.recommendProduct : Array(vm.recommendProduct.prefix(2))) { product in
                                             Button {
                                                 selectedProduct = product
-                                                showProductDetail = true
                                             } label: {
                                                 ProductCard(product: product)
                                             }
@@ -214,11 +215,11 @@ struct ResultView: View {
         }
         .navigationBarBackButtonHidden(true)
         .sheet(isPresented: $showUpgrade) { UpgradeSheetView() }
-        .sheet(isPresented: $showProductDetail) {
-            if let product = selectedProduct {
-                NavigationStack {
-                    DetailView(type: .product(product))
-                }
+        // item-based so the sheet body always carries the tapped product;
+        // the isPresented+if-let form intermittently presents blank.
+        .sheet(item: $selectedProduct) { product in
+            NavigationStack {
+                DetailView(type: .product(product))
             }
         }
         .fullScreenCover(isPresented: $showRoutine) {
@@ -229,12 +230,26 @@ struct ResultView: View {
     }
 
     private func closeResult() {
-        onDismiss?()
-        dismiss()
+        // Exactly one dismissal mechanism: the owner's closure when there is
+        // one (it pops the presenting state itself), the environment dismiss
+        // otherwise. Running both pops two levels from Recents and double-
+        // resets the camera.
+        if let onDismiss {
+            onDismiss()
+        } else {
+            dismiss()
+        }
     }
 
     private func createRoutineFromProducts() {
-        let products = isPremium ? vm.recommendProduct : Array(vm.recommendProduct.prefix(2))
+        // The routine screen is Pro-only; writing items a free user cannot
+        // open would just strand invisible rows. Offer the upgrade instead.
+        guard isPremium else {
+            showUpgrade = true
+            return
+        }
+
+        let products = vm.recommendProduct
         let manager = LocalPersistenceManager.shared
 
         let stepMap: [String: (order: Int16, times: [String])] = [
@@ -252,6 +267,13 @@ struct ResultView: View {
                   let mapping = stepMap[type] else { continue }
 
             for time in mapping.times {
+                // Same dedupe rule as acceptSuggestion: one product per
+                // step slot, or the extra row becomes an invisible orphan
+                // the routine screen can never show or delete.
+                if let duplicate = manager.fetchRoutineItems(for: time)
+                    .first(where: { $0.stepOrder == mapping.order }) {
+                    manager.deleteRoutineItem(duplicate)
+                }
                 manager.saveRoutineItem(
                     productId: product.id,
                     productName: product.name,
@@ -268,10 +290,9 @@ struct ResultView: View {
         withAnimation {
             routineCreated = true
         }
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
-            showRoutine = true
-        }
+        // No delayed presentation: a timer would still fire (and present a
+        // full-screen cover) after the user has already left this screen.
+        showRoutine = true
     }
 }
 
@@ -337,7 +358,7 @@ struct ResultBar: View {
                     if !locked {
                         RoundedRectangle(cornerRadius: Radius.small)
                             .fill(Color.brandPrimary)
-                            .frame(width: geo.size.width * (score / 100), height: 6)
+                            .frame(width: geo.size.width * (min(max(score, 0), 100) / 100), height: 6)
                     }
                 }
             }
