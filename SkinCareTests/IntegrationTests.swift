@@ -76,12 +76,9 @@ internal import CoreData
         imageData: nil
     )
 
+    // fetchAnalysisRecords sorts newest-first via its NSSortDescriptor.
     let records = manager.fetchAnalysisRecords()
     #expect(records.count == 2)
-
-    let vm = RecentsViewModel()
-    let sorted = vm.mergeSort(records)
-
-    #expect(sorted.first?.condition == "Healthy")
-    #expect((sorted.first?.overallScore ?? 0) > (sorted.last?.overallScore ?? 0))
+    #expect(records.first?.condition == "Healthy")
+    #expect((records.first?.overallScore ?? 0) > (records.last?.overallScore ?? 0))
 }
