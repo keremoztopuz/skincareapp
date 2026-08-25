@@ -26,23 +26,42 @@ class SubscriptionManager: ObservableObject {
         }
     }
 
-    /// Length of a product's introductory free trial in days, or nil when
-    /// App Store Connect carries no free-trial offer on it. Drives whether the
-    /// paywalls may mention a trial at all.
-    static func trialDays(in product: StoreProduct) -> Int? {
+    /// A product's introductory free-trial length in its own store unit, or
+    /// nil when App Store Connect carries no free-trial offer on it. Drives
+    /// whether the paywalls may mention a trial at all. Kept in the store's
+    /// unit so the paywall wording matches the App Store product page
+    /// ("1 month free" must not become "30-Day").
+    enum TrialPeriod {
+        case days(Int), weeks(Int), months(Int), years(Int)
+
+        var startCTA: String {
+            switch self {
+            case .days(let n): return String(format: NSLocalizedString("start_free_trial_%lld_days", comment: ""), n)
+            case .weeks(let n): return String(format: NSLocalizedString("start_free_trial_%lld_weeks", comment: ""), n)
+            case .months(let n): return String(format: NSLocalizedString("start_free_trial_%lld_months", comment: ""), n)
+            case .years(let n): return String(format: NSLocalizedString("start_free_trial_%lld_years", comment: ""), n)
+            }
+        }
+    }
+
+    static func trialPeriod(in product: StoreProduct) -> TrialPeriod? {
         guard let intro = product.introductoryDiscount, intro.paymentMode == .freeTrial else { return nil }
         let period = intro.subscriptionPeriod
         switch period.unit {
-        case .day: return period.value
-        case .week: return period.value * 7
-        case .month: return period.value * 30
-        case .year: return period.value * 365
-        @unknown default: return period.value
+        case .day: return .days(period.value)
+        case .week: return .weeks(period.value)
+        case .month: return .months(period.value)
+        case .year: return .years(period.value)
+        @unknown default: return .days(period.value)
         }
     }
 
     private init() {
-        checkSubscriptionStatus()
+        // Previews and the test target never call Purchases.configure;
+        // touching Purchases.shared unconfigured is a fatal error.
+        if Purchases.isConfigured {
+            checkSubscriptionStatus()
+        }
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(appWillEnterForeground),
@@ -56,12 +75,16 @@ class SubscriptionManager: ObservableObject {
     }
 
     func checkSubscriptionStatus() {
+        guard Purchases.isConfigured else { return }
         Purchases.shared.getCustomerInfo { info, _ in
             guard let info = info else { return }
             DispatchQueue.main.async {
-                let hasEntitlement = info.entitlements[Self.proEntitlementID]?.isActive == true
-                let hasActiveSubscription = !info.activeSubscriptions.isEmpty
-                self.isPremium = hasEntitlement || hasActiveSubscription
+                // The entitlement is the single source of truth. An
+                // activeSubscriptions fallback used to live here as a
+                // workaround for the misnamed "pro" entitlement; with the
+                // identifier fixed it would only grant Pro to any future
+                // non-Pro subscription SKU.
+                self.isPremium = info.entitlements[Self.proEntitlementID]?.isActive == true
             }
         }
     }
@@ -71,8 +94,8 @@ class SubscriptionManager: ObservableObject {
     var isPremium: Bool {
         get { UserDefaults.standard.bool(forKey: "isPremium") }
         set {
-            UserDefaults.standard.set(newValue, forKey: "isPremium")
             objectWillChange.send()
+            UserDefaults.standard.set(newValue, forKey: "isPremium")
         }
     }
 
@@ -105,6 +128,7 @@ class SubscriptionManager: ObservableObject {
     }
 
     func recordScan() {
+        objectWillChange.send()
         let current = currentMonthKey
         if storedMonth != current {
             storedMonth = current
@@ -112,6 +136,5 @@ class SubscriptionManager: ObservableObject {
         } else {
             storedCount += 1
         }
-        objectWillChange.send()
     }
 }
