@@ -194,7 +194,11 @@ struct CameraView: View {
             Text(vm.errorMessage ?? "")
         }
         .alert(AppStrings.scanLimitReached, isPresented: $showQuotaAlert) {
-            Button(AppStrings.goPro) { showUpgrade = true }
+            Button(AppStrings.goPro) {
+                // Presenting a sheet in the same runloop as an alert's
+                // dismissal silently fails; defer one cycle.
+                DispatchQueue.main.async { showUpgrade = true }
+            }
             Button(AppStrings.ok, role: .cancel) {}
         } message: {
             Text(String(format: NSLocalizedString("free_scans_used", comment: ""), SubscriptionManager.shared.freeMonthlyLimit))
@@ -233,11 +237,12 @@ struct CameraView: View {
             }
         }
         .fullScreenCover(isPresented: $showResult, onDismiss: {
+            // The single reset point — the closure below only flips the
+            // flag, so a swipe-down and the back button behave identically.
             vm.resetScanner()
         }) {
             ResultView(record: vm.analysisRecord, isFromRecents: false) {
                 showResult = false
-                vm.resetScanner()
             }
         }
     }
