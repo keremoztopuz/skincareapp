@@ -13,19 +13,23 @@ class SearchViewModel: ObservableObject {
     @Published var searchText: String = ""
     @Published var products: [Product] = []
     @Published var isLoading: Bool = false
-    
+    /// Set when the catalog fetch fails, so the tab can show a retry
+    /// instead of a permanent, misleading "no products" state.
+    @Published var loadFailed: Bool = false
+
     init() {
         Task {
             await fetchProducts()
         }
     }
-    
+
     var filteredProducts: [Product] {
         if searchText.isEmpty {
             return products
         } else {
             return products.filter {
                 $0.name.localizedCaseInsensitiveContains(searchText)
+                    || ($0.brand?.localizedCaseInsensitiveContains(searchText) ?? false)
             }
         }
     }
@@ -33,10 +37,12 @@ class SearchViewModel: ObservableObject {
     @MainActor
     func fetchProducts() async {
         isLoading = true
+        loadFailed = false
         do {
             self.products = try await SupabaseService.shared.fetchProducts()
         } catch {
             self.products = []
+            self.loadFailed = true
         }
         isLoading = false
     }
