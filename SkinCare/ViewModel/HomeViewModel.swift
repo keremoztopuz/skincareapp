@@ -127,19 +127,6 @@ class HomeViewModel: ObservableObject {
         pendingSuggestionCount = LocalPersistenceManager.shared.fetchPendingSuggestions().count
     }
 
-    func toggleStep(_ id: UUID) {
-        RoutineCompletionStore.shared.toggle(id, time: routineTimeKey)
-        routineSteps = routineSteps.map { step in
-            guard step.id == id else { return step }
-            return RoutineStepDisplay(
-                id: step.id,
-                typeName: step.typeName,
-                productName: step.productName,
-                isCompleted: !step.isCompleted
-            )
-        }
-    }
-
     func fetchNames() {
         let profile = LocalPersistenceManager.shared.fetchUserProfile()
         self.userName = profile?.name ?? ""
