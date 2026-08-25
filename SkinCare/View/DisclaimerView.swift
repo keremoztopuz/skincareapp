@@ -16,6 +16,7 @@ struct DisclaimerView: View {
                 // The notice scrolls when it is taller than the screen; the
                 // consent checkbox and Continue button stay pinned below so
                 // they can never be pushed out of reach.
+                GeometryReader { proxy in
                 ScrollView {
                 VStack(spacing: 0) {
                 Spacer(minLength: 12)
@@ -79,8 +80,10 @@ struct DisclaimerView: View {
 
                 Spacer(minLength: 20)
                 }
+                .frame(minHeight: proxy.size.height)
                 }
                 .scrollBounceBehavior(.basedOnSize)
+                }
 
                 Button {
                     withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
