@@ -15,7 +15,9 @@ final class RoutineCompletionStore {
 
     private let defaults = UserDefaults.standard
     private let keyPrefix = "routineCompletions"
-    private let keepDays = 7
+    /// Retention window; the streak on the profile derives its cap from
+    /// this so the two can never disagree.
+    let keepDays = 7
 
     private static let dayFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -58,8 +60,11 @@ final class RoutineCompletionStore {
         }
     }
 
-    /// Drops per-day keys older than `keepDays` so the store cannot grow forever.
-    private func pruneOldEntries() {
+    /// Drops per-day keys older than `keepDays` so the store cannot grow
+    /// forever. Also called before streak computation: the singleton's init
+    /// runs once, and an app kept alive for weeks would otherwise never
+    /// prune again.
+    func pruneOldEntries() {
         guard let cutoff = Calendar.current.date(byAdding: .day, value: -keepDays, to: Date()) else { return }
         let cutoffDay = Self.dayFormatter.string(from: cutoff)
         for storedKey in defaults.dictionaryRepresentation().keys where storedKey.hasPrefix("\(keyPrefix).") {
