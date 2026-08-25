@@ -61,7 +61,14 @@ extension Font {
         case ..<31: style = .title1
         default: style = .largeTitle
         }
-        let scaledSize = UIFontMetrics(forTextStyle: style).scaledValue(for: size)
+        // Mirror the app-level `.dynamicTypeSize(...accessibility1)` cap.
+        // UIFontMetrics reads UIKit's trait environment, which knows nothing
+        // about the SwiftUI clamp — without capping the category here, text
+        // at AX2-AX5 would keep growing past the layouts the cap protects.
+        let current = UITraitCollection.current.preferredContentSizeCategory
+        let capped = min(current, .accessibilityMedium)
+        let traits = UITraitCollection(preferredContentSizeCategory: capped)
+        let scaledSize = UIFontMetrics(forTextStyle: style).scaledValue(for: size, compatibleWith: traits)
         return .system(size: scaledSize, weight: weight)
     }
 }
