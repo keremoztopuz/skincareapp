@@ -2,13 +2,13 @@
 
 Effective date: TODO
 
-SkinCare is designed to help users review visible skin concerns, track their skincare progress, and organize skincare routines.
+Skinner is designed to help users review visible skin concerns, track their skincare progress, and organize skincare routines.
 
 This draft must be published on a public URL before App Store submission.
 
 ## Information We Process
 
-SkinCare may process the following information:
+Skinner may process the following information:
 
 - Profile information you enter, such as name, age range, gender, skin type, and known skin concerns.
 - Camera images captured for skin analysis.
@@ -18,7 +18,7 @@ SkinCare may process the following information:
 
 ## Hybrid Skin Analysis
 
-SkinCare uses a hybrid approach to analyze visible skin concerns:
+Skinner uses a hybrid approach to analyze visible skin concerns:
 - **On-Device Analysis:** Initial face detection and basic condition analysis (acne, redness) are performed entirely on your device using Apple's CoreML and Vision frameworks.
 - **Cloud Analysis:** Advanced cosmetic metrics (wrinkles, eyebags, pigmentation, and hydration) are analyzed using Google Gemini API (Cloud VLM). This requires an active internet connection and transmits securely cropped face images for real-time analysis.
 
@@ -28,24 +28,24 @@ Scan images and analysis results (scores and dates) are saved locally on your de
 
 ## Online Content
 
-SkinCare may connect to Supabase to fetch:
+Skinner may connect to Supabase to fetch:
 
 - Skincare articles
 - Product catalog information
 - Product recommendations
 - Routine-related content
 
-These requests are used to display app content. SkinCare should not send captured face images to Supabase.
+These requests are used to display app content. Skinner should not send captured face images to Supabase.
 
 ## Purchases and Subscriptions
 
-SkinCare may offer optional paid subscriptions. Purchases are processed by Apple. Subscription status may be checked through RevenueCat so the app can unlock paid features.
+Skinner may offer optional paid subscriptions. Purchases are processed by Apple. Subscription status may be checked through RevenueCat so the app can unlock paid features.
 
 We do not receive your full payment card information.
 
 ## Medical Disclaimer
 
-SkinCare does not provide medical diagnosis, medical treatment, or professional medical advice. Analysis results are for informational and cosmetic tracking purposes only.
+Skinner does not provide medical diagnosis, medical treatment, or professional medical advice. Analysis results are for informational and cosmetic tracking purposes only.
 
 If you have a medical concern, skin disease, pain, rapidly changing symptoms, or an urgent health issue, consult a qualified healthcare professional.
 
@@ -63,7 +63,7 @@ Subscription records are retained by Apple and RevenueCat according to their pol
 
 ## Children's Privacy
 
-SkinCare is not intended for children under 13. If you believe a child has provided personal information, contact us so we can help address the issue.
+Skinner is not intended for children under 13. If you believe a child has provided personal information, contact us so we can help address the issue.
 
 ## Your Choices
 
