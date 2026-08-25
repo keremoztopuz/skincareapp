@@ -96,6 +96,12 @@ struct ScoreRing: View {
                 progress = min(max(score, 0), 100)
             }
         }
+        // Without this a reused ring keeps showing the previous score.
+        .onChange(of: score) { _, newScore in
+            withAnimation(.easeOut(duration: 0.6)) {
+                progress = min(max(newScore, 0), 100)
+            }
+        }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text("\(Int(score)) /100, \(OverallBand(score: score).localizedTitle)"))
     }
