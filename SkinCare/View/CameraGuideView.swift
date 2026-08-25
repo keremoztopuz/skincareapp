@@ -16,10 +16,12 @@ struct CameraGuideView: View {
         VStack(spacing: 0) {
             // Scrolls only when the guidance is taller than the screen; the
             // Next button stays pinned below it either way.
+            GeometryReader { proxy in
             ScrollView {
             VStack(spacing: 12) {
+                Spacer(minLength: 8)
+
                 BrandCircleIcon(systemImage: "camera.fill", size: 80, animated: true)
-                    .padding(.top, 8)
 
                 Text(NSLocalizedString("camera_guidelines", comment: ""))
                     .font(.scaled(size: 28, weight: .bold))
@@ -94,10 +96,13 @@ struct CameraGuideView: View {
                 .padding(.top, 8)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, 16)
+
+                Spacer(minLength: 16)
             }
-            .padding(.bottom, 16)
+            .frame(minHeight: proxy.size.height)
             }
             .scrollBounceBehavior(.basedOnSize)
+            }
 
             Button(action: {
                 hasSeenCameraGuide = true
