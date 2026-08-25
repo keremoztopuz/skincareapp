@@ -1,4 +1,4 @@
-# SkinCare App Store Release Checklist
+# Skinner App Store Release Checklist
 
 Bu dosya App Store'a cikis icin teknik, hesap, gizlilik ve icerik hazirliklarini takip etmek icindir.
 
