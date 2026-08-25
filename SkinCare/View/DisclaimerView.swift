@@ -13,7 +13,12 @@ struct DisclaimerView: View {
             Color.brandBackground.ignoresSafeArea()
 
             VStack(spacing: 0) {
-                Spacer()
+                // The notice scrolls when it is taller than the screen; the
+                // consent checkbox and Continue button stay pinned below so
+                // they can never be pushed out of reach.
+                ScrollView {
+                VStack(spacing: 0) {
+                Spacer(minLength: 12)
 
                 ZStack {
                     Circle()
@@ -72,7 +77,10 @@ struct DisclaimerView: View {
                 }
                 .scaleEffect(contentScale)
 
-                Spacer()
+                Spacer(minLength: 20)
+                }
+                }
+                .scrollBounceBehavior(.basedOnSize)
 
                 Button {
                     withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
