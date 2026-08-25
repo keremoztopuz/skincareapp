@@ -15,24 +15,32 @@ class ResultsViewModel: ObservableObject {
     @Published var recommendProduct: [Product] = []
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
-    
-    init(record: AnalysisRecord?) {
+
+    /// True when the screen shows a stored record from history. Routine
+    /// suggestions belong to a fresh scan only — regenerating them on every
+    /// history visit re-creates suggestion rows and inflates the badge on
+    /// Home.
+    private let isHistorical: Bool
+
+    init(record: AnalysisRecord?, isHistorical: Bool = false) {
         self.record = record
+        self.isHistorical = isHistorical
         Task {
             await generateRecommendations()
         }
     }
-    
+
     //MARK: Personalized recommendations algorithm
-    
+
     @MainActor
     func generateRecommendations() async {
         guard let condition = record?.condition else {
             recommendation = [String(localized: "recommendation_keep_hydrated")]
-            // Default products if no condition
+            // No record, no products: leave isLoading false so the view can
+            // show its empty state instead of a spinner that never resolves.
             return
         }
-        
+
         isLoading = true
         
         // simple text recommendation logic (could also be in Supabase)
@@ -54,7 +62,7 @@ class ResultsViewModel: ObservableObject {
             self.errorMessage = AppStrings.internetConnectionRequired
         }
 
-        if let record = self.record {
+        if let record = self.record, !isHistorical {
             let skinType = LocalPersistenceManager.shared.fetchUserProfile()?.skinType ?? SkinType.normal.rawValue
             let suggestions = await RoutineEngine.shared.generateRoutine(from: record, skinType: skinType)
             if !suggestions.isEmpty {
