@@ -51,8 +51,9 @@ private func resetAppFlowDefaults() {
     #expect(vm.currentPage == 1)
 }
 
-@Test func testRecentsViewModelMergeSort() {
+@Test func testAnalysisRecordsFetchNewestFirst() throws {
     let context = PersistenceController(inMemory: true).container.viewContext
+    let manager = LocalPersistenceManager(context: context)
 
     let record1 = AnalysisRecord(context: context)
     record1.date = Date().addingTimeInterval(-86400 * 5)
@@ -61,15 +62,12 @@ private func resetAppFlowDefaults() {
     let record3 = AnalysisRecord(context: context)
     record3.date = Date().addingTimeInterval(-86400 * 10)
 
-    let records = [record1, record2, record3]
+    try context.save()
 
-    let vm = RecentsViewModel()
-    let sorted = vm.mergeSort(records)
+    let sorted = manager.fetchAnalysisRecords()
 
     #expect(sorted.first == record2)
     #expect(sorted.last == record3)
-
-    context.rollback()
 }
 
 @Test @MainActor func testResultsViewModelRecommendations() async {
