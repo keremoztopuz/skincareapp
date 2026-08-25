@@ -5,6 +5,11 @@ internal import Combine
 
 class SubscriptionManager: ObservableObject {
     static let shared = SubscriptionManager()
+
+    /// Must match the entitlement identifier in the RevenueCat dashboard.
+    /// Both the monthly subscription and the lifetime purchase unlock it.
+    static let proEntitlementID = "skanner_pro"
+
     private init() {
         checkSubscriptionStatus()
         NotificationCenter.default.addObserver(
@@ -23,7 +28,7 @@ class SubscriptionManager: ObservableObject {
         Purchases.shared.getCustomerInfo { info, _ in
             guard let info = info else { return }
             DispatchQueue.main.async {
-                let hasEntitlement = info.entitlements["pro"]?.isActive == true
+                let hasEntitlement = info.entitlements[Self.proEntitlementID]?.isActive == true
                 let hasActiveSubscription = !info.activeSubscriptions.isEmpty
                 self.isPremium = hasEntitlement || hasActiveSubscription
             }
