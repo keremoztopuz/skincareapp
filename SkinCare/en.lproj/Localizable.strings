@@ -333,6 +333,7 @@
 "delete_all_data_message" = "This permanently removes your profile, analysis history, and routine from this device.";
 "version" = "Version";
 "restore_no_subscription" = "No active subscription was found to restore.";
+"purchase_pending_message" = "Your purchase is awaiting confirmation. Pro will unlock automatically once it is approved.";
 
 /* Profile stats */
 "stat_total_analyses" = "Analyses";
@@ -352,4 +353,7 @@
 
 /* Free trial (shown only when the App Store offers one) */
 "start_free_trial_%lld_days" = "Start %lld-Day Free Trial";
+"start_free_trial_%lld_weeks" = "Start %lld-Week Free Trial";
+"start_free_trial_%lld_months" = "Start %lld-Month Free Trial";
+"start_free_trial_%lld_years" = "Start %lld-Year Free Trial";
 "get_pro" = "Get Pro";

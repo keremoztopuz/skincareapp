@@ -286,6 +286,7 @@
 "delete_all_data_message" = "Profiliniz, analiz geçmişiniz ve rutininiz bu cihazdan kalıcı olarak silinir.";
 "version" = "Sürüm";
 "restore_no_subscription" = "Geri yüklenecek aktif bir abonelik bulunamadı.";
+"purchase_pending_message" = "Satın alma onay bekliyor. Onaylandığında Pro otomatik olarak açılacak.";
 
 /* Profil istatistikleri */
 "stat_total_analyses" = "Analiz";
@@ -305,4 +306,7 @@
 
 /* Ücretsiz deneme (yalnızca App Store sunduğunda gösterilir) */
 "start_free_trial_%lld_days" = "%lld Günlük Ücretsiz Denemeyi Başlat";
+"start_free_trial_%lld_weeks" = "%lld Haftalık Ücretsiz Denemeyi Başlat";
+"start_free_trial_%lld_months" = "%lld Aylık Ücretsiz Denemeyi Başlat";
+"start_free_trial_%lld_years" = "%lld Yıllık Ücretsiz Denemeyi Başlat";
 "get_pro" = "Pro'ya Geç";
