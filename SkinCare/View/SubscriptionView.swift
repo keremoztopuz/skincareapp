@@ -42,11 +42,14 @@ struct SubscriptionView: View {
     }
 
     var body: some View {
-        GeometryReader { geo in
-            let outerSize = geo.size.width * 0.20
+        ZStack {
+            // Outside the GeometryReader so the fill always reaches the
+            // status bar, whatever the content height turns out to be.
+            Color.brandBackground.ignoresSafeArea()
 
-            ZStack {
-                Color.brandBackground.ignoresSafeArea()
+            GeometryReader { geo in
+                let m = Metrics.fitting(height: geo.size.height)
+                let outerSize = geo.size.width * m.logoRatio
 
                 VStack(spacing: 0) {
 
@@ -59,19 +62,21 @@ struct SubscriptionView: View {
                             }
                             loadPrices()
                         }
-                    .padding(.top, 12)
+                    .padding(.top, m.topPadding)
 
                     // MARK: - Title
                         VStack(spacing: 8) {
                             Text(NSLocalizedString("unlock_premium", comment: ""))
-                                .font(.scaled(size: 26, weight: .bold))
+                                .font(.scaled(size: m.titleSize, weight: .bold))
                                 .foregroundColor(.brandText)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.7)
 
                         }
                     .padding(.top, 6)
 
                     // MARK: - Plan Cards
-                    VStack(spacing: 10) {
+                    VStack(spacing: m.cardSpacing) {
                             planCard(
                                 plan: .free,
                                 title: AppStrings.free,
@@ -79,10 +84,10 @@ struct SubscriptionView: View {
                                 period: "",
                                 features: [
                                     ("camera.viewfinder", NSLocalizedString("5_analysis_per_month", comment: "")),
-                                    ("chart.bar", NSLocalizedString("basic_insights", comment: "")),
-                                    ("clock.arrow.circlepath", NSLocalizedString("last_5_scans", comment: ""))
+                                    ("chart.bar", NSLocalizedString("basic_insights", comment: ""))
                                 ],
-                                style: .plain
+                                style: .plain,
+                                metrics: m
                             )
                             .scaleEffect(freeCardAppeared ? 1.0 : 0.8)
                             .opacity(freeCardAppeared ? 1.0 : 0)
@@ -94,10 +99,10 @@ struct SubscriptionView: View {
                                 period: AppStrings.perMonth,
                                 features: [
                                     ("infinity", NSLocalizedString("unlimited_analysis", comment: "")),
-                                    ("chart.bar.fill", NSLocalizedString("all_conditions_detected", comment: "")),
                                     ("bag.fill", NSLocalizedString("full_recommendations", comment: ""))
                                 ],
-                                style: .featured
+                                style: .featured,
+                                metrics: m
                             )
                             .scaleEffect(proCardAppeared ? 1.0 : 0.8)
                             .opacity(proCardAppeared ? 1.0 : 0)
@@ -111,13 +116,14 @@ struct SubscriptionView: View {
                                     ("crown.fill", NSLocalizedString("everything_in_pro", comment: "")),
                                     ("checkmark.seal.fill", NSLocalizedString("pay_once_use_forever", comment: ""))
                                 ],
-                                style: .accented
+                                style: .accented,
+                                metrics: m
                             )
                             .scaleEffect(lifetimeCardAppeared ? 1.0 : 0.8)
                             .opacity(lifetimeCardAppeared ? 1.0 : 0)
                         }
                     .padding(.horizontal, 20)
-                    .padding(.top, 14)
+                    .padding(.top, m.cardsTopPadding)
                     .onAppear {
                             withAnimation(.spring(response: 0.4, dampingFraction: 0.6).delay(0.15)) {
                                 freeCardAppeared = true
@@ -130,10 +136,10 @@ struct SubscriptionView: View {
                             }
                     }
 
-                    Spacer(minLength: 8)
+                    Spacer(minLength: 4)
 
                     // MARK: - CTA Button
-                    VStack(spacing: 8) {
+                    VStack(spacing: m.ctaSpacing) {
                             Button(action: {
                                 switch selectedPlan {
                                 case .pro:
@@ -162,7 +168,7 @@ struct SubscriptionView: View {
                                 }
                                 .foregroundColor(.white)
                                 .frame(maxWidth: .infinity)
-                                .padding(.vertical, 15)
+                                .padding(.vertical, m.ctaVerticalPadding)
                                 .background(Color.brandPrimary)
                                 .cornerRadius(Radius.card)
                             }
@@ -191,17 +197,51 @@ struct SubscriptionView: View {
                             LegalFooter()
                         }
                     .padding(.horizontal, 20)
-                    .padding(.bottom, 12)
+                    .padding(.bottom, m.bottomPadding)
                 }
             }
-            .alert(AppStrings.purchaseError, isPresented: Binding(
-                get: { purchaseError != nil },
-                set: { if !$0 { purchaseError = nil } }
-            )) {
-                Button(AppStrings.ok, role: .cancel) {}
-            } message: {
-                Text(purchaseError ?? "")
+        }
+        .alert(AppStrings.purchaseError, isPresented: Binding(
+            get: { purchaseError != nil },
+            set: { if !$0 { purchaseError = nil } }
+        )) {
+            Button(AppStrings.ok, role: .cancel) {}
+        } message: {
+            Text(purchaseError ?? "")
+        }
+    }
+
+    // MARK: - Adaptive metrics
+    /// The screen never scrolls, so the layout tightens instead. Two steps are
+    /// enough: the roomy default, and a compact set for short screens
+    /// (iPhone SE and anything else under ~700pt of usable height).
+    private struct Metrics {
+        let logoRatio: CGFloat
+        let titleSize: CGFloat
+        let topPadding: CGFloat
+        let cardSpacing: CGFloat
+        let cardPadding: CGFloat
+        let cardsTopPadding: CGFloat
+        let featureSpacing: CGFloat
+        let ctaSpacing: CGFloat
+        let ctaVerticalPadding: CGFloat
+        let bottomPadding: CGFloat
+
+        static func fitting(height: CGFloat) -> Metrics {
+            if height < 700 {
+                return Metrics(
+                    logoRatio: 0.13, titleSize: 20, topPadding: 2,
+                    cardSpacing: 6, cardPadding: 10, cardsTopPadding: 6,
+                    featureSpacing: 6, ctaSpacing: 4, ctaVerticalPadding: 12,
+                    bottomPadding: 6
+                )
             }
+            return Metrics(
+                logoRatio: 0.16, titleSize: 22, topPadding: 8,
+                cardSpacing: 8, cardPadding: 12, cardsTopPadding: 10,
+                featureSpacing: 8, ctaSpacing: 8, ctaVerticalPadding: 15,
+                bottomPadding: 12
+            )
         }
     }
 
@@ -243,7 +283,7 @@ struct SubscriptionView: View {
     }
 
     // MARK: - Plan Card
-    private func planCard(plan: Plan, title: String, price: String, period: String, features: [(String, String)], style: CardStyle) -> some View {
+    private func planCard(plan: Plan, title: String, price: String, period: String, features: [(String, String)], style: CardStyle, metrics m: Metrics) -> some View {
         let isSelected = selectedPlan == plan
         let isFilled = style.isFilled
 
@@ -263,7 +303,7 @@ struct SubscriptionView: View {
                             if let badgeKey = style.badgeKey {
                                 Text(NSLocalizedString(badgeKey, comment: ""))
                                     .font(.scaled(size: 10, weight: .bold))
-                                    .foregroundColor(isFilled ? .brandPrimary : .white)
+                                    .foregroundColor(isFilled ? .brandPrimarySoft : .white)
                                     .padding(.horizontal, 8)
                                     .padding(.vertical, 3)
                                     .background(isFilled ? Color.white : Color.brandPrimary)
@@ -301,7 +341,7 @@ struct SubscriptionView: View {
                 Divider()
                     .padding(.vertical, 2)
 
-                VStack(spacing: 8) {
+                VStack(spacing: m.featureSpacing) {
                     ForEach(features, id: \.1) { icon, text in
                         HStack(spacing: 10) {
                             Image(systemName: icon)
@@ -319,22 +359,11 @@ struct SubscriptionView: View {
                         }
                     }
                 }
-
-                if isFilled {
-                    HStack {
-                        Spacer()
-                        Text(NSLocalizedString("free_trial_included", comment: ""))
-                            .font(.scaled(size: 12, weight: .medium))
-                            .foregroundColor(.white.opacity(0.8))
-                        Spacer()
-                    }
-                    .padding(.top, 2)
-                }
             }
-            .padding(14)
+            .padding(m.cardPadding)
             .background(
                 RoundedRectangle(cornerRadius: Radius.card)
-                    .fill(isFilled ? Color.brandPrimary : Color.white)
+                    .fill(isFilled ? Color.brandPrimarySoft : Color.white)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: Radius.card)
