@@ -17,12 +17,28 @@ struct SubscriptionView: View {
     @State private var lifetimeCardAppeared = false
     @State private var isPurchasing = false
     @State private var purchaseError: String?
-    @State private var proPriceText: String?
-    @State private var lifetimePriceText: String?
+    @State private var proPriceText: String = FallbackPrice.monthly
+    @State private var lifetimePriceText: String = FallbackPrice.lifetime
     @EnvironmentObject var appVM: ContentViewModel
 
     enum Plan {
         case free, pro, lifetime
+    }
+
+    /// Shown until StoreKit returns the storefront price (and if it never does).
+    /// Keep these in step with the App Store Connect price tiers — the live
+    /// price always wins once `loadPrices()` answers.
+    private enum FallbackPrice {
+        static var monthly: String { forCurrency(turkish: "₺199,99", usd: "$3.99", eur: "€4,99") }
+        static var lifetime: String { forCurrency(turkish: "₺899", usd: "$17.99", eur: "€19,99") }
+
+        private static func forCurrency(turkish: String, usd: String, eur: String) -> String {
+            switch Locale.current.currency?.identifier {
+            case "TRY": return turkish
+            case "EUR": return eur
+            default: return usd
+            }
+        }
     }
 
     var body: some View {
@@ -74,8 +90,8 @@ struct SubscriptionView: View {
                             planCard(
                                 plan: .pro,
                                 title: AppStrings.pro,
-                                price: proPriceText ?? "",
-                                period: proPriceText == nil ? "" : AppStrings.perMonth,
+                                price: proPriceText,
+                                period: AppStrings.perMonth,
                                 features: [
                                     ("infinity", NSLocalizedString("unlimited_analysis", comment: "")),
                                     ("chart.bar.fill", NSLocalizedString("all_conditions_detected", comment: "")),
@@ -89,8 +105,8 @@ struct SubscriptionView: View {
                             planCard(
                                 plan: .lifetime,
                                 title: NSLocalizedString("lifetime_plan", comment: ""),
-                                price: lifetimePriceText ?? "",
-                                period: lifetimePriceText == nil ? "" : NSLocalizedString("one_time", comment: ""),
+                                price: lifetimePriceText,
+                                period: NSLocalizedString("one_time", comment: ""),
                                 features: [
                                     ("crown.fill", NSLocalizedString("everything_in_pro", comment: "")),
                                     ("checkmark.seal.fill", NSLocalizedString("pay_once_use_forever", comment: ""))
@@ -201,11 +217,9 @@ struct SubscriptionView: View {
     private var ctaCaption: String? {
         switch selectedPlan {
         case .pro:
-            guard let price = proPriceText else { return nil }
-            return String(format: NSLocalizedString("then_price_monthly_%@", comment: ""), price)
+            return String(format: NSLocalizedString("then_price_monthly_%@", comment: ""), proPriceText)
         case .lifetime:
-            guard let price = lifetimePriceText else { return nil }
-            return String(format: NSLocalizedString("one_time_price_%@", comment: ""), price)
+            return String(format: NSLocalizedString("one_time_price_%@", comment: ""), lifetimePriceText)
         case .free:
             return nil
         }
@@ -351,8 +365,12 @@ struct SubscriptionView: View {
             let monthly = current.monthly ?? current.availablePackages.first
             let lifetime = current.lifetime
             DispatchQueue.main.async {
-                proPriceText = monthly?.storeProduct.localizedPriceString
-                lifetimePriceText = lifetime?.storeProduct.localizedPriceString
+                if let live = monthly?.storeProduct.localizedPriceString {
+                    proPriceText = live
+                }
+                if let live = lifetime?.storeProduct.localizedPriceString {
+                    lifetimePriceText = live
+                }
             }
         }
     }
