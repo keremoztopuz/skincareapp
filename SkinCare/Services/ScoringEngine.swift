@@ -44,6 +44,13 @@ class ScoringEngine {
         let pigmentationWeight: Double = 0.50
         let wrinkleWeight: Double = 0.35
         let eyebagWeight: Double = 0.25
+        // Dehydration counts toward overall too — without it a severely
+        // dehydrated but otherwise clear face scored ~98 while its dryness
+        // bar read ~70. Weighted below the primary conditions, consistent
+        // with hydration's 0.7 share of the dryness bar. The 0.5 default
+        // (hydration-unmeasured legacy records) contributes a small constant
+        // that the exponential absorbs.
+        let dehydrationWeight: Double = 0.40
 
         // Floor keeps a perfect scan at ~98 instead of a fake 100.
         let load = 0.02
@@ -52,6 +59,7 @@ class ScoringEngine {
             + pigmentationWeight * pigmentation
             + wrinkleWeight * wrinkles
             + eyebagWeight * eyebags
+            + dehydrationWeight * (1.0 - hydration)
         let overallScore = clamp(100.0 * exp(-load))
 
         // MARK: Inflammation (higher = worse)
