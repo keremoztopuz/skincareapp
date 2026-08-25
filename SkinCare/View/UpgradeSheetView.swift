@@ -166,7 +166,7 @@ struct UpgradeSheetView: View {
                     Circle().fill(Color.white).frame(width: 80, height: 80)
                     Image(systemName: "checkmark.circle.fill")
                         .font(.scaled(size: 52))
-                        .foregroundColor(.brandPositive)
+                        .foregroundColor(.brandPrimary)
                 }
                 Text(NSLocalizedString("welcome_to_pro", comment: ""))
                     .font(.scaled(size: 22, weight: .bold))
@@ -222,7 +222,7 @@ struct UpgradeSheetView: View {
                     let entitled = info?.entitlements["pro"]?.isActive == true
                     if entitled || transaction != nil {
                         SubscriptionManager.shared.isPremium = true
-                        withAnimation { showSuccess = true }
+                        withAnimation(.spring(response: 0.4, dampingFraction: 0.6)) { showSuccess = true }
                         DispatchQueue.main.asyncAfter(deadline: .now() + 1.8) {
                             dismiss()
                         }
@@ -244,7 +244,7 @@ struct UpgradeSheetView: View {
                 }
                 if info?.entitlements["pro"]?.isActive == true {
                     SubscriptionManager.shared.isPremium = true
-                    withAnimation { showSuccess = true }
+                    withAnimation(.spring(response: 0.4, dampingFraction: 0.6)) { showSuccess = true }
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1.8) {
                         dismiss()
                     }
