@@ -14,9 +14,12 @@ struct CameraGuideView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            Spacer()
+            // Scrolls only when the guidance is taller than the screen; the
+            // Next button stays pinned below it either way.
+            ScrollView {
             VStack(spacing: 12) {
                 BrandCircleIcon(systemImage: "camera.fill", size: 80, animated: true)
+                    .padding(.top, 8)
 
                 Text(NSLocalizedString("camera_guidelines", comment: ""))
                     .font(.scaled(size: 28, weight: .bold))
@@ -48,7 +51,6 @@ struct CameraGuideView: View {
                                 guideImage("guidegood4")
                             }
                         }
-                        .frame(height: 166)
 
                         VStack(alignment: .leading, spacing: 16) {
                             BulletRow(text: NSLocalizedString("guide_do_position_face", comment: ""), icon: "checkmark.circle.fill")
@@ -79,7 +81,6 @@ struct CameraGuideView: View {
                                 guideImage("guidebad4")
                             }
                         }
-                        .frame(height: 166)
                         VStack(alignment: .leading, spacing: 16) {
                             BulletRow(text: NSLocalizedString("guide_dont_move", comment: ""), icon: "xmark.circle.fill")
                             BulletRow(text: NSLocalizedString("guide_dont_makeup", comment: ""), icon: "xmark.circle.fill")
@@ -94,8 +95,9 @@ struct CameraGuideView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, 16)
             }
-
-            Spacer()
+            .padding(.bottom, 16)
+            }
+            .scrollBounceBehavior(.basedOnSize)
 
             Button(action: {
                 hasSeenCameraGuide = true
@@ -110,14 +112,19 @@ struct CameraGuideView: View {
         .background(Color.brandBackground.ignoresSafeArea())
     }
 
+    /// Square thumbnail that divides the column width instead of claiming a
+    /// fixed 80pt — two of them plus spacing used to overflow the column on a
+    /// 375pt-wide phone.
     @ViewBuilder
     private func guideImage(_ name: String) -> some View {
-        Image(name)
-            .resizable()
-            .scaledToFill()
-            .frame(width: 80, height: 80)
-            .clipped()
-            .cornerRadius(Radius.small)
+        Color.clear
+            .aspectRatio(1, contentMode: .fit)
+            .overlay(
+                Image(name)
+                    .resizable()
+                    .scaledToFill()
+            )
+            .clipShape(RoundedRectangle(cornerRadius: Radius.small))
     }
 }
 
