@@ -218,6 +218,7 @@ struct RoutineView: View {
                     name: item.productName ?? "",
                     brand: item.productBrand,
                     description: nil,
+                    descriptionTr: nil,
                     imageUrl: item.productImageUrl,
                     productType: item.productType,
                     activeIngredients: nil,
