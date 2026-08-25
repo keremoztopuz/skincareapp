@@ -35,7 +35,8 @@ class ProfileSetupViewModel: ObservableObject {
         }
     }
     @Published var didFinish = false
-    
+    @Published var showSaveError = false
+
     @Published var showNameWarning = false
     @Published var showGenderWarning = false
     @Published var showSkinTypeWarning = false
@@ -59,13 +60,21 @@ class ProfileSetupViewModel: ObservableObject {
     }
 
     func completeProfile() {
-        persistenceManager.saveUserProfile(
-            name: name,
+        // Validation already trims; persist the trimmed form too so the
+        // greeting never carries stray whitespace.
+        let saved = persistenceManager.saveUserProfile(
+            name: name.trimmingCharacters(in: .whitespacesAndNewlines),
             skinType: skinType?.rawValue ?? "Normal",
             ageRange: String(age),
             gender: gender?.rawValue ?? "Prefer not to say",
             knownIssues: ""
         )
-        didFinish = true
+        // Advancing without a stored profile would leave every downstream
+        // personalization reading an empty profile.
+        if saved {
+            didFinish = true
+        } else {
+            showSaveError = true
+        }
     }
 }
