@@ -273,3 +273,10 @@
 "delete_all_data_message" = "Tu perfil, tu historial de análisis y tu rutina se eliminarán permanentemente de este dispositivo.";
 "version" = "Versión";
 "restore_no_subscription" = "No se encontró ninguna suscripción activa para restaurar.";
+
+/* Estadísticas del perfil */
+"stat_total_analyses" = "Análisis";
+"stat_latest_score" = "Última puntuación";
+"stat_member_since" = "Miembro desde";
+"routine_streak" = "Racha de rutina";
+"routine_streak_days_%lld" = "%lld días";

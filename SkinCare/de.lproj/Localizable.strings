@@ -273,3 +273,10 @@
 "delete_all_data_message" = "Ihr Profil, Ihr Analyseverlauf und Ihre Routine werden dauerhaft von diesem Gerät entfernt.";
 "version" = "Version";
 "restore_no_subscription" = "Es wurde kein aktives Abonnement zum Wiederherstellen gefunden.";
+
+/* Profilstatistiken */
+"stat_total_analyses" = "Analysen";
+"stat_latest_score" = "Letzter Score";
+"stat_member_since" = "Mitglied seit";
+"routine_streak" = "Routine-Serie";
+"routine_streak_days_%lld" = "%lld Tage";

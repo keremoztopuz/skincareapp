@@ -335,3 +335,10 @@
 "delete_all_data_message" = "This permanently removes your profile, analysis history, and routine from this device.";
 "version" = "Version";
 "restore_no_subscription" = "No active subscription was found to restore.";
+
+/* Profile stats */
+"stat_total_analyses" = "Analyses";
+"stat_latest_score" = "Latest Score";
+"stat_member_since" = "Member Since";
+"routine_streak" = "Routine Streak";
+"routine_streak_days_%lld" = "%lld days";

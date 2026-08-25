@@ -288,3 +288,10 @@
 "delete_all_data_message" = "Profiliniz, analiz geçmişiniz ve rutininiz bu cihazdan kalıcı olarak silinir.";
 "version" = "Sürüm";
 "restore_no_subscription" = "Geri yüklenecek aktif bir abonelik bulunamadı.";
+
+/* Profil istatistikleri */
+"stat_total_analyses" = "Analiz";
+"stat_latest_score" = "Son Skor";
+"stat_member_since" = "Üyelik";
+"routine_streak" = "Rutin Serisi";
+"routine_streak_days_%lld" = "%lld gün";

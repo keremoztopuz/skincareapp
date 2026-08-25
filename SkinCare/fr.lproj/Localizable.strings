@@ -273,3 +273,10 @@
 "delete_all_data_message" = "Votre profil, votre historique d'analyses et votre routine seront définitivement supprimés de cet appareil.";
 "version" = "Version";
 "restore_no_subscription" = "Aucun abonnement actif à restaurer n'a été trouvé.";
+
+/* Statistiques du profil */
+"stat_total_analyses" = "Analyses";
+"stat_latest_score" = "Dernier score";
+"stat_member_since" = "Membre depuis";
+"routine_streak" = "Série de routine";
+"routine_streak_days_%lld" = "%lld jours";
