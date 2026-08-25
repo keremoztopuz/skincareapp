@@ -36,8 +36,33 @@ final class AnalysisService {
     private let session: URLSession = {
         let configuration = URLSessionConfiguration.default
         configuration.timeoutIntervalForRequest = 30
+        // The request timeout resets on every byte of progress, so a
+        // trickling upload never trips it; without a resource ceiling the
+        // system default is seven days of "Analyzing".
+        configuration.timeoutIntervalForResource = 120
         return URLSession(configuration: configuration)
     }()
+
+    /// The proxy rejects bodies over 4 MiB and downscales to 768px anyway,
+    /// so anything beyond this edge length is wasted upload on cellular.
+    private static let maxUploadEdge: CGFloat = 1024
+
+    private func uploadJPEG(from image: UIImage) -> Data? {
+        let scaled: UIImage
+        let longestEdge = max(image.size.width, image.size.height)
+        if longestEdge > Self.maxUploadEdge {
+            let ratio = Self.maxUploadEdge / longestEdge
+            let targetSize = CGSize(width: image.size.width * ratio, height: image.size.height * ratio)
+            let format = UIGraphicsImageRendererFormat.default()
+            format.scale = 1
+            scaled = UIGraphicsImageRenderer(size: targetSize, format: format).image { _ in
+                image.draw(in: CGRect(origin: .zero, size: targetSize))
+            }
+        } else {
+            scaled = image
+        }
+        return scaled.jpegData(compressionQuality: 0.82)
+    }
 
     private struct Envelope: Decodable {
         let scores: AnalysisScores
@@ -52,7 +77,7 @@ final class AnalysisService {
     /// upstream failures internally, and retrying here would double-spend
     /// the daily budget on every flake.
     func analyze(image: UIImage, skinType: String?, age: Int?) async throws -> AnalysisScores {
-        guard let jpeg = image.jpegData(compressionQuality: 0.82) else {
+        guard let jpeg = uploadJPEG(from: image), jpeg.count < 4 * 1024 * 1024 else {
             throw AnalysisError.encodingFailed
         }
 
