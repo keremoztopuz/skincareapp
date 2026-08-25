@@ -443,13 +443,13 @@ struct ArticleCard: View {
             .frame(width: 258, height: 148)
 
             VStack(alignment: .leading, spacing: 4){
-                Text(article.title)
+                Text(article.localizedTitle)
                     .font(.scaled(size: 15, weight: .bold))
                     .foregroundColor(.brandText)
                     .lineLimit(2)
                     .minimumScaleFactor(0.85)
 
-                Text(article.content ?? "")
+                Text(article.localizedContent ?? "")
                     .font(.scaled(size: 13, weight: .regular))
                     .foregroundColor(.gray)
                     .lineLimit(2)
