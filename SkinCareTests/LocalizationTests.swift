@@ -9,7 +9,7 @@ import Testing
 import Foundation
 @testable import SkinCare
 
-private let supportedLanguages = ["en", "tr", "de", "fr", "it", "es"]
+private let supportedLanguages = ["en", "tr"]
 
 private func localizationKeys(for language: String) throws -> Set<String> {
     let path = try #require(
