@@ -49,16 +49,27 @@ struct OnBoardingPageView: View {
                                 animationView.setValueProvider(white, keypath: AnimationKeypath(keypath: "**.Color"))
                                 animationView.animationSpeed = page.lottieSpeed
                                 if page.lottieRepeatDelay > 0 {
+                                    // configure re-runs on every SwiftUI
+                                    // update; without the tag guard each
+                                    // re-render spawned another loop chain
+                                    // and the animation visibly sped up.
+                                    guard animationView.tag != 0xB00 else { return }
+                                    animationView.tag = 0xB00
                                     let delay = page.lottieRepeatDelay
-                                    func playLoop() {
-                                        animationView.play { completed in
+                                    // Weak throughout: a strong capture would
+                                    // keep the view (and the timer chain)
+                                    // alive for the whole app lifetime after
+                                    // onboarding is dismissed.
+                                    func playLoop(_ view: LottieAnimationView?) {
+                                        guard let view else { return }
+                                        view.play { [weak view] completed in
                                             guard completed else { return }
-                                            DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
-                                                playLoop()
+                                            DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak view] in
+                                                playLoop(view)
                                             }
                                         }
                                     }
-                                    playLoop()
+                                    playLoop(animationView)
                                 }
                             }
                             .frame(width: innerSize * 0.78, height: innerSize * 0.78)
@@ -94,7 +105,19 @@ struct OnBoardingPageView: View {
             }
             .frame(width: geo.size.width)
         }
-        .onAppear { trigger() }
+        .onAppear {
+            // TabView pre-renders neighbouring pages; only the visible page
+            // animates in. Pre-rendered neighbours settle at full scale so a
+            // fast swipe can never land on a page stuck at scale 0.
+            if index == currentPage {
+                trigger()
+            } else {
+                isPulsing = true
+                iconScale = 1
+                titleScale = 1
+                descScale = 1
+            }
+        }
         .onChange(of: currentPage) { _, newPage in
             if newPage == index { trigger() }
         }
