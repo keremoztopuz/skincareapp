@@ -132,7 +132,7 @@ struct ProductDetailContent: View {
                     .font(.scaled(size: 18, weight: .bold))
                     .foregroundColor(.brandText)
 
-                Text(product.description ?? AppStrings.noProductDescription)
+                Text(product.localizedDescription ?? AppStrings.noProductDescription)
                     .font(.scaled(size: 16))
                     .foregroundColor(.gray)
                     .lineSpacing(4)
@@ -188,7 +188,7 @@ struct ArticleDetailContent: View {
             }
             .cardShadow()
 
-            Text(article.title)
+            Text(article.localizedTitle)
                 .font(.scaled(size: 32, weight: .bold))
                 .foregroundColor(.brandText)
             
@@ -217,7 +217,7 @@ struct ArticleDetailContent: View {
                     .cornerRadius(Radius.small)
             }
 
-            Text(article.content ?? "")
+            Text(article.localizedContent ?? "")
                 .font(.scaled(size: 16))
                 .foregroundColor(Color.brandText.opacity(0.8))
                 .lineSpacing(6)
@@ -231,6 +231,7 @@ struct ArticleDetailContent: View {
         name: "Hydrating Serum",
         brand: "GlowLab",
         description: "A lightweight, fast-absorbing serum.",
+        descriptionTr: "Hafif, hızlı emilen bir serum.",
         imageUrl: nil,
         productType: "Serum",
         activeIngredients: "Hyaluronic Acid",
@@ -246,7 +247,9 @@ struct ArticleDetailContent: View {
     DetailView(type: .news(Articles(
         id: UUID(),
         title: "10 Essential Tips for Winter Skin Care",
+        titleTr: "Kış Cildi İçin 10 Temel İpucu",
         content: "Winter can be harsh on your skin...",
+        contentTr: "Kış cildiniz için zorlayıcı olabilir...",
         imageUrl: nil,
         readTime: 5,
         articleType: "Tips",
