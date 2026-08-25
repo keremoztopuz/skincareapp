@@ -51,10 +51,8 @@ class HomeViewModel: ObservableObject {
     }
 
     init() {
-        fetchNames()
-        fetchStatistics()
-        fetchRoutineSummary()
-
+        // Local data is loaded from the view's onAppear, which also fires on
+        // first appearance — fetching here too just doubled the work.
         Task {
             await fetchAllCloudData()
         }
