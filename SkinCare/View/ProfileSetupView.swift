@@ -98,6 +98,9 @@ struct ProfileSetupView: View {
                 appVM.completeProfile()
             }
         }
+        .alert(NSLocalizedString("profile_save_error", comment: ""), isPresented: $vm.showSaveError) {
+            Button(AppStrings.ok, role: .cancel) {}
+        }
     }
     // MARK: age selection page
     struct AgePageView: View {
