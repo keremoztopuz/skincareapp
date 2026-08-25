@@ -16,6 +16,12 @@ class MoreViewModel: ObservableObject {
     @Published var userGender: String = ""
     @Published var userSkinType: String = ""
 
+    // Profile stats
+    @Published var totalAnalyses: Int = 0
+    @Published var latestScore: Int?
+    @Published var memberSince: String = "-"
+    @Published var routineStreak: Int = 0
+
     init() { loadProfile() }
 
     func loadProfile() {
@@ -24,5 +30,52 @@ class MoreViewModel: ObservableObject {
         userAge     = profile?.ageRange   ?? "-"
         userGender  = profile?.gender.map(AppStrings.localizedGender) ?? "-"
         userSkinType = profile?.skinType.map(AppStrings.localizedSkinType) ?? "-"
+        loadStats(profile: profile)
+    }
+
+    private func loadStats(profile: UserProfile?) {
+        let records = LocalPersistenceManager.shared.fetchAnalysisRecords()
+        totalAnalyses = records.count
+        latestScore = records
+            .sorted { ($0.date ?? .distantPast) < ($1.date ?? .distantPast) }
+            .last
+            .map { Int($0.overallScore) }
+
+        if let created = profile?.createdAt {
+            let formatter = DateFormatter()
+            formatter.setLocalizedDateFormatFromTemplate("MMMyyyy")
+            memberSince = formatter.string(from: created)
+        } else {
+            memberSince = "-"
+        }
+
+        routineStreak = computeRoutineStreak()
+    }
+
+    /// Consecutive days (ending today, or yesterday if today has no ticks yet)
+    /// with at least one completed routine step. The completion store only
+    /// keeps 7 days of history, so the streak naturally caps at 7.
+    private func computeRoutineStreak() -> Int {
+        let store = RoutineCompletionStore.shared
+        let calendar = Calendar.current
+
+        func hasTicks(on date: Date) -> Bool {
+            !store.completedIDs(time: "morning", on: date).isEmpty ||
+            !store.completedIDs(time: "evening", on: date).isEmpty
+        }
+
+        var day = Date()
+        if !hasTicks(on: day) {
+            guard let yesterday = calendar.date(byAdding: .day, value: -1, to: day) else { return 0 }
+            day = yesterday
+        }
+
+        var streak = 0
+        while hasTicks(on: day), streak < 7 {
+            streak += 1
+            guard let previous = calendar.date(byAdding: .day, value: -1, to: day) else { break }
+            day = previous
+        }
+        return streak
     }
 }
