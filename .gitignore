@@ -36,3 +36,4 @@ SkinCare/Model/SupabaseConfig.swift
 *.swo
 *~
 SkinCare/Model/AnalysisConfig.swift
+SkinCare/Model/RevenueCatConfig.swift
