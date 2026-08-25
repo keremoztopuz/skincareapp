@@ -16,10 +16,16 @@ class LocalPersistenceManager {
         self.context = context
     }
     // User Profile
-    func saveUserProfile(name: String, skinType: String, ageRange: String, gender: String, knownIssues: String) {
+    /// Returns false when the Core Data save fails, so callers can refuse to
+    /// advance a flow that depends on the profile actually existing.
+    @discardableResult
+    func saveUserProfile(name: String, skinType: String, ageRange: String, gender: String, knownIssues: String) -> Bool {
         let request: NSFetchRequest<UserProfile> = UserProfile.fetchRequest()
+        // Same ordering as fetchUserProfile: if duplicate rows ever exist,
+        // reads and writes must land on the same (newest) profile.
+        request.sortDescriptors = [NSSortDescriptor(key: "createdAt", ascending: false)]
         request.fetchLimit = 1
-        
+
         let profile: UserProfile
         if let existingProfile = try? context.fetch(request).first {
             profile = existingProfile
@@ -36,13 +42,19 @@ class LocalPersistenceManager {
 
         do {
             try context.save()
+            return true
         } catch {
             print("Save error: \(error)")
+            context.rollback()
+            return false
         }
     }
     // Analysis Records
+    /// Returns nil when the Core Data save fails, so callers can tell a
+    /// persisted record from one that would vanish on the next launch —
+    /// a failed save must not burn a scan.
     @discardableResult
-    func saveAnalysisRecord(condition: String, confidence: Double, wrinkleScore: Double, eyebagScore: Double, pigmentationScore: Double, date: Date, drynessScore: Double, inflammationScore: Double, oilinessScore: Double, overallScore: Double, userFeedback: Bool, acneScore: Double, eczemaScore: Double, hydrationScore: Double = 0, imageData: Data?) -> AnalysisRecord {
+    func saveAnalysisRecord(condition: String, confidence: Double, wrinkleScore: Double, eyebagScore: Double, pigmentationScore: Double, date: Date, drynessScore: Double, inflammationScore: Double, oilinessScore: Double, overallScore: Double, userFeedback: Bool, acneScore: Double, eczemaScore: Double, hydrationScore: Double = 0, imageData: Data?) -> AnalysisRecord? {
         let record = AnalysisRecord(context: context)
         record.condition = condition
         record.confidence = confidence
@@ -67,7 +79,8 @@ class LocalPersistenceManager {
             return record
         } catch {
             print("Save error: \(error)")
-            return record
+            context.rollback()
+            return nil
         }
     }
     // MARK: - Score schema migration
@@ -84,9 +97,10 @@ class LocalPersistenceManager {
         let engine = ScoringEngine()
 
         for record in fetchAnalysisRecords() {
-            // Very old records stored raw scores on a 0-1 scale; the ML path
-            // clamps to [1, 99], so genuine 0-100 records always have a raw
-            // maximum of at least 1.0.
+            // Very old records stored raw scores on a 0-1 scale. The
+            // heuristic can only ever see pre-migration records: this runs
+            // at launch, before any cloud scan can be taken, and the version
+            // flag stops it from touching records created afterwards.
             let rawMax = max(record.acneScore, record.eczemaScore,
                              record.pigmentationScore, record.wrinkleScore)
             let scale: Double = rawMax <= 1.0 ? 1.0 : 100.0
