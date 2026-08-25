@@ -83,14 +83,19 @@ class ContentViewModel: ObservableObject {
         hasAcceptedDisclaimer = true
     }
     
+    /// The loading screens do no real work; they only pace the transition.
+    /// 1.5s reads as intentional without holding the user (a paying user
+    /// especially) for 3.5s per step.
+    private let loadingDuration: TimeInterval = 1.5
+
     func completeProfile() {
         hasCompletedProfile = true
         showLoading = true
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3.5) { [weak self] in
+        DispatchQueue.main.asyncAfter(deadline: .now() + loadingDuration) { [weak self] in
             self?.showLoading = false
         }
     }
-    
+
     func completePurchaseStep(isPremium: Bool) {
         // Only grant premium here; never revoke it. The free path must not
         // overwrite an entitlement RevenueCat may already have restored.
@@ -98,9 +103,12 @@ class ContentViewModel: ObservableObject {
             SubscriptionManager.shared.isPremium = true
         }
         self.showLoading = true
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3.5) { [weak self] in
-            self?.showLoading = false
+        DispatchQueue.main.asyncAfter(deadline: .now() + loadingDuration) { [weak self] in
+            // Order matters: the subscription flag must flip before (or with)
+            // the loading flag, or currentState briefly re-resolves to
+            // .subscription and the paywall flashes back.
             self?.hasCompletedSubscription = true
+            self?.showLoading = false
         }
     }
 }
