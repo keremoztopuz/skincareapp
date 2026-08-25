@@ -13,7 +13,7 @@ class RoutineViewModel: ObservableObject {
         didSet { refreshCompletions() }
     }
     @Published var addingStepOrder: Int16 = 0
-    @Published var addingProductType: String = ""
+    @Published var addingProductTypes: [String] = []
     @Published var completedIDs: Set<UUID> = []
 
     private let manager = LocalPersistenceManager.shared
