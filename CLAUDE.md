@@ -8,7 +8,7 @@
 - **Commit Messages:** Do not use any automated authoring tool mentions.
 
 ## Project Overview
-- **App:** SkinCare — iOS SwiftUI skin analysis app
+- **App:** Skinner — iOS SwiftUI skin analysis app (Xcode project/target and bundle ID are still named SkinCare)
 - **Team:** Berat Kerem Ozttopuz + Zeynep Aslan
 - **Min iOS:** 18.0+
 - **Pattern:** MVVM
