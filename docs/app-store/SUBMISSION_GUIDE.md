@@ -7,20 +7,17 @@ göreceğin yazıyor.
 
 | # | İş | Nerede | Durum |
 | --- | --- | --- | --- |
-| 1 | `com.keremoztopuz.skincare.pro.weekly` ve `...pro.lifetime` ürünlerini `skanner_pro` entitlement'ına bağla | RevenueCat → Entitlements | **Açık — kritik** |
+| 1 | `skanner_pro` entitlement'ına weekly + lifetime bağlı | RevenueCat → Entitlements | Tamam (26 Ağu 10:38) |
 | 2 | Boş kalan `$rc_monthly` paketini `default` offering'den sil | RevenueCat → Offerings | Açık (kozmetik) |
 | 3 | Haftalık ürünün review screenshot'ını kontrol et (13 KB'lık bir dosya görünüyor) | App Store Connect → Subscriptions | Açık |
 | 4 | App Store screenshot'ları (6.9") | ASC → App Store sekmesi | Hazırlanıyor |
 | 5 | Build yükle (Archive → Distribute) | Xcode Organizer | Açık |
 
-**1. madde olmadan başvurma.** Entitlement'a bağlı ürün yoksa satın alma
-tamamlanır, para çekilir ve uygulama Pro'yu açmaz. Apple bunu 3.1.1 /
-"in-app purchase not working" gerekçesiyle reddeder.
-
-Yol: RevenueCat → Project `skanner` → Entitlements → `skanner_pro` →
-**Attach products** → `SkinCare Pro Weekly` + `Skincare Pro Lifetime` seç → Save.
-Ardından `Purchases.shared.getCustomerInfo` ile sandbox'ta bir satın alma
-deneyip `entitlements["skanner_pro"].isActive == true` görmelisin.
+Entitlement doğrulandı: `skanner_pro` (`entl44648f3a6c`) altında
+`SkinCare Pro Weekly` ve `Skincare Pro Lifetime` bağlı. Yine de ilk sandbox
+satın almasında `entitlements["skanner_pro"].isActive == true` geldiğini
+gör — entitlement'a bağlı ürün olmadan satın alma parayı alır, Pro'yu açmaz ve
+Apple bunu 3.1.1 ile reddeder.
 
 ## 1. Ürün durumu (doğrulandı)
 
@@ -28,7 +25,7 @@ deneyip `entitlements["skanner_pro"].isActive == true` görmelisin.
 | --- | --- | --- | --- | --- | --- | --- |
 | Weekly | `com.keremoztopuz.skincare.pro.weekly` | ONE_WEEK | ₺99,99 | $3.99 | €3,99 | READY_TO_SUBMIT |
 | Lifetime | `com.keremoztopuz.skincare.pro.lifetime` | — | ₺699,99 | $12.99 | €14,99 | READY_TO_SUBMIT |
-| Monthly (emekli) | `com.keremoztopuz.skincare.pro.monthly` | ONE_MONTH | ₺99,99 | $3.99 | €3,99 | Hiçbir pakete bağlı değil |
+| Monthly (emekli) | `com.keremoztopuz.skincare.pro.monthly` | ONE_MONTH | ₺99,99 | $3.99 | €3,99 | RevenueCat'ten silindi, App Store Connect'te duruyor |
 
 Haftalık üründe **3 günlük ücretsiz deneme** tanımlı (26 Ağustos 2026'dan
 itibaren, tüm bölgelerde). Uygulama denemeyi StoreKit'ten okur: buton
