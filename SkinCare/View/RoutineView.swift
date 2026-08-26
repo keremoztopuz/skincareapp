@@ -430,7 +430,7 @@ struct ProductPickerSheet: View {
                     do {
                         fetched += try await SupabaseService.shared.fetchProductsByType(type)
                     } catch {
-                        print("Fetch products by type error: \(error)")
+                        AppLog.error("Products by type fetch failed", error)
                     }
                 }
                 products = fetched
