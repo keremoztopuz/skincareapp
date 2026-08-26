@@ -112,7 +112,7 @@ struct HomeView: View {
                                 spacing: 12
                             ) {
                                 MetricCard(value: "\(vm.avgOverallScore)", label: AppStrings.overallScore, progress: Double(vm.avgOverallScore))
-                                MetricCard(value: "\(vm.avgDryness)%", label: AppStrings.dryness, progress: Double(vm.avgDryness))
+                                MetricCard(value: "\(vm.avgHydration)%", label: AppStrings.hydration, progress: Double(vm.avgHydration))
                                 MetricCard(value: "\(vm.avgOiliness)%", label: AppStrings.oiliness, progress: Double(vm.avgOiliness))
                                 MetricCard(value: "\(vm.avgInflammation)%", label: AppStrings.inflammation, progress: Double(vm.avgInflammation))
                             }
