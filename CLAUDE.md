@@ -77,13 +77,23 @@ names and the metric names are deliberately different vocabularies.
 
 ## Data & Privacy
 - **Core Data:** all user data (profile, analysis history) — stays on device.
-- **Supabase (PostgreSQL):** articles, product recommendations, routine content (fetch only).
+- **Neon (PostgreSQL):** articles, product recommendations, routine content. Read only, and never directly: the app calls the proxy's `/v1/catalogue/*` endpoints, so it carries no database credential. The role behind those endpoints can only `SELECT` the four catalogue tables.
 - **Privacy-by-design:** Face crops are sent securely to the analysis proxy (Vertex AI / Gemini) for real-time processing and are not stored permanently by our services. Google retains requests briefly for abuse monitoring; they are not used to train models.
 - **Connectivity:** Analysis requires an internet connection. History, profile and routines work offline.
 
-## Known Limitation — Supabase catalogue
-`supabase/seed/00_schema.sql` has never been run against the live project, so
-`description_tr` / `title_tr` / `content_tr` do not exist there and every list
-query returns HTTP 400. Home and Search therefore show the "content can't be
-loaded" state rather than a catalogue. This is deliberate for now: the backend
-moves to Vertex/Firestore next, and the seed will be revisited there.
+## Catalogue database (Neon)
+`neon/seed/` holds the whole catalogue as SQL: `00_schema.sql` is the full DDL,
+then products, product-condition links and articles. Run them in order against
+the Neon project with `psql`; every file re-runs safely.
+
+The live database currently holds 107 products, 111 product-condition links,
+40 articles and the 5 condition rows.
+
+- Products and articles upsert on a fixed `uuid5` id, so regenerating the seed
+  files does not create duplicates.
+- `conditions.key` carries the five class names `RoutineEngine` looks up.
+- The app never connects to Postgres. `CatalogueService` calls the proxy; the
+  proxy connects as `skinner_reader`, a login role with `SELECT` and nothing
+  else. Do not put an owner URL in the proxy's `DATABASE_URL`.
+- `created_at` is emitted to millisecond precision by the proxy on purpose —
+  Foundation's ISO8601 decoder rejects the microseconds Postgres returns.
