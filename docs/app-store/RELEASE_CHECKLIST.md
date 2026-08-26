@@ -20,7 +20,7 @@ Bu dosya App Store'a cikis icin teknik, hesap, gizlilik ve icerik hazirliklarini
 
 - [x] `IPHONEOS_DEPLOYMENT_TARGET` 18.0.
 - [x] Release archive Xcode'da basarili (`CODE_SIGNING_ALLOWED=NO` ile dogrulandi, sifir hata).
-- [ ] **Karar bekliyor — iPad:** target `TARGETED_DEVICE_FAMILY = "1,2"` (iPhone + iPad) ama iPad'de sadece portrait destekleniyor ve `UIRequiresFullScreen` yok. Archive bunu uyari olarak veriyor ve App Review iPad'de calismayan bir iPad build'ini reddedebilir. Uygulama iPhone icin tasarlandi (metadata'da yalnizca iPhone screenshot seti var). Ya device family `1`'e cekilmeli ya da iPad duzeni gercekten test edilmeli.
+- [x] Uygulama yalnizca iPhone: `TARGETED_DEVICE_FAMILY = 1`, iPad yonlendirme anahtari kaldirildi. App Store Connect'te de iPad screenshot seti istenmeyecek.
 - [x] Kamera izni aciklamasi net.
 - [x] Kamera reddedilince kullaniciya anlasilir ekran gosteriliyor.
 - [x] Gelismis analiz icin yuz kirpimi Google Gemini'ye gonderiliyor; bu durum uygulama ici aciklamada ve gizlilik politikasinda belirtiliyor. Kalici depolama yapilmiyor.
