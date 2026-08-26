@@ -25,6 +25,9 @@ class MoreViewModel: ObservableObject {
     // No init-time load: the view's onAppear fires on first appearance too,
     // and loading here as well just doubled the work.
 
+    /// Main actor: it writes @Published state and reads AppStrings, which is
+    /// main-actor isolated. Every call site is a SwiftUI view callback anyway.
+    @MainActor
     func loadProfile() {
         let profile = LocalPersistenceManager.shared.fetchUserProfile()
         userName    = profile?.name       ?? "-"
@@ -34,6 +37,7 @@ class MoreViewModel: ObservableObject {
         loadStats(profile: profile)
     }
 
+    @MainActor
     private func loadStats(profile: UserProfile?) {
         let records = LocalPersistenceManager.shared.fetchAnalysisRecords()
         totalAnalyses = records.count
