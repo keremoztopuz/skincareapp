@@ -10,7 +10,7 @@ göreceğin yazıyor.
 | 1 | `skanner_pro` entitlement'ına weekly + lifetime bağlı | RevenueCat → Entitlements | Tamam (26 Ağu 10:38) |
 | 2 | Boş kalan `$rc_monthly` paketini `default` offering'den sil | RevenueCat → Offerings | Açık (kozmetik) |
 | 3 | Haftalık ürünün review screenshot'ını kontrol et (13 KB'lık bir dosya görünüyor) | App Store Connect → Subscriptions | Açık |
-| 4 | App Store screenshot'ları (6.9") | ASC → App Store sekmesi | Hazırlanıyor |
+| 4 | App Store screenshot'ları (6.9") | `docs/app-store/screenshots/` | Hazır — 9 kare çekildi |
 | 5 | Build yükle (Archive → Distribute) | Xcode Organizer | Açık |
 
 Entitlement doğrulandı: `skanner_pro` (`entl44648f3a6c`) altında
@@ -43,14 +43,8 @@ olur. Metinlerde sabitlenmiş bir deneme vaadi yok.
 - İçerik gerçek uygulama ekranı olmalı; sahte veri veya montaj Apple'ın
   2.3.3 maddesine takılır.
 
-Önerilen kareler:
-
-1. Onboarding — "Skinner'a Hoş Geldiniz"
-2. Ana ekran — selamlama, istatistik kartları, rutin özeti
-3. Tarama ekranı — yüz çerçevesi
-4. Sonuç ekranı — genel skor + beş koşul çubuğu
-5. Rutin ekranı — sabah/akşam adımları
-6. Geçmiş — analiz listesi ve trend
+Kareler `docs/app-store/screenshots/` altında hazır; yükleme sırası ve hangi
+karelerin gerçek cihazda yenilenmesi gerektiği o klasördeki `README.md`'de.
 
 ## 3. App Store Connect adımları
 
