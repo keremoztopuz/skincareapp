@@ -9,21 +9,25 @@ import Foundation
 
 struct SkinScore {
     let overallScore: Double
-    let drynessScore: Double
     let oilinessScore: Double
     let inflammationScore: Double
     let dominantCondition: String
 }
 
-/// Converts raw condition severities (0-1) into the derived scores shown in the app.
+/// Converts the five measured condition severities (0-1) into the derived
+/// metrics shown in the app.
 ///
-/// All formulas use exponential soft saturation instead of linear sums with hard
-/// caps, so the full 0-100 range is usable and extreme inputs cannot silently
-/// flatline. `overallScore` is computed once from the raw severities (never from
-/// the derived bars) to avoid double counting, and decays as `100 * exp(-load)`.
-/// Skin type contributes small load intercepts plus susceptibility multipliers
-/// on individual weights, so the measured evidence always dominates the
-/// self-reported profile.
+/// The analysis produces five classes — acne, redness, wrinkles, eyebags,
+/// pigmentation — plus a direct hydration reading. Hydration is surfaced as a
+/// metric on its own; oiliness and inflammation are derived here, and
+/// `overallScore` is computed once from the raw inputs (never from the derived
+/// metrics) to avoid double counting.
+///
+/// All formulas use exponential soft saturation instead of linear sums with
+/// hard caps, so the full 0-100 range is usable and extreme inputs cannot
+/// silently flatline. Skin type contributes small load intercepts plus
+/// susceptibility multipliers on individual weights, so the measured evidence
+/// always dominates the self-reported profile.
 class ScoringEngine {
 
     func calculateScore(
@@ -32,7 +36,7 @@ class ScoringEngine {
         pigmentation: Double,
         wrinkles: Double = 0,
         eyebags: Double = 0,
-        hydration: Double = 0.5,
+        hydration: Double,
         skinType: String
     ) -> SkinScore {
         let type = normalizedSkinType(skinType)
@@ -45,11 +49,9 @@ class ScoringEngine {
         let wrinkleWeight: Double = 0.35
         let eyebagWeight: Double = 0.25
         // Dehydration counts toward overall too — without it a severely
-        // dehydrated but otherwise clear face scored ~98 while its dryness
-        // bar read ~70. Weighted below the primary conditions, consistent
-        // with hydration's 0.7 share of the dryness bar. The 0.5 default
-        // (hydration-unmeasured legacy records) contributes a small constant
-        // that the exponential absorbs.
+        // dehydrated but otherwise clear face scored ~98 while its hydration
+        // metric read ~30. Weighted below the primary conditions: hydration is
+        // a real reading, but a dry face is not an unhealthy face.
         let dehydrationWeight: Double = 0.40
 
         // Floor keeps a perfect scan at ~98 instead of a fake 100.
@@ -76,23 +78,6 @@ class ScoringEngine {
             + 0.3 * pigmentation
         let inflammationScore = clamp(100.0 * (1.0 - exp(-inflammationLoad)))
 
-        // MARK: Dryness (higher = worse)
-        let drynessBase: Double
-        switch type {
-        case "dry": drynessBase = 0.35
-        case "combination", "sensitive": drynessBase = 0.15
-        case "oily": drynessBase = 0.05
-        default: drynessBase = 0.10
-        }
-        // Hydration is measured now (0-1, higher = better hydrated), so it
-        // carries most of the weight. The skin-type base and redness stay as
-        // secondary signals: a self-reported type is still informative, and
-        // redness correlates with a compromised barrier.
-        let drynessLoad = drynessBase
-            + 0.7 * (1.0 - hydration)
-            + 0.3 * redness
-        let drynessScore = clamp(100.0 * (1.0 - exp(-drynessLoad)))
-
         // MARK: Oiliness (higher = worse)
         // Base-heavy by necessity: there is no direct sebum measurement, acne
         // is the only correlated signal.
@@ -114,7 +99,6 @@ class ScoringEngine {
 
         return SkinScore(
             overallScore: overallScore,
-            drynessScore: drynessScore,
             oilinessScore: oilinessScore,
             inflammationScore: inflammationScore,
             dominantCondition: dominantCondition
