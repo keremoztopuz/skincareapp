@@ -43,7 +43,7 @@ class ResultsViewModel: ObservableObject {
 
         isLoading = true
         
-        // simple text recommendation logic (could also be in Supabase)
+        // simple text recommendation logic (could also come from the catalogue)
         switch condition.lowercased() {
         case "acne":
             recommendation = [String(localized: "recommendation_salicylic_cleanser")]
@@ -76,7 +76,7 @@ class ResultsViewModel: ObservableObject {
         guard let condition = record?.condition else { return }
         errorMessage = nil
         do {
-            self.recommendProduct = try await SupabaseService.shared.fetchRecommendedProducts(for: condition)
+            self.recommendProduct = try await CatalogueService.shared.fetchRecommendedProducts(for: condition)
         } catch {
             self.errorMessage = AppStrings.loadFailureMessage(for: error)
             AppLog.error("Recommended products fetch failed", error)
