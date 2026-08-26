@@ -37,7 +37,7 @@
           "codeOffers" : [
 
           ],
-          "displayPrice" : "1.99",
+          "displayPrice" : "3.99",
           "familyShareable" : false,
           "groupNumber" : 1,
           "internalID" : "A1B2C3D4-E5F6-7890-ABCD-EF1234567890",
@@ -49,8 +49,8 @@
             }
           ],
           "productID" : "com.keremoztopuz.skincare.pro.monthly",
-          "recurringSubscriptionPeriod" : "P1M",
-          "referenceName" : "skinner Pro Monthly",
+          "recurringSubscriptionPeriod" : "P1W",
+          "referenceName" : "skinner Pro Weekly",
           "subscriptionGroupID" : "21654321",
           "type" : "RecurringSubscription"
         }
