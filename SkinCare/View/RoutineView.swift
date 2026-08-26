@@ -382,6 +382,9 @@ struct ProductPickerSheet: View {
     @Environment(\.dismiss) var dismiss
     @State private var products: [Product] = []
     @State private var isLoading = true
+    /// A failed fetch reads exactly like an empty catalogue in the picker,
+    /// so the two states have to be told apart.
+    @State private var loadErrorMessage: String?
 
     var body: some View {
         NavigationStack {
@@ -392,13 +395,20 @@ struct ProductPickerSheet: View {
                     ProgressView()
                 } else if products.isEmpty {
                     VStack(spacing: 12) {
-                        Image(systemName: "tray")
+                        Image(systemName: loadErrorMessage == nil ? "tray" : "exclamationmark.icloud")
                             .font(.scaled(size: 40))
                             .foregroundColor(.gray)
                             .accessibilityHidden(true)
-                        Text(NSLocalizedString("no_products_found", comment: ""))
+                        Text(loadErrorMessage ?? NSLocalizedString("no_products_found", comment: ""))
                             .font(.scaled(size: 16))
                             .foregroundColor(.gray)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 40)
+                        if loadErrorMessage != nil {
+                            Button(AppStrings.tryAgain) { retry() }
+                                .font(.scaled(size: 15, weight: .bold))
+                                .foregroundColor(.brandPrimary)
+                        }
                     }
                 } else {
                     ScrollView {
@@ -424,19 +434,29 @@ struct ProductPickerSheet: View {
                     Button(NSLocalizedString("cancel", comment: "")) { dismiss() }
                 }
             }
-            .task {
-                var fetched: [Product] = []
-                for type in productTypes {
-                    do {
-                        fetched += try await SupabaseService.shared.fetchProductsByType(type)
-                    } catch {
-                        AppLog.error("Products by type fetch failed", error)
-                    }
-                }
-                products = fetched
-                isLoading = false
+            .task { await load() }
+        }
+    }
+
+    private func retry() {
+        Task { await load() }
+    }
+
+    @MainActor
+    private func load() async {
+        isLoading = true
+        loadErrorMessage = nil
+        var fetched: [Product] = []
+        for type in productTypes {
+            do {
+                fetched += try await SupabaseService.shared.fetchProductsByType(type)
+            } catch {
+                loadErrorMessage = AppStrings.loadFailureMessage(for: error)
+                AppLog.error("Products by type fetch failed", error)
             }
         }
+        products = fetched
+        isLoading = false
     }
 
     private func pickerProductCard(_ product: Product) -> some View {
