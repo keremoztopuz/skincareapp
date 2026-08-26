@@ -1,7 +1,25 @@
-# App Store screenshot'ları — 6.9" (1320 × 2868)
+# App Store screenshot'ları
+
+İki boyut hazır. Aynı kareler, aynı isimler:
+
+| Klasör | Boyut | Yuva |
+| --- | --- | --- |
+| `6.9-inch/` | 1320 × 2868 | 6.9" |
+| `6.5-inch/` | 1284 × 2778 | 6.5" |
 
 iPhone 17 Pro Max simülatöründe, 26 Ağustos 2026'da Türkçe arayüzle çekildi.
 Alpha kanalı kaldırıldı (App Store Connect alpha içeren PNG kabul etmez).
+
+6.5" seti 6.9" karelerinden üretildi: 1284 genişliğe küçültülüp yüksekliği
+2778'e ortadan kırpıldı. İki oran %0,4 farklı olduğu için ölçekleme tek başına
+kareyi eziyordu; kırpma üstten ve alttan toplam 12 piksel alıyor, o da durum
+çubuğunun boşluğuna denk geliyor. Küçültme olduğu için netlik kaybı yok.
+
+## Bilinen hata
+
+`02-home.png` ana ekranı değil **splash ekranını** gösteriyor. Aşağıdaki
+sırada 1 numara olarak duruyor; mağazaya yüklemeden önce ana ekran karesiyle
+değiştirilmeli.
 
 ## App Store Connect'e yüklenecek sıra
 
