@@ -114,7 +114,7 @@ Sensitive data:
 
 ### Monthly
 
-Product ID: `skincare_pro_monthly`
+Product ID: `com.keremoztopuz.skincare.pro.monthly`
 
 Reference name: Monthly Pro
 
@@ -124,7 +124,7 @@ Description: Unlimited monthly scans, all six visible-feature readings, full sca
 
 ### Lifetime
 
-Product ID: TODO — confirm the identifier created in App Store Connect. The app reads it through the RevenueCat `$rc_lifetime` package, so that package must be attached to the offering or the lifetime card falls back to placeholder pricing.
+Product ID: `com.keremoztopuz.skincare.pro.lifetime`, attached to the RevenueCat `$rc_lifetime` package of the `default` offering. Without that package the lifetime card falls back to placeholder pricing.
 
 Reference name: Lifetime Pro
 
@@ -142,11 +142,18 @@ The app's placeholder prices — shown only until StoreKit returns the real stor
 
 | Storefront | Monthly | Lifetime |
 | --- | --- | --- |
-| US | $3.99 | $17.99 |
-| EU | €4,99 | €19,99 |
-| TR | ₺199,99 | ₺899 |
+| US | $1.99 | $17.99 |
+| EU | €1,99 | €19,99 |
+| TR | ₺99,99 | ₺699,99 |
 
-TODO: These must match App Store Connect exactly. `SkinCare/Resources/SkinCareProducts.storekit` still carries a stale `9.99` monthly price from an earlier draft; update it before local StoreKit testing, otherwise sandbox runs disagree with production.
+Turkey is the pricing base. The monthly subscription was equalized from the TR
+price across every territory, which is why the US monthly sits at $1.99.
+
+TODO: the lifetime product was **not** equalized — RevenueCat's equalize
+endpoint rejects non-consumables, so only the TR price moved and every other
+territory still carries the tier set from the old $17.99 base. Equalize it from
+Turkey in App Store Connect, then update the table and
+`SubscriptionManager.FallbackPrice`.
 
 ### Introductory offer
 
