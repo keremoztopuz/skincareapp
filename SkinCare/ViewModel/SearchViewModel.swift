@@ -16,6 +16,9 @@ class SearchViewModel: ObservableObject {
     /// Set when the catalog fetch fails, so the tab can show a retry
     /// instead of a permanent, misleading "no products" state.
     @Published var loadFailed: Bool = false
+    /// The message that matches the actual failure, not a blanket
+    /// "check your connection".
+    @Published var loadErrorMessage: String = AppStrings.internetConnectionRequired
 
     init() {
         Task {
@@ -43,6 +46,8 @@ class SearchViewModel: ObservableObject {
         } catch {
             self.products = []
             self.loadFailed = true
+            self.loadErrorMessage = AppStrings.loadFailureMessage(for: error)
+            AppLog.error("Catalog fetch failed", error)
         }
         isLoading = false
     }
