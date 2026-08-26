@@ -53,18 +53,15 @@ struct MoreView: View {
                         HStack(spacing: 12) {
                             StatCard(
                                 value: "\(vm.totalAnalyses)",
-                                label: NSLocalizedString("stat_total_analyses", comment: ""),
-                                icon: "sparkles"
+                                label: NSLocalizedString("stat_total_analyses", comment: "")
                             )
                             StatCard(
                                 value: vm.latestScore.map(String.init) ?? "-",
-                                label: NSLocalizedString("stat_latest_score", comment: ""),
-                                icon: "heart.text.square.fill"
+                                label: NSLocalizedString("stat_latest_score", comment: "")
                             )
                             StatCard(
                                 value: vm.memberSince,
-                                label: NSLocalizedString("stat_member_since", comment: ""),
-                                icon: "calendar"
+                                label: NSLocalizedString("stat_member_since", comment: "")
                             )
                         }
 
@@ -552,17 +549,16 @@ struct InfoCard: View {
     }
 }
 
+/// Deliberately iconless. Three symbols side by side read as decoration
+/// rather than information; the number is the content and the label already
+/// says which number it is. The streak card keeps its flame because there the
+/// symbol is the only thing distinguishing it from a plain count.
 struct StatCard: View {
     let value: String
     let label: String
-    let icon: String
 
     var body: some View {
         VStack(spacing: 6) {
-            Image(systemName: icon)
-                .font(.scaled(size: 16))
-                .foregroundColor(.brandPrimary)
-                .accessibilityHidden(true)
             Text(value)
                 .font(.scaled(size: 17, weight: .bold))
                 .foregroundColor(.brandText)
@@ -575,7 +571,7 @@ struct StatCard: View {
                 .minimumScaleFactor(0.8)
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 14)
+        .padding(.vertical, 18)
         .padding(.horizontal, 8)
         .background(Color.white)
         .cornerRadius(Radius.card)
