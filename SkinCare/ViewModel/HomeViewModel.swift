@@ -69,8 +69,8 @@ class HomeViewModel: ObservableObject {
         errorMessage = nil
 
         do {
-            async let fetchedProducts = SupabaseService.shared.fetchProducts()
-            async let fetchedArticles = SupabaseService.shared.fetchArticles()
+            async let fetchedProducts = CatalogueService.shared.fetchProducts()
+            async let fetchedArticles = CatalogueService.shared.fetchArticles()
 
             let (p, a) = try await (fetchedProducts, fetchedArticles)
 
