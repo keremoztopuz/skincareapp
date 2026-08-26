@@ -18,6 +18,9 @@ struct DetailView: View {
     @State private var fullProduct: Product?
     @State private var fullArticle: Articles?
     @State private var isLoadingFullDetail = false
+    /// The summary row is shown as a fallback, so a failed detail fetch is
+    /// a partial page rather than a blank one — but it still has to say so.
+    @State private var loadErrorMessage: String?
     
     var body: some View {
         ZStack {
@@ -39,6 +42,23 @@ struct DetailView: View {
                             }
                             .frame(maxWidth: .infinity)
                         } else {
+                            if let loadErrorMessage {
+                                HStack(spacing: 10) {
+                                    Text(loadErrorMessage)
+                                        .font(.scaled(size: 13))
+                                        .foregroundColor(.gray)
+                                    Spacer()
+                                    Button(AppStrings.tryAgain) {
+                                        loadFullDetail()
+                                    }
+                                    .font(.scaled(size: 13, weight: .bold))
+                                    .foregroundColor(.brandPrimary)
+                                }
+                                .padding(12)
+                                .background(Color.brandBlush)
+                                .cornerRadius(Radius.card)
+                            }
+
                             switch type {
                             case .product(let product):
                                 ProductDetailContent(product: fullProduct ?? product)
@@ -60,6 +80,7 @@ struct DetailView: View {
     
     private func loadFullDetail() {
         isLoadingFullDetail = true
+        loadErrorMessage = nil
         // @MainActor: the task writes view @State, and a task created in a
         // nonisolated method would otherwise run off the main actor.
         Task { @MainActor in
@@ -71,6 +92,7 @@ struct DetailView: View {
                     self.fullArticle = try await SupabaseService.shared.fetchArticleDetail(id: article.id)
                 }
             } catch {
+                loadErrorMessage = AppStrings.loadFailureMessage(for: error)
                 AppLog.error("Product detail fetch failed", error)
             }
             isLoadingFullDetail = false
