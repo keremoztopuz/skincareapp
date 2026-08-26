@@ -121,9 +121,13 @@ offering, and `$rc_weekly` is the only subscription package the paywalls read.
 
 Reference name: Weekly Pro
 
-Display name: Skinner Pro
+Display name (what the buyer sees): **Skinner Pro Weekly** / tr **Skinner Pro Haftalık**
 
-Description: Unlimited scans, all five visible-feature readings, full scan history, and routine recommendations.
+Description: Unlimited AI skin analysis, billed weekly. / tr Sınırsız cilt analizi, haftalık abonelik.
+
+Review screenshot: the real paywall capture
+(`docs/app-store/screenshots/07-paywall.png`, 336 KB), uploaded 26 August 2026 —
+it replaced a 13 KB placeholder that would likely have drawn a 3.1.1 rejection.
 
 An existing subscription's duration cannot be changed after the fact: RevenueCat's
 store-state API accepts a `P1W` duration on the monthly product and reports the
@@ -143,7 +147,11 @@ Product ID: `com.keremoztopuz.skincare.pro.lifetime`, attached to the RevenueCat
 
 Reference name: Lifetime Pro
 
-Display name: Skinner Lifetime
+Display name: still **skinner** — the same string the weekly product used to
+carry, so both products show one name on Apple's purchase sheet. App Store
+Connect refuses the change over the API ("The field (NAME) can not be
+modified"), so set it to **Skinner Pro Lifetime** / tr **Skinner Pro Ömür Boyu**
+by hand in the App Store Connect UI before submitting.
 
 Description: One-time purchase. Everything in Pro, with no subscription and no renewal.
 
