@@ -72,7 +72,7 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
         }
 
         guard let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front) else {
-            print("no front camera")
+            AppLog.error("No front camera available")
             return
         }
 
@@ -93,7 +93,7 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
                 device.unlockForConfiguration()
             }
         } catch {
-            print("camera setup error: \(error.localizedDescription)")
+            AppLog.error("Camera setup failed", error)
         }
 
         session.commitConfiguration()
@@ -248,7 +248,7 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
         } catch {
             // Without this the completion never fires and the awaiting task
             // would hang forever with the UI stuck on "Analyzing".
-            NSLog("Face detection failed: %@", error.localizedDescription)
+            AppLog.error("Face detection failed", error)
             completion(nil, .zero)
         }
     }
@@ -297,7 +297,7 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
                 self.didProduceModelScores = true
             }
         } catch {
-            NSLog("Cloud analysis failed: %@", String(describing: error))
+            AppLog.error("Cloud analysis failed", error)
             let messageKey: String
             switch error {
             case AnalysisError.encodingFailed:
