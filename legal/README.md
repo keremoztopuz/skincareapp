@@ -9,7 +9,14 @@ Source for the public legal pages the app links to from every purchase screen
 Both are directories with an `index.html`, so the extensionless URLs above
 resolve without relying on server-side rewrites.
 
-## Publishing
+## Published
+
+Live at https://keremoztopuz.github.io/skincare-legal/ since 26 August 2026,
+from the public repo `keremoztopuz/skincare-legal` (Pages: branch `main`,
+folder `/`). That repo holds a copy of this folder's contents, not a submodule
+— change a page here and push the same change there, or the two drift apart.
+
+## Publishing (first time)
 
 1. Create the public repo `keremoztopuz/skincare-legal`.
 2. Copy the **contents** of this folder (not the folder itself) to the repo root
