@@ -71,7 +71,7 @@ struct DetailView: View {
                     self.fullArticle = try await SupabaseService.shared.fetchArticleDetail(id: article.id)
                 }
             } catch {
-                print("Failed to fetch full detail: \(error)")
+                AppLog.error("Product detail fetch failed", error)
             }
             isLoadingFullDetail = false
         }
