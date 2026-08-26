@@ -36,7 +36,7 @@ class RoutineEngine {
 
         for (conditionKey, score) in activeConditions {
             do {
-                let products = try await SupabaseService.shared.fetchRecommendedProducts(for: conditionKey)
+                let products = try await CatalogueService.shared.fetchRecommendedProducts(for: conditionKey)
                 for product in products {
                     if let existing = allProducts.firstIndex(where: { $0.product.id == product.id }) {
                         allProducts[existing].conditionScores[conditionKey] = score
