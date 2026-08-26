@@ -10,7 +10,7 @@ alter table public.articles  add column if not exists content_tr text;
 -- conditions.key uzerinde tekillik, asagidaki upsert icin gerekli
 create unique index if not exists conditions_key_uniq on public.conditions (key);
 
--- RoutineEngine.swift:83-97 icindeki bes anahtar
+-- RoutineEngine.swift:83-87 icindeki bes anahtar
 insert into public.conditions (id, key) values
   ('3b785e3c-be84-5e2e-8326-9511297d1832'::uuid, 'acne'),
   ('82771f2c-1b0a-5404-8c90-8bc58151bfb3'::uuid, 'redness'),
