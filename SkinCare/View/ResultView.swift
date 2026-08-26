@@ -123,10 +123,17 @@ struct ResultView: View {
                                 .padding(.horizontal, 20)
 
                             if let error = vm.errorMessage, vm.recommendProduct.isEmpty, !vm.isLoading {
-                                Text(error)
-                                    .font(.scaled(size: 14))
-                                    .foregroundColor(.gray)
-                                    .padding(.horizontal, 20)
+                                VStack(alignment: .leading, spacing: 8) {
+                                    Text(error)
+                                        .font(.scaled(size: 14))
+                                        .foregroundColor(.gray)
+                                    Button(AppStrings.tryAgain) {
+                                        Task { await vm.fetchRecommendedProducts() }
+                                    }
+                                    .font(.scaled(size: 14, weight: .bold))
+                                    .foregroundColor(.brandPrimary)
+                                }
+                                .padding(.horizontal, 20)
                             }
 
                             ScrollView(.horizontal, showsIndicators: false) {
