@@ -28,8 +28,22 @@ struct PersistenceController {
 
     let container: NSPersistentContainer
 
+    /// NSPersistentContainer(name:) loads a *fresh* NSManagedObjectModel each
+    /// time, so a second controller (a preview, or a test running alongside
+    /// `shared`) leaves two live models describing the same entities. Core
+    /// Data then cannot map `AnalysisRecord` to a unique NSEntityDescription
+    /// and saves fail with 134020. One model instance per process removes the
+    /// ambiguity.
+    private static let managedObjectModel: NSManagedObjectModel = {
+        guard let url = Bundle.main.url(forResource: "SkinCare", withExtension: "momd"),
+              let model = NSManagedObjectModel(contentsOf: url) else {
+            fatalError("SkinCare.momd missing from the app bundle")
+        }
+        return model
+    }()
+
     init(inMemory: Bool = false) {
-        container = NSPersistentContainer(name: "SkinCare")
+        container = NSPersistentContainer(name: "SkinCare", managedObjectModel: Self.managedObjectModel)
         if inMemory {
             // A true in-memory store, not SQLite-at-/dev/null: the /dev/null
             // form is shared between concurrently running tests, which makes
