@@ -7,6 +7,7 @@ struct MoreView: View {
     @State private var showEditProfile = false
     @State private var showUpgrade = false
     @State private var showDeleteConfirm = false
+    @State private var showCredits = false
     @State private var isRestoring = false
     @State private var restoreMessage: String?
 
@@ -234,6 +235,14 @@ struct MoreView: View {
                             }
                             .buttonStyle(.plain)
 
+                            Button { showCredits = true } label: {
+                                SettingsRow(
+                                    icon: "text.book.closed",
+                                    title: NSLocalizedString("credits", comment: "")
+                                )
+                            }
+                            .buttonStyle(.plain)
+
                             SettingsRow(
                                 icon: "info.circle",
                                 title: NSLocalizedString("version", comment: ""),
@@ -282,6 +291,9 @@ struct MoreView: View {
         }
         .sheet(isPresented: $showUpgrade) {
             UpgradeSheetView()
+        }
+        .sheet(isPresented: $showCredits) {
+            CreditsView()
         }
         .onAppear {
             vm.loadProfile()
