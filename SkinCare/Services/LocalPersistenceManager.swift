@@ -44,7 +44,7 @@ class LocalPersistenceManager {
             try context.save()
             return true
         } catch {
-            print("Save error: \(error)")
+            AppLog.error("Core Data save failed", error)
             context.rollback()
             return false
         }
@@ -76,7 +76,7 @@ class LocalPersistenceManager {
             try context.save()
             return record
         } catch {
-            print("Save error: \(error)")
+            AppLog.error("Core Data save failed", error)
             context.rollback()
             return nil
         }
@@ -135,7 +135,7 @@ class LocalPersistenceManager {
             // Leaving the version untouched means the migration is retried on
             // the next launch instead of leaving the store half-converted.
             context.rollback()
-            print("Score migration save error: \(error)")
+            AppLog.error("Score migration save failed", error)
         }
     }
 
@@ -147,7 +147,7 @@ class LocalPersistenceManager {
         do {
             return try context.fetch(request)
         } catch {
-            print("Fetch error: \(error)")
+            AppLog.error("Core Data fetch failed", error)
             return []
         }
     }
@@ -157,7 +157,7 @@ class LocalPersistenceManager {
         do {
             try context.save()
         } catch {
-            print("Delete error: \(error)")
+            AppLog.error("Record delete failed", error)
         }
     }
 
@@ -180,7 +180,7 @@ class LocalPersistenceManager {
             try context.save()
         } catch {
             context.rollback()
-            print("Delete all error: \(error)")
+            AppLog.error("Delete-all failed", error)
         }
     }
 
@@ -222,7 +222,7 @@ class LocalPersistenceManager {
         do {
             try context.save()
         } catch {
-            print("Save routine item error: \(error)")
+            AppLog.error("Routine item save failed", error)
         }
     }
 
@@ -231,7 +231,7 @@ class LocalPersistenceManager {
         do {
             try context.save()
         } catch {
-            print("Delete routine item error: \(error)")
+            AppLog.error("Routine item delete failed", error)
         }
     }
 
@@ -261,7 +261,7 @@ class LocalPersistenceManager {
         do {
             try context.save()
         } catch {
-            print("Save suggestions error: \(error)")
+            AppLog.error("Suggestion save failed", error)
         }
     }
 
@@ -295,7 +295,7 @@ class LocalPersistenceManager {
         do {
             try context.save()
         } catch {
-            print("Accept suggestion error: \(error)")
+            AppLog.error("Suggestion accept failed", error)
         }
     }
 
@@ -304,7 +304,7 @@ class LocalPersistenceManager {
         do {
             try context.save()
         } catch {
-            print("Dismiss suggestion error: \(error)")
+            AppLog.error("Suggestion dismiss failed", error)
         }
     }
 
@@ -317,7 +317,7 @@ class LocalPersistenceManager {
         do {
             try context.save()
         } catch {
-            print("Dismiss all suggestions error: \(error)")
+            AppLog.error("Dismiss-all suggestions failed", error)
         }
     }
 }
