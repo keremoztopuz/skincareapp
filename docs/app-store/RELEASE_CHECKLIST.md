@@ -4,16 +4,16 @@ Bu dosya App Store'a cikis icin teknik, hesap, gizlilik ve icerik hazirliklarini
 
 ## Kritik Bloklar
 
-- [ ] Apple Developer Program uyeligi aktif.
-- [ ] App Store Connect'te yeni app kaydi acildi.
-- [ ] Bundle ID: `com.keremoztopuz.SkinCare`.
+- [x] Apple Developer Program uyeligi aktif.
+- [x] App Store Connect'te yeni app kaydi acildi. RevenueCat app `app91511d0d30` bu kayittan canli urun durumu okuyor.
+- [x] Bundle ID: `com.keremoztopuz.SkinCare`. RevenueCat app kaydi da ayni bundle id'yi tasiyor.
 - [x] App adi kesinlesti: `Skinner` (Xcode target ve bundle ID hala `SkinCare`; bu kasitli).
 - [x] Support URL yayinda: `https://keremoztopuz.github.io/skincare-legal/` — yayinda, 200 donuyor. Kaynak repo: `keremoztopuz/skincare-legal` (public, GitHub Pages main/root).
 - [x] Privacy Policy URL yayinda: `https://keremoztopuz.github.io/skincare-legal/privacy` — yayinda. Uzantisiz adres kanonik `/privacy/` adresine 301 ile gidiyor.
-- [ ] RevenueCat production API key hazir.
-- [ ] App Store Connect subscription urunu hazir.
-- [ ] RevenueCat entitlement adi **`skanner_pro`** olarak App Store urunune baglandi. (`SubscriptionManager.swift` bu id'yi okur; `pro` yazilirsa hicbir satin alma kilidi acmaz.)
-- [ ] Uygulama icindeki fiyat/deneme metinleri App Store Connect ile birebir ayni. (Lifetime tier'i henuz TR bazindan esitlenmedi — `APP_STORE_METADATA_DRAFT.md` fiyat tablosuna bakin.)
+- [x] RevenueCat production API key hazir. `RevenueCatConfig.apiKey`, `app91511d0d30` uygulamasinin production public key'i ile birebir ayni.
+- [x] App Store Connect subscription urunu hazir. `com.keremoztopuz.skincare.pro.monthly` ve `...pro.lifetime` ikisi de `READY_TO_SUBMIT`: tum bolgelerde fiyat, en-US + tr yerellestirme, review ekran goruntusu ve notu girili. Ilk build ile birlikte incelemeye gidecekler.
+- [x] RevenueCat entitlement adi **`skanner_pro`** olarak App Store urunune baglandi. (`SubscriptionManager.swift` bu id'yi okur; `pro` yazilirsa hicbir satin alma kilidi acmaz.) `default` offering current ve `$rc_monthly` / `$rc_lifetime` paketleri iki App Store urunune bagli.
+- [x] Uygulama icindeki fiyat/deneme metinleri App Store Connect ile birebir ayni. `FallbackPrice.lifetime` canli tier'lere gore duzeltildi ($17.99/€19,99 yerine $12.99/€14,99); monthly zaten uyuyordu. Hicbir yerde deneme suresi vaadi yok — App Store Connect'te tanimli bir `trial_offer` da yok.
 - [ ] TestFlight build yuklendi ve gercek cihazda test edildi.
 
 ## Teknik Kontroller
