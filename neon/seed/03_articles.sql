@@ -1,6 +1,6 @@
 -- Skinner katalog seed
 -- Uretim: scratchpad/generate_sql.py. Elle duzenleme, scripti guncelle.
--- Supabase Dashboard > SQL Editor icinde sirayla calistir.
+-- Neon Console > SQL Editor icinde ya da psql ile, dosya sirasiyla calistir.
 
 insert into public.articles
   (id, title, title_tr, content, content_tr, image_url, read_time, article_type, is_active, is_fixed)
