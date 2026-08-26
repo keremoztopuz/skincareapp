@@ -70,7 +70,8 @@ Bu dosya App Store'a cikis icin teknik, hesap, gizlilik ve icerik hazirliklarini
 - [ ] Yuz bulunamayan fotograf.
 - [ ] Analiz kaydi olusturma.
 - [ ] Recents ekrani analiz gecmisini gosteriyor.
-- [ ] Search/Home icerik servisi verilerini gosteriyor. — **BLOKE**: `supabase/seed/00_schema.sql` canli projede hic calistirilmadi, tum liste sorgulari HTTP 400 donuyor. Backend Vertex'e tasinana kadar katalog bos kalacak (bilinen ve kabul edilmis durum).
+- [x] Search/Home icerik servisi verilerini gosteriyor. Katalog Neon'a tasindi: `neon/seed/` canli projede calistirildi (107 urun, 111 urun-kondisyon bagi, 40 makale). Uygulama artik proxy'nin `/v1/catalogue/*` uclarindan okuyor ve hicbir veritabani kimlik bilgisi tasimiyor.
+- [ ] Proxy'nin Cloud Run dagitimina `DATABASE_URL` secret'i eklendi ve yeniden deploy edildi. Bu yapilmadan katalog uclari canlida 500 doner.
 - [ ] Internet kapaliyken uygulama aciliyor.
 - [ ] Satin alma iptal edildi.
 - [ ] Satin alma basarili.
