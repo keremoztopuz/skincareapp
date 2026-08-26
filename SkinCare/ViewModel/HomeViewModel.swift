@@ -60,8 +60,10 @@ class HomeViewModel: ObservableObject {
     
     @MainActor
     func fetchAllCloudData() async {
+        // Only concurrency is guarded. An "already loaded" guard used to sit
+        // here too, which made the retry button a no-op and left the first
+        // snapshot on screen for the rest of the process lifetime.
         guard !isLoading else { return }
-        guard products.isEmpty || articles.isEmpty else { return }
 
         isLoading = true
         errorMessage = nil
@@ -75,7 +77,8 @@ class HomeViewModel: ObservableObject {
             self.products = p
             self.articles = a
         } catch {
-            self.errorMessage = AppStrings.internetConnectionRequired
+            self.errorMessage = AppStrings.loadFailureMessage(for: error)
+            AppLog.error("Home cloud fetch failed", error)
         }
 
         isLoading = false
