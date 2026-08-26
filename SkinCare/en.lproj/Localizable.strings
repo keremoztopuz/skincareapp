@@ -364,15 +364,8 @@
 /* Credits and licences */
 "credits" = "Credits & Licences";
 "close" = "Close";
-"credits_intro" = "The product catalogue in this app is built on open data. Here is where each part comes from, and the licence it is used under.";
 "credits_product_photos" = "Product photos";
-"credits_product_photos_body" = "Product photographs come from Open Beauty Facts, contributed by its community and used under the Creative Commons Attribution-ShareAlike 3.0 licence.";
 "credits_product_data" = "Product names and brands";
-"credits_product_data_body" = "Product listings come from the Open Beauty Facts database, used under the Open Database License.";
 "credits_article_photos" = "Article photos";
-"credits_article_photos_body" = "Photographs alongside the articles come from Pexels and are used under the Pexels License.";
 "credits_pexels_license" = "Pexels License";
-"credits_written" = "Written content";
-"credits_written_body" = "Every product description, article and routine in the app was written for Skinner.";
 "credits_open_source" = "Open source";
-"credits_open_source_body" = "Skinner is built with Lottie and the RevenueCat Purchases SDK, both released under the MIT licence.";
