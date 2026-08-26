@@ -79,7 +79,7 @@ struct RecordCard: View {
                     }
                 }
 
-                ScoreBar(label: AppStrings.dryness, value: record.drynessScore)
+                ScoreBar(label: AppStrings.hydration, value: record.hydrationScore)
                 ScoreBar(label: AppStrings.inflammation, value: record.inflammationScore)
                 ScoreBar(label: AppStrings.oiliness, value: record.oilinessScore)
             }
