@@ -56,8 +56,10 @@ struct SearchView: View {
                     // a retry, or the tab stays empty until the app restarts.
                     VStack(spacing: 16) {
                         Spacer()
-                        BrandCircleIcon(systemImage: "wifi.slash", size: 120)
-                        Text(AppStrings.internetConnectionRequired)
+                        BrandCircleIcon(systemImage: vm.loadErrorMessage == AppStrings.internetConnectionRequired
+                                        ? "wifi.slash"
+                                        : "exclamationmark.icloud", size: 120)
+                        Text(vm.loadErrorMessage)
                             .font(.scaled(size: 16))
                             .foregroundColor(.gray)
                             .multilineTextAlignment(.center)
@@ -80,8 +82,10 @@ struct SearchView: View {
                     VStack(spacing: 16) {
                         Spacer()
                         BrandCircleIcon(systemImage: "magnifyingglass", size: 120)
+                        // An empty catalogue is a success with zero rows,
+                        // not a failure — the failure branch is above.
                         Text(vm.searchText.isEmpty
-                             ? NSLocalizedString("search_no_products", comment: "")
+                             ? AppStrings.catalogEmpty
                              : NSLocalizedString("search_no_results", comment: ""))
                             .font(.scaled(size: 16))
                             .foregroundColor(.gray)
