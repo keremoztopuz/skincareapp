@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		FD8C6E462FB51F9700E1EFC0 /* RevenueCat in Frameworks */ = {isa = PBXBuildFile; productRef = FD8C6E452FB51F9700E1EFC0 /* RevenueCat */; };
-		FD8C6ED92FB89B6900E1EFC0 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = FD8C6ED82FB89B6900E1EFC0 /* Supabase */; };
 		FDFE57982F7BB73D00D6B678 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = FDFE57972F7BB73D00D6B678 /* Lottie */; };
 /* End PBXBuildFile section */
 
@@ -72,7 +71,6 @@
 			files = (
 				FD8C6E462FB51F9700E1EFC0 /* RevenueCat in Frameworks */,
 				FDFE57982F7BB73D00D6B678 /* Lottie in Frameworks */,
-				FD8C6ED92FB89B6900E1EFC0 /* Supabase in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -153,7 +151,6 @@
 			packageProductDependencies = (
 				FDFE57972F7BB73D00D6B678 /* Lottie */,
 				FD8C6E452FB51F9700E1EFC0 /* RevenueCat */,
-				FD8C6ED82FB89B6900E1EFC0 /* Supabase */,
 			);
 			productName = SkinCare;
 			productReference = FDB86CB22F60134900C4B181 /* SkinCare.app */;
@@ -195,7 +192,6 @@
 			packageReferences = (
 				FDFE57962F7BB73D00D6B678 /* XCRemoteSwiftPackageReference "lottie-ios" */,
 				FD8C6DD82FB510D600E1EFC0 /* XCRemoteSwiftPackageReference "purchases-ios" */,
-				FD8C6ED72FB89B3D00E1EFC0 /* XCRemoteSwiftPackageReference "supabase-swift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = FDB86CB32F60134900C4B181 /* Products */;
@@ -523,14 +519,6 @@
 				minimumVersion = 5.73.0;
 			};
 		};
-		FD8C6ED72FB89B3D00E1EFC0 /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/supabase-community/supabase-swift";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.5.1;
-			};
-		};
 		FDFE57962F7BB73D00D6B678 /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/airbnb/lottie-ios";
@@ -546,11 +534,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = FD8C6DD82FB510D600E1EFC0 /* XCRemoteSwiftPackageReference "purchases-ios" */;
 			productName = RevenueCat;
-		};
-		FD8C6ED82FB89B6900E1EFC0 /* Supabase */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = FD8C6ED72FB89B3D00E1EFC0 /* XCRemoteSwiftPackageReference "supabase-swift" */;
-			productName = Supabase;
 		};
 		FDFE57972F7BB73D00D6B678 /* Lottie */ = {
 			isa = XCSwiftPackageProductDependency;
