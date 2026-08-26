@@ -73,7 +73,6 @@
 "limited_recommendations" = "Limited recommendations";
 "last_5_scans" = "Last 5 recent scans";
 "unlimited_analysis" = "Unlimited analysis";
-"all_conditions_detected" = "All conditions detected";
 "full_recommendations" = "Full product recommendations";
 "complete_history" = "Complete history & tracking";
 "purchase_error" = "Purchase Error";
@@ -174,7 +173,6 @@
 /* Heatmap */
 "low" = "Low";
 "high" = "High";
-"heatmap_description" = "Areas highlighted in red show where %@ signs were detected.";
 
 /* Common */
 "ok" = "OK";
@@ -216,13 +214,12 @@
 "condition_acne" = "Breakouts";
 "condition_redness" = "Redness";
 "condition_pigmentation" = "Pigmentation";
-"condition_hydration" = "Hydration";
 "condition_wrinkles" = "Wrinkles";
 "condition_eyebags" = "Eye Bags";
 "condition_eye_bags" = "Eye Bags";
 "condition_healthy" = "Healthy";
 
-"metric_dryness" = "Dryness";
+"metric_hydration" = "Hydration";
 "metric_inflammation" = "Inflammation";
 "metric_oiliness" = "Oiliness";
 "condition_recommendation_acne" = "Use cleansers containing salicylic acid. Prefer non-comedogenic moisturizers.";
@@ -305,7 +302,7 @@
 "then_price_monthly_%@" = "Then %@ per month. Auto-renews until canceled.";
 "price_monthly_%@" = "%@ per month. Auto-renews until canceled in Settings.";
 "upgrade_feature_unlimited_scans" = "Unlimited monthly scans";
-"upgrade_feature_full_analysis" = "Full analysis: wrinkles, eye bags, pigmentation, hydration";
+"upgrade_feature_full_analysis" = "Full analysis: wrinkles, eye bags, pigmentation";
 "upgrade_feature_full_history" = "Full history of all past scans";
 "upgrade_feature_unlimited_recommendations" = "Unlimited product recommendations";
 "free_feature_5_scans" = "5 scans per month";
