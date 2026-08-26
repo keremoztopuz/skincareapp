@@ -179,7 +179,7 @@
 "your_personal_expert" = "Your personal AI assisted skincare expert";
 "pro_plan" = "Pro";
 "free_plan" = "Free";
-"per_month" = "/month";
+"per_week" = "/week";
 
 /* Localization Sweep */
 "save" = "Save";
@@ -300,8 +300,8 @@
 "search_catalog_empty" = "There are no products in the catalogue yet.";
 "search_no_results" = "No products match your search.";
 "price_free" = "Free";
-"then_price_monthly_%@" = "Then %@ per month. Auto-renews until canceled.";
-"price_monthly_%@" = "%@ per month. Auto-renews until canceled in Settings.";
+"then_price_weekly_%@" = "Then %@ per week. Auto-renews until canceled.";
+"price_weekly_%@" = "%@ per week. Auto-renews until canceled in Settings.";
 "upgrade_feature_unlimited_scans" = "Unlimited monthly scans";
 "upgrade_feature_full_analysis" = "Full analysis: wrinkles, eye bags, pigmentation";
 "upgrade_feature_full_history" = "Full history of all past scans";
