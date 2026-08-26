@@ -449,7 +449,7 @@ struct ProductPickerSheet: View {
         var fetched: [Product] = []
         for type in productTypes {
             do {
-                fetched += try await SupabaseService.shared.fetchProductsByType(type)
+                fetched += try await CatalogueService.shared.fetchProductsByType(type)
             } catch {
                 loadErrorMessage = AppStrings.loadFailureMessage(for: error)
                 AppLog.error("Products by type fetch failed", error)
