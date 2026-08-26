@@ -25,10 +25,10 @@ Track visible skin changes over time and build a simple daily routine from your 
 
 Skinner helps you look at your skin's visible features, follow how they change over time, and organize a personal skincare routine.
 
-Take a photo with your iPhone camera and Skinner reviews six visible features: breakouts, redness, wrinkles, eye bags, pigmentation, and hydration-related signs. Each scan is saved on your device, so you can compare two scans side by side and see what changed.
+Take a photo with your iPhone camera and Skinner reviews five visible features: breakouts, redness, wrinkles, eye bags, and pigmentation. It then summarises them as three easy-to-follow metrics — hydration, oiliness and inflammation — plus one overall score. Each scan is saved on your device, so you can compare two scans side by side and see what changed.
 
 Key features:
-- Six visible-feature readings from a single photo
+- Five visible-feature readings and three summary metrics from a single photo
 - Compare any two scans and see the difference
 - Scan history stored on your device
 - Personal morning and evening routine builder
@@ -53,11 +53,11 @@ Alternative: Lifestyle
 
 ## Age Rating
 
-TODO: Confirm. Expected 4+ / 12+. No user-generated content, no social features, no medical claims.
+**12+**. No user-generated content, no social features, no medical claims; the 12+ band covers the "infrequent/mild medical or treatment information" answer that a cosmetic skin-tracking app has to give.
 
 ## Support URL
 
-TODO: Add public support page URL.
+https://keremoztopuz.github.io/skincare-legal/ — sayfa `legal/` altinda hazir, yayinlanmayi bekliyor (`legal/README.md`).
 
 ## Marketing URL
 
@@ -65,11 +65,11 @@ TODO: Optional. Leave blank if there is no landing page.
 
 ## Privacy Policy URL
 
-TODO: Publish `PRIVACY_POLICY_DRAFT.md` as a public web page and add its URL. The same URL must match the in-app legal links in `LegalLinks.swift`.
+https://keremoztopuz.github.io/skincare-legal/privacy — matches `LegalLinks.swift`. The page is written (`legal/privacy/index.html`); publishing the GitHub Pages site is the remaining step.
 
 ## Terms of Use URL
 
-Use Apple's Standard EULA if there is no custom terms page:
+https://keremoztopuz.github.io/skincare-legal/terms — a custom page, because `LegalLinks.swift` links to it from every purchase screen. Apple's Standard EULA is the fallback only if that page is not published in time:
 https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
 
 ## Review Notes
@@ -80,13 +80,13 @@ Processing flow:
 1. The user takes a photo with the front camera.
 2. The photo is cropped to the detected face on-device using Apple's Vision framework.
 3. The crop is sent over HTTPS to our own backend service, which strips image metadata, downscales the image, and forwards it to Google's Gemini API (Vertex AI) for processing.
-4. Six numeric readings are returned and shown to the user. The crop is not stored permanently by our service. Google retains requests briefly for abuse monitoring only; they are not used to train models.
+4. Five visible-feature readings plus a hydration reading are returned; the app shows them alongside three summary metrics and an overall score. The crop is not stored permanently by our service. Google retains requests briefly for abuse monitoring only; they are not used to train models.
 
 No account or sign-in is required. Profile details and scan history are stored only on the device using Core Data and are never uploaded. Product and article content is read from our backend; no user data is sent with those requests.
 
 The app shows a medical disclaimer during onboarding that the user must accept before continuing, and repeats a non-diagnostic notice on every result screen.
 
-Free tier: 5 scans per month, breakouts and redness readings only, last 5 analyses visible. Paid tier unlocks unlimited scans, all six readings, full history, and routine recommendations.
+Free tier: 5 scans per month, breakouts and redness readings only, last 5 analyses visible. Paid tier unlocks unlimited scans, all five visible-feature readings, full history, and routine recommendations. The three summary metrics and the overall score are free on both tiers.
 
 ## App Privacy Draft
 
@@ -120,7 +120,7 @@ Reference name: Monthly Pro
 
 Display name: Skinner Pro
 
-Description: Unlimited monthly scans, all six visible-feature readings, full scan history, and routine recommendations.
+Description: Unlimited monthly scans, all five visible-feature readings, full scan history, and routine recommendations.
 
 ### Lifetime
 
@@ -175,10 +175,10 @@ App Store Connect'te tr yerel ayari icin kullanilacak metinler. Uygulama Turkce 
 
 Skinner cildinizin gorunur ozelliklerine bakmaniza, bunlarin zaman icinde nasil degistigini izlemenize ve kisisel bir cilt bakim rutini olusturmaniza yardimci olur.
 
-iPhone kameranizla bir fotograf cekin; Skinner alti gorunur ozelligi degerlendirir: sivilce, kizariklik, kirisiklik, goz alti torbalari, leke ve nem belirtileri. Her tarama cihazinizda saklanir, boylece iki taramayi yan yana karsilastirip neyin degistigini gorebilirsiniz.
+iPhone kameranizla bir fotograf cekin; Skinner bes gorunur ozelligi degerlendirir: sivilce, kizariklik, kirisiklik, goz alti torbalari ve leke. Ardindan bunlari uc anlasilir metrige (nem, yaglilik, iltihaplanma) ve tek bir genel skora ozetler. Her tarama cihazinizda saklanir, boylece iki taramayi yan yana karsilastirip neyin degistigini gorebilirsiniz.
 
 Ozellikler:
-- Tek fotograftan alti gorunur ozellik olcumu
+- Tek fotograftan bes gorunur ozellik olcumu ve uc ozet metrik
 - Iki taramayi karsilastirma
 - Cihazda saklanan tarama gecmisi
 - Sabah ve aksam rutini olusturucu
