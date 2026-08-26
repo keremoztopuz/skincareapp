@@ -114,24 +114,28 @@ Sensitive data:
 
 ### Weekly
 
-Product ID: `com.keremoztopuz.skincare.pro.monthly` — the identifier is kept and
-the plan is sold as a weekly one, so the identifier no longer describes the
-period. It is attached to the RevenueCat `$rc_weekly` package of the `default`
-offering.
-
-**Open item.** App Store Connect still reports this product's duration as
-`ONE_MONTH`. RevenueCat's store-state API accepts a `P1W` duration and reports
-the operation as succeeded, but Apple silently drops it — a read-back on
-26 August 2026 still returned `ONE_MONTH`. The duration has to be changed in the
-App Store Connect UI, or, if the UI locks the field, a new weekly product must
-be created and attached to `$rc_weekly` in its place. Until that is done the app
-sells a monthly subscription while its paywall reads "per week".
+Product ID: `com.keremoztopuz.skincare.pro.weekly`, duration `ONE_WEEK`, created
+on 26 August 2026 in the same `skinner Pro` subscription group as the monthly
+product. It is attached to the RevenueCat `$rc_weekly` package of the `default`
+offering, and `$rc_weekly` is the only subscription package the paywalls read.
 
 Reference name: Weekly Pro
 
 Display name: Skinner Pro
 
 Description: Unlimited scans, all five visible-feature readings, full scan history, and routine recommendations.
+
+An existing subscription's duration cannot be changed after the fact: RevenueCat's
+store-state API accepts a `P1W` duration on the monthly product and reports the
+operation as succeeded, but Apple silently drops it — the read-back still says
+`ONE_MONTH`. Hence the separate product.
+
+### Monthly (retired from the paywall)
+
+Product ID: `com.keremoztopuz.skincare.pro.monthly`, duration `ONE_MONTH`,
+₺99,99 / $3.99 / €3,99. It stays in App Store Connect and in RevenueCat but no
+package points at it any more, so no paywall offers it and no new customer can
+subscribe to it.
 
 ### Lifetime
 
@@ -157,11 +161,12 @@ The app's placeholder prices — shown only until StoreKit returns the real stor
 | EU | €3,99 | €14,99 |
 | TR | ₺99,99 | ₺699,99 |
 
-The subscription became weekly on 26 August 2026 at the same US and EU amounts
-it carried as a monthly plan, with TR set back to ₺99,99. The three storefronts
-above were set by hand rather than equalized from a base territory, so each of
-the three is its own decision — and the remaining territories still sit on the
-old $1.99 base until someone equalizes them from US in App Store Connect.
+The weekly product was created on 26 August 2026 at the same US and EU amounts
+the monthly plan carried, with TR at ₺99,99. Its other territories were filled
+by Apple's equalization from US $3.99, then TR was set back by hand — the
+equalization had raised it to ₺199,99. The retired monthly product still has
+around 150 territories on its old $1.99 base; nothing sells it, so that is
+cosmetic.
 
 The lifetime product could not be equalized through RevenueCat — its equalize
 endpoint rejects non-consumables — so its non-TR tiers were set by hand in App
