@@ -5,13 +5,15 @@
 
 import SwiftUI
 
-/// Where the catalogue came from, and under which licence.
+/// The sources behind the catalogue, and the licence each is used under.
 ///
-/// This is not decoration. The product photographs are Creative Commons
-/// BY-SA 3.0 and the product listings are ODbL: both licences grant the right
-/// to use the work *on the condition* that the source is credited. Ship the
-/// photos without this screen and the licence is breached, however correct
-/// everything else is.
+/// This is not decoration. The product photographs are CC BY-SA 3.0 and the
+/// listings are ODbL: both grant the right to use the work *on the condition*
+/// that the source is credited. Ship the photos without this screen and the
+/// licence is breached, however correct everything else is.
+///
+/// Names only, no prose. A licence screen is read to check a credit, not to
+/// be told a story about where a photo came from.
 struct CreditsView: View {
     @Environment(\.dismiss) private var dismiss
 
@@ -19,7 +21,6 @@ struct CreditsView: View {
         let id = UUID()
         let icon: String
         let title: String
-        let text: String
         let links: [CreditLink]
     }
 
@@ -28,7 +29,6 @@ struct CreditsView: View {
             Credit(
                 icon: "camera",
                 title: NSLocalizedString("credits_product_photos", comment: ""),
-                text: NSLocalizedString("credits_product_photos_body", comment: ""),
                 links: [
                     CreditLink("Open Beauty Facts", "https://world.openbeautyfacts.org"),
                     CreditLink("CC BY-SA 3.0", "https://creativecommons.org/licenses/by-sa/3.0/"),
@@ -37,7 +37,6 @@ struct CreditsView: View {
             Credit(
                 icon: "list.bullet.rectangle",
                 title: NSLocalizedString("credits_product_data", comment: ""),
-                text: NSLocalizedString("credits_product_data_body", comment: ""),
                 links: [
                     CreditLink("Open Beauty Facts", "https://world.openbeautyfacts.org/data"),
                     CreditLink("ODbL 1.0", "https://opendatacommons.org/licenses/odbl/1-0/"),
@@ -46,7 +45,6 @@ struct CreditsView: View {
             Credit(
                 icon: "photo",
                 title: NSLocalizedString("credits_article_photos", comment: ""),
-                text: NSLocalizedString("credits_article_photos_body", comment: ""),
                 links: [
                     CreditLink("Pexels", "https://www.pexels.com"),
                     CreditLink(NSLocalizedString("credits_pexels_license", comment: ""),
@@ -54,18 +52,12 @@ struct CreditsView: View {
                 ]
             ),
             Credit(
-                icon: "text.alignleft",
-                title: NSLocalizedString("credits_written", comment: ""),
-                text: NSLocalizedString("credits_written_body", comment: ""),
-                links: []
-            ),
-            Credit(
                 icon: "shippingbox",
                 title: NSLocalizedString("credits_open_source", comment: ""),
-                text: NSLocalizedString("credits_open_source_body", comment: ""),
                 links: [
                     CreditLink("Lottie", "https://github.com/airbnb/lottie-ios"),
                     CreditLink("RevenueCat", "https://github.com/RevenueCat/purchases-ios"),
+                    CreditLink("MIT", "https://opensource.org/license/mit"),
                 ]
             ),
         ]
@@ -77,18 +69,11 @@ struct CreditsView: View {
                 Color.brandBackground.ignoresSafeArea()
 
                 ScrollView {
-                    VStack(alignment: .leading, spacing: 16) {
-                        Text(NSLocalizedString("credits_intro", comment: ""))
-                            .font(.scaled(size: 15))
-                            .foregroundColor(.gray)
-                            .fixedSize(horizontal: false, vertical: true)
-                            .padding(.horizontal, 20)
-
+                    VStack(alignment: .leading, spacing: 12) {
                         ForEach(credits) { credit in
                             CreditCard(
                                 icon: credit.icon,
                                 title: credit.title,
-                                text: credit.text,
                                 links: credit.links
                             )
                         }
@@ -123,11 +108,10 @@ struct CreditLink: Identifiable {
 private struct CreditCard: View {
     let icon: String
     let title: String
-    let text: String
     let links: [CreditLink]
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 10) {
                 Image(systemName: icon)
                     .font(.scaled(size: 16, weight: .semibold))
@@ -140,33 +124,25 @@ private struct CreditCard: View {
                     .foregroundColor(.brandText)
             }
 
-            Text(text)
-                .font(.scaled(size: 14))
-                .foregroundColor(.gray)
-                .fixedSize(horizontal: false, vertical: true)
-
-            if !links.isEmpty {
-                // Wrapping, not a scroll view: licence names grow under
-                // larger text sizes, and a licence link the user cannot see
-                // credits nobody.
-                WrappingRow(spacing: 8) {
-                    ForEach(links) { link in
-                        Link(destination: link.url) {
-                            HStack(spacing: 4) {
-                                Text(link.label)
-                                Image(systemName: "arrow.up.right")
-                                    .font(.scaled(size: 10, weight: .bold))
-                            }
-                            .font(.scaled(size: 13, weight: .semibold))
-                            .foregroundColor(.brandPrimary)
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 7)
-                            .background(Color.brandPrimary.opacity(0.08))
-                            .cornerRadius(Radius.small)
+            // Wrapping, not a scroll view: licence names grow under larger
+            // text sizes, and a licence link the user cannot see credits
+            // nobody.
+            WrappingRow(spacing: 8) {
+                ForEach(links) { link in
+                    Link(destination: link.url) {
+                        HStack(spacing: 4) {
+                            Text(link.label)
+                            Image(systemName: "arrow.up.right")
+                                .font(.scaled(size: 10, weight: .bold))
                         }
+                        .font(.scaled(size: 13, weight: .semibold))
+                        .foregroundColor(.brandPrimary)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 7)
+                        .background(Color.brandPrimary.opacity(0.08))
+                        .cornerRadius(Radius.small)
                     }
                 }
-                .padding(.top, 2)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
