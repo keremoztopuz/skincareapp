@@ -178,7 +178,15 @@ Connect and this table and the fallback both have to move with it.
 
 ### Introductory offer
 
-TODO: Decide whether to offer a free trial. Nothing in the app promises one — the paywalls read the offer from StoreKit and mention a trial only when App Store Connect actually carries one, using the store's own unit ("1 month free", not "30 days"). With no offer configured the buttons simply read "Get Pro".
+The weekly product carries a **3-day free trial**, set on 26 August 2026 and
+available in every territory. Nothing is hard-coded: the paywalls read the offer
+from StoreKit and mention a trial only when App Store Connect actually carries
+one, in the store's own unit — so the buttons now read "3 Günlük Ücretsiz
+Denemeyi Başlat" / "Start 3-Day Free Trial" and the caption below them switches
+to `then_price_weekly_%@`. `SkinCareProducts.storekit` carries the same P3D
+free-trial offer so the simulator shows what the store will show.
+
+The lifetime product is a non-consumable and cannot carry a trial.
 
 ---
 
