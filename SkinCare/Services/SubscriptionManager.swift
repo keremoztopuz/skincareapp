@@ -14,7 +14,7 @@ class SubscriptionManager: ObservableObject {
     /// does). Keep in step with the App Store Connect price tiers — the live
     /// price always wins once the offerings load.
     enum FallbackPrice {
-        static var monthly: String { forCurrency(turkish: "₺99,99", usd: "$1.99", eur: "€1,99") }
+        static var monthly: String { forCurrency(turkish: "₺149,99", usd: "$3.99", eur: "€3,99") }
         static var lifetime: String { forCurrency(turkish: "₺699,99", usd: "$12.99", eur: "€14,99") }
 
         private static func forCurrency(turkish: String, usd: String, eur: String) -> String {
