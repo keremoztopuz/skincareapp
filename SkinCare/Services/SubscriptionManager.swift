@@ -14,8 +14,8 @@ class SubscriptionManager: ObservableObject {
     /// does). Keep in step with the App Store Connect price tiers — the live
     /// price always wins once the offerings load.
     enum FallbackPrice {
-        static var monthly: String { forCurrency(turkish: "₺199,99", usd: "$3.99", eur: "€4,99") }
-        static var lifetime: String { forCurrency(turkish: "₺899", usd: "$17.99", eur: "€19,99") }
+        static var monthly: String { forCurrency(turkish: "₺99,99", usd: "$1.99", eur: "€1,99") }
+        static var lifetime: String { forCurrency(turkish: "₺699,99", usd: "$17.99", eur: "€19,99") }
 
         private static func forCurrency(turkish: String, usd: String, eur: String) -> String {
             switch Locale.current.currency?.identifier {
@@ -61,6 +61,7 @@ class SubscriptionManager: ObservableObject {
         // touching Purchases.shared unconfigured is a fatal error.
         if Purchases.isConfigured {
             checkSubscriptionStatus()
+            observeCustomerInfo()
         }
         NotificationCenter.default.addObserver(
             self,
@@ -72,6 +73,22 @@ class SubscriptionManager: ObservableObject {
 
     @objc private func appWillEnterForeground() {
         checkSubscriptionStatus()
+    }
+
+    private var customerInfoTask: Task<Void, Never>?
+
+    /// Foreground polling alone leaves the UI stale for anything that lands
+    /// while the app is open — a renewal, a billing failure, an expiry, or a
+    /// refund. The stream pushes every one of those the moment RevenueCat
+    /// sees it, so Pro is granted and revoked without waiting for a
+    /// background/foreground round trip.
+    private func observeCustomerInfo() {
+        customerInfoTask = Task { [weak self] in
+            for await info in Purchases.shared.customerInfoStream {
+                let entitled = info.entitlements[Self.proEntitlementID]?.isActive == true
+                await MainActor.run { self?.isPremium = entitled }
+            }
+        }
     }
 
     func checkSubscriptionStatus() {
