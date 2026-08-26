@@ -174,6 +174,7 @@ enum AppStrings {
 
     // MARK: - Common
     static let ok = String(localized: "ok")
+    static let close = String(localized: "close")
     static let pro = String(localized: "pro_plan")
     static let free = String(localized: "free_plan")
     static let perMonth = String(localized: "per_month")
