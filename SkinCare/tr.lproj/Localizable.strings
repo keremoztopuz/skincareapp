@@ -313,3 +313,19 @@
 "start_free_trial_%lld_months" = "%lld Aylık Ücretsiz Denemeyi Başlat";
 "start_free_trial_%lld_years" = "%lld Yıllık Ücretsiz Denemeyi Başlat";
 "get_pro" = "Pro'ya Geç";
+
+/* Kaynaklar ve lisanslar */
+"credits" = "Kaynaklar ve Lisanslar";
+"close" = "Kapat";
+"credits_intro" = "Uygulamadaki ürün kataloğu açık verilere dayanıyor. Her parçanın nereden geldiği ve hangi lisansla kullanıldığı aşağıda.";
+"credits_product_photos" = "Ürün fotoğrafları";
+"credits_product_photos_body" = "Ürün fotoğrafları, topluluğunun katkılarıyla oluşan Open Beauty Facts'ten geliyor ve Creative Commons Atıf-AynıLisanslaPaylaş 3.0 lisansıyla kullanılıyor.";
+"credits_product_data" = "Ürün adları ve markalar";
+"credits_product_data_body" = "Ürün kayıtları Open Beauty Facts veritabanından geliyor ve Open Database License ile kullanılıyor.";
+"credits_article_photos" = "Makale fotoğrafları";
+"credits_article_photos_body" = "Makalelerin yanındaki fotoğraflar Pexels'ten geliyor ve Pexels Lisansı ile kullanılıyor.";
+"credits_pexels_license" = "Pexels Lisansı";
+"credits_written" = "Yazılı içerik";
+"credits_written_body" = "Uygulamadaki her ürün açıklaması, makale ve rutin Skinner için yazıldı.";
+"credits_open_source" = "Açık kaynak";
+"credits_open_source_body" = "Skinner, ikisi de MIT lisansıyla yayınlanan Lottie ve RevenueCat Purchases SDK ile geliştirildi.";
