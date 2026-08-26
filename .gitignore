@@ -27,7 +27,6 @@ Build/
 .env.*
 *.secret
 secrets/
-SkinCare/Model/SupabaseConfig.swift
 
 # Temporary files
 *.tmp
