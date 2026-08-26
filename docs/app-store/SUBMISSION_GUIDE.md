@@ -9,7 +9,8 @@ göreceğin yazıyor.
 | --- | --- | --- | --- |
 | 1 | `skanner_pro` entitlement'ına weekly + lifetime bağlı | RevenueCat → Entitlements | Tamam (26 Ağu 10:38) |
 | 2 | Boş kalan `$rc_monthly` paketini `default` offering'den sil | RevenueCat → Offerings | Açık (kozmetik) |
-| 3 | Haftalık ürünün review screenshot'ını kontrol et (13 KB'lık bir dosya görünüyor) | App Store Connect → Subscriptions | Açık |
+| 3 | Haftalık ürünün review screenshot'ı | App Store Connect → Subscriptions | Tamam — gerçek paywall karesi (336 KB) yüklendi |
+| 3b | Lifetime ürününün görünen adı hâlâ "skinner" | App Store Connect → In-App Purchases | **Açık — elle düzeltilmeli** |
 | 4 | App Store screenshot'ları (6.9") | `docs/app-store/screenshots/` | Hazır — 9 kare çekildi |
 | 5 | Build yükle (Archive → Distribute) | Xcode Organizer | Açık |
 
@@ -69,9 +70,21 @@ karelerin gerçek cihazda yenilenmesi gerektiği o klasördeki `README.md`'de.
   `https://keremoztopuz.github.io/skincare-legal/terms`
 
 ### 3.4 Subscriptions
-- Grup: `skinner Pro` — grup ekranında lokalize isim girili olmalı (tr: skinner Pro)
+- Grup: `skinner Pro` — grup ekranında lokalize isim girili olmalı (tr: skinner Pro).
+  Grubun ASC'deki referans adı hâlâ `Skincare Pro Monthly`; bu yalnızca dahili
+  bir etiket, kullanıcı görmüyor. Değiştirmek istersen ASC UI'dan yap — API
+  üzerinden farklı bir grup adı yazmak ürünü başka bir gruba taşıyabilir.
 - Her ürün için: display name, description, review screenshot, review notes.
 - Weekly ürününde trial'ın "3 Days, All Territories" göründüğünü doğrula.
+- **Görünen adlar.** Kullanıcının satın alma onay sayfasında gördüğü ad
+  `localizations.<locale>.name` alanıdır, reference name değil. Weekly ürünün
+  adı 26 Ağustos 2026'da `Skinner Pro Weekly` / `Skinner Pro Haftalık` olarak
+  düzeltildi. **Lifetime hâlâ `skinner`**: App Store Connect API bu ürünün
+  localization'ında `NAME` alanını kilitliyor
+  ("The field (NAME) can not be modified"), yani ASC arayüzünden elle
+  `Skinner Pro Lifetime` / `Skinner Pro Ömür Boyu` yapılmalı. İki ürün aynı
+  adla göründüğü sürece 3.1.2'nin "abonelik başlığı net olmalı" maddesiyle
+  sürtüşür.
 
 ### 3.5 Version Information
 - Screenshot'lar (bkz. bölüm 2), Promotional text, Description, Keywords,
