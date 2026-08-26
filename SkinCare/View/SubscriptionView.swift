@@ -17,7 +17,7 @@ struct SubscriptionView: View {
     @State private var lifetimeCardAppeared = false
     @State private var isPurchasing = false
     @State private var purchaseError: String?
-    @State private var proPriceText: String = SubscriptionManager.FallbackPrice.monthly
+    @State private var proPriceText: String = SubscriptionManager.FallbackPrice.weekly
     @State private var lifetimePriceText: String = SubscriptionManager.FallbackPrice.lifetime
     @State private var trial: SubscriptionManager.TrialPeriod?
     @EnvironmentObject var appVM: ContentViewModel
@@ -84,7 +84,7 @@ struct SubscriptionView: View {
                                 plan: .pro,
                                 title: AppStrings.pro,
                                 price: proPriceText,
-                                period: AppStrings.perMonth,
+                                period: AppStrings.perWeek,
                                 features: [
                                     ("infinity", NSLocalizedString("unlimited_analysis", comment: "")),
                                     ("bag.fill", NSLocalizedString("full_recommendations", comment: ""))
@@ -256,9 +256,9 @@ struct SubscriptionView: View {
         switch selectedPlan {
         case .pro:
             if trial != nil {
-                return String(format: NSLocalizedString("then_price_monthly_%@", comment: ""), proPriceText)
+                return String(format: NSLocalizedString("then_price_weekly_%@", comment: ""), proPriceText)
             }
-            return String(format: NSLocalizedString("price_monthly_%@", comment: ""), proPriceText)
+            return String(format: NSLocalizedString("price_weekly_%@", comment: ""), proPriceText)
         case .lifetime:
             return String(format: NSLocalizedString("one_time_price_%@", comment: ""), lifetimePriceText)
         case .free:
@@ -394,23 +394,23 @@ struct SubscriptionView: View {
     // MARK: - Localized Prices
     /// Live storefront prices replace the FallbackPrice placeholders as soon
     /// as the offerings load; the fallbacks only fill the gap until then.
-    /// Only the true `$rc_monthly` package may feed the Pro card — falling
+    /// Only the true `$rc_weekly` package may feed the Pro card — falling
     /// back to an arbitrary package could show (and charge) the lifetime
-    /// price as if it were monthly.
+    /// price as if it were weekly.
     private func loadPrices() {
         guard Purchases.isConfigured else { return }
         Purchases.shared.getOfferings { offerings, _ in
             guard let current = offerings?.current else { return }
-            let monthly = current.monthly
+            let weekly = current.weekly
             let lifetime = current.lifetime
             DispatchQueue.main.async {
-                if let live = monthly?.storeProduct.localizedPriceString {
+                if let live = weekly?.storeProduct.localizedPriceString {
                     proPriceText = live
                 }
                 if let live = lifetime?.storeProduct.localizedPriceString {
                     lifetimePriceText = live
                 }
-                trial = monthly.flatMap { SubscriptionManager.trialPeriod(in: $0.storeProduct) }
+                trial = weekly.flatMap { SubscriptionManager.trialPeriod(in: $0.storeProduct) }
             }
         }
     }
@@ -437,8 +437,8 @@ struct SubscriptionView: View {
                 package = current?.lifetime
             case .pro:
                 // Never substitute another package: an offering without a
-                // monthly package must fail loudly, not charge lifetime.
-                package = current?.monthly
+                // weekly package must fail loudly, not charge lifetime.
+                package = current?.weekly
             case .free:
                 package = nil
             }
