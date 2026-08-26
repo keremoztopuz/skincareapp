@@ -8,8 +8,8 @@ Bu dosya App Store'a cikis icin teknik, hesap, gizlilik ve icerik hazirliklarini
 - [ ] App Store Connect'te yeni app kaydi acildi.
 - [ ] Bundle ID: `com.keremoztopuz.SkinCare`.
 - [x] App adi kesinlesti: `Skinner` (Xcode target ve bundle ID hala `SkinCare`; bu kasitli).
-- [ ] Support URL yayinda: `https://keremoztopuz.github.io/skincare-legal/` — **BLOKE**, `legal/` klasoru hazir ama Pages sitesi henuz yayinlanmadi (bkz. `legal/README.md`).
-- [ ] Privacy Policy URL yayinda: `https://keremoztopuz.github.io/skincare-legal/privacy` — **BLOKE**, ayni Pages sitesi.
+- [x] Support URL yayinda: `https://keremoztopuz.github.io/skincare-legal/` — yayinda, 200 donuyor. Kaynak repo: `keremoztopuz/skincare-legal` (public, GitHub Pages main/root).
+- [x] Privacy Policy URL yayinda: `https://keremoztopuz.github.io/skincare-legal/privacy` — yayinda. Uzantisiz adres kanonik `/privacy/` adresine 301 ile gidiyor.
 - [ ] RevenueCat production API key hazir.
 - [ ] App Store Connect subscription urunu hazir.
 - [ ] RevenueCat entitlement adi **`skanner_pro`** olarak App Store urunune baglandi. (`SubscriptionManager.swift` bu id'yi okur; `pro` yazilirsa hicbir satin alma kilidi acmaz.)
@@ -58,7 +58,7 @@ Bu dosya App Store'a cikis icin teknik, hesap, gizlilik ve icerik hazirliklarini
 - [x] App icinde disclaimer var.
 - [ ] Privacy Policy URL App Store Connect'e eklendi.
 - [ ] Support URL App Store Connect'e eklendi.
-- [ ] Abonelik varsa Terms of Use/EULA linki hazir: `https://keremoztopuz.github.io/skincare-legal/terms` — sayfa yazildi, yayinlanmayi bekliyor.
+- [x] Abonelik varsa Terms of Use/EULA linki hazir: `https://keremoztopuz.github.io/skincare-legal/terms` — yayinda.
 - [ ] App aciklamasinda "medical diagnosis", "treatment", "cure" gibi iddialar yok.
 - [x] App aciklamasi analizlerin bilgilendirme amacli oldugunu soyluyor.
 
@@ -71,7 +71,7 @@ Bu dosya App Store'a cikis icin teknik, hesap, gizlilik ve icerik hazirliklarini
 - [ ] Analiz kaydi olusturma.
 - [ ] Recents ekrani analiz gecmisini gosteriyor.
 - [x] Search/Home icerik servisi verilerini gosteriyor. Katalog Neon'a tasindi: `neon/seed/` canli projede calistirildi (107 urun, 111 urun-kondisyon bagi, 40 makale). Uygulama artik proxy'nin `/v1/catalogue/*` uclarindan okuyor ve hicbir veritabani kimlik bilgisi tasimiyor.
-- [ ] Proxy'nin Cloud Run dagitimina `DATABASE_URL` secret'i eklendi ve yeniden deploy edildi. Bu yapilmadan katalog uclari canlida 500 doner ve Home/Search "icerik yuklenemiyor" gosterir.
+- [x] Proxy'nin Cloud Run dagitimina `DATABASE_URL` secret'i eklendi ve yeniden deploy edildi (revision `skincare-proxy-00003-f7z`). Canlida dogrulandi: `/v1/catalogue/articles`, `/products` ve `/recommendations` gercek veri donuyor, `/v1/analyze` 200 ve `gemini-2.5-flash` cevabi veriyor. `skinner_reader` rolunun yazma denemesi veritabani tarafindan reddediliyor.
 - [x] Katalog kaynaklarina atif verildi. Profil > Ayarlar > Kaynaklar ve Lisanslar ekrani Open Beauty Facts (fotograflar CC BY-SA 3.0, veri ODbL), Pexels ve kullanilan acik kaynak SDK'lari kredilendiriyor. Fotograflarin lisansi atfi sart kosuyor, bu ekran olmadan yayina cikilamaz.
 - [ ] Internet kapaliyken uygulama aciliyor.
 - [ ] Satin alma iptal edildi.
