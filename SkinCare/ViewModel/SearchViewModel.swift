@@ -42,7 +42,7 @@ class SearchViewModel: ObservableObject {
         isLoading = true
         loadFailed = false
         do {
-            self.products = try await SupabaseService.shared.fetchProducts()
+            self.products = try await CatalogueService.shared.fetchProducts()
         } catch {
             self.products = []
             self.loadFailed = true
