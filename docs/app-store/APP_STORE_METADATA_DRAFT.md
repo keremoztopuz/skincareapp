@@ -142,18 +142,20 @@ The app's placeholder prices — shown only until StoreKit returns the real stor
 
 | Storefront | Monthly | Lifetime |
 | --- | --- | --- |
-| US | $1.99 | $17.99 |
-| EU | €1,99 | €19,99 |
+| US | $1.99 | $12.99 |
+| EU | €1,99 | €14,99 |
 | TR | ₺99,99 | ₺699,99 |
 
 Turkey is the pricing base. The monthly subscription was equalized from the TR
 price across every territory, which is why the US monthly sits at $1.99.
 
-TODO: the lifetime product was **not** equalized — RevenueCat's equalize
-endpoint rejects non-consumables, so only the TR price moved and every other
-territory still carries the tier set from the old $17.99 base. Equalize it from
-Turkey in App Store Connect, then update the table and
-`SubscriptionManager.FallbackPrice`.
+The lifetime product could not be equalized through RevenueCat — its equalize
+endpoint rejects non-consumables — so its non-TR tiers were set by hand in App
+Store Connect. The table above is the live App Store Connect state as read back
+on 26 August 2026; `SubscriptionManager.FallbackPrice` matches it. TR ₺699,99
+is still roughly 7x the monthly while US $12.99 is roughly 6.5x, so the two
+storefronts are not a strict multiple of each other. Change a tier in App Store
+Connect and this table and the fallback both have to move with it.
 
 ### Introductory offer
 
