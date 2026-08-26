@@ -1,0 +1,3 @@
+/* Kamera izni metni. INFOPLIST_KEY_NSCameraUsageDescription'in Turkce
+   karsiligi; iOS kullaniciya bu degeri gosterir. */
+"NSCameraUsageDescription" = "Skinner, yüzünüzü fotoğraflamak için kamerayı kullanır. Fotoğraf analiz servisimize güvenli şekilde gönderilir ve kalıcı olarak saklanmaz.";
