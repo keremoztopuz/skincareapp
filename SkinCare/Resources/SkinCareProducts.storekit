@@ -1,8 +1,6 @@
 {
   "identifier" : "F0A8A3A0-1B2C-4D5E-9F6A-7B8C9D0E1F2A",
-  "nonRenewingSubscriptions" : [
-
-  ],
+  "nonRenewingSubscriptions" : [],
   "products" : [
     {
       "displayPrice" : "17.99",
@@ -20,26 +18,39 @@
       "type" : "NonConsumable"
     }
   ],
-  "settings" : {
-  },
+  "settings" : {},
   "subscriptionGroups" : [
     {
       "id" : "21654321",
-      "localizations" : [
-
-      ],
+      "localizations" : [],
       "name" : "skinner Pro",
       "subscriptions" : [
         {
-          "adHocOffers" : [
-
-          ],
-          "codeOffers" : [
-
-          ],
+          "adHocOffers" : [],
+          "codeOffers" : [],
           "displayPrice" : "3.99",
           "familyShareable" : false,
           "groupNumber" : 1,
+          "internalID" : "B2C3D4E5-F6A7-8901-BCDE-F23456789012",
+          "localizations" : [
+            {
+              "description" : "AI Powered skin care app",
+              "displayName" : "skinner",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.keremoztopuz.skincare.pro.weekly",
+          "recurringSubscriptionPeriod" : "P1W",
+          "referenceName" : "skinner Pro Weekly",
+          "subscriptionGroupID" : "21654321",
+          "type" : "RecurringSubscription"
+        },
+        {
+          "adHocOffers" : [],
+          "codeOffers" : [],
+          "displayPrice" : "3.99",
+          "familyShareable" : false,
+          "groupNumber" : 2,
           "internalID" : "A1B2C3D4-E5F6-7890-ABCD-EF1234567890",
           "localizations" : [
             {
@@ -49,8 +60,8 @@
             }
           ],
           "productID" : "com.keremoztopuz.skincare.pro.monthly",
-          "recurringSubscriptionPeriod" : "P1W",
-          "referenceName" : "skinner Pro Weekly",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "skinner Pro Monthly",
           "subscriptionGroupID" : "21654321",
           "type" : "RecurringSubscription"
         }
