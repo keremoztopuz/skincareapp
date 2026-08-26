@@ -32,7 +32,7 @@ class HomeViewModel: ObservableObject {
 
     // Average Statistics
     @Published var avgOverallScore: Int = 0
-    @Published var avgDryness: Int = 0
+    @Published var avgHydration: Int = 0
     @Published var avgOiliness: Int = 0
     @Published var avgInflammation: Int = 0
 
@@ -88,7 +88,7 @@ class HomeViewModel: ObservableObject {
         
         let count = Double(records.count)
         let totalOverall = records.reduce(0.0) { $0 + $1.overallScore }
-        let totalDryness = records.reduce(0.0) { $0 + $1.drynessScore }
+        let totalHydration = records.reduce(0.0) { $0 + $1.hydrationScore }
         let totalOiliness = records.reduce(0.0) { $0 + $1.oilinessScore }
         let totalInflammation = records.reduce(0.0) { $0 + $1.inflammationScore }
         
@@ -102,7 +102,7 @@ class HomeViewModel: ObservableObject {
 
         DispatchQueue.main.async {
             self.avgOverallScore = Int(totalOverall / count)
-            self.avgDryness = Int(totalDryness / count)
+            self.avgHydration = Int(totalHydration / count)
             self.avgOiliness = Int(totalOiliness / count)
             self.avgInflammation = Int(totalInflammation / count)
             self.scoreTrend = Array(trend)
