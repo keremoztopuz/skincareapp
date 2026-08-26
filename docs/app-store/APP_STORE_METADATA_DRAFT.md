@@ -112,15 +112,19 @@ Sensitive data:
 
 ## Subscription Metadata
 
-### Monthly
+### Weekly
 
-Product ID: `com.keremoztopuz.skincare.pro.monthly`
+Product ID: `com.keremoztopuz.skincare.pro.weekly` was never created — the product
+keeps its original `com.keremoztopuz.skincare.pro.monthly` identifier and its
+duration was changed to one week on 26 August 2026, before it ever went on
+sale. The identifier no longer describes the period; the store duration does.
+It is attached to the RevenueCat `$rc_weekly` package of the `default` offering.
 
-Reference name: Monthly Pro
+Reference name: Weekly Pro
 
 Display name: Skinner Pro
 
-Description: Unlimited monthly scans, all five visible-feature readings, full scan history, and routine recommendations.
+Description: Unlimited scans, all five visible-feature readings, full scan history, and routine recommendations.
 
 ### Lifetime
 
@@ -140,22 +144,23 @@ Both products must unlock the RevenueCat entitlement `skanner_pro`. The app trea
 
 The app's placeholder prices — shown only until StoreKit returns the real storefront price — are:
 
-| Storefront | Monthly | Lifetime |
+| Storefront | Weekly | Lifetime |
 | --- | --- | --- |
 | US | $3.99 | $12.99 |
 | EU | €3,99 | €14,99 |
-| TR | ₺149,99 | ₺699,99 |
+| TR | ₺99,99 | ₺699,99 |
 
-The monthly price was raised on 26 August 2026 from ₺99,99 / $1.99 / €1,99.
-The three storefronts above were set by hand rather than equalized from a base
-territory, so monthly is no longer a single Apple equalization of one price —
-each of the three is its own decision.
+The subscription became weekly on 26 August 2026 at the same US and EU amounts
+it carried as a monthly plan, with TR set back to ₺99,99. The three storefronts
+above were set by hand rather than equalized from a base territory, so each of
+the three is its own decision — and the remaining territories still sit on the
+old $1.99 base until someone equalizes them from US in App Store Connect.
 
 The lifetime product could not be equalized through RevenueCat — its equalize
 endpoint rejects non-consumables — so its non-TR tiers were set by hand in App
 Store Connect. The table above is the live App Store Connect state as read back
 on 26 August 2026; `SubscriptionManager.FallbackPrice` matches it. TR ₺699,99
-is still roughly 7x the monthly while US $12.99 is roughly 6.5x, so the two
+is still roughly 7x the weekly while US $12.99 is roughly 3.3x, so the two
 storefronts are not a strict multiple of each other. Change a tier in App Store
 Connect and this table and the fallback both have to move with it.
 
