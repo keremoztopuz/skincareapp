@@ -1,0 +1,3 @@
+/* Camera permission prompt. Mirrors INFOPLIST_KEY_NSCameraUsageDescription;
+   the localized value is what iOS actually shows. */
+"NSCameraUsageDescription" = "Skinner uses the camera to photograph your face. The photo is sent securely to our analysis service and is not stored permanently.";
