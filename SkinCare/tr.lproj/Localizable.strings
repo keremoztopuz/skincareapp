@@ -141,7 +141,7 @@
 "your_personal_expert" = "Kişisel yapay zeka destekli cilt bakım uzmanınız";
 "pro_plan" = "Pro";
 "free_plan" = "Ücretsiz";
-"per_month" = "/ay";
+"per_week" = "/hafta";
 
 "save" = "Kaydet";
 "unknown" = "Bilinmiyor";
@@ -253,8 +253,8 @@
 "search_catalog_empty" = "Katalogda henüz ürün yok.";
 "search_no_results" = "Aramanızla eşleşen ürün bulunamadı.";
 "price_free" = "Ücretsiz";
-"then_price_monthly_%@" = "Sonrasında aylık %@. İptal edilene kadar otomatik yenilenir.";
-"price_monthly_%@" = "Aylık %@. Ayarlar'dan iptal edilene kadar otomatik yenilenir.";
+"then_price_weekly_%@" = "Sonrasında haftalık %@. İptal edilene kadar otomatik yenilenir.";
+"price_weekly_%@" = "Haftalık %@. Ayarlar'dan iptal edilene kadar otomatik yenilenir.";
 "upgrade_feature_unlimited_scans" = "Sınırsız aylık tarama";
 "upgrade_feature_full_analysis" = "Tam analiz: kırışıklık, göz altı torbası, pigmentasyon";
 "upgrade_feature_full_history" = "Tüm geçmiş taramalara erişim";
