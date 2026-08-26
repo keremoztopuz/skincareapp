@@ -112,7 +112,7 @@ struct CompareView: View {
                         detailRow(label: AppStrings.pigmentation, val1: older.pigmentationScore, val2: newer.pigmentationScore, higherIsBetter: false)
                         detailRow(label: AppStrings.wrinkles,     val1: older.wrinkleScore,      val2: newer.wrinkleScore,      higherIsBetter: false)
                         detailRow(label: AppStrings.eyeBags,      val1: older.eyebagScore,       val2: newer.eyebagScore,       higherIsBetter: false)
-                        detailRow(label: AppStrings.dryness,      val1: older.drynessScore,      val2: newer.drynessScore,      higherIsBetter: false)
+                        detailRow(label: AppStrings.hydration,    val1: older.hydrationScore,    val2: newer.hydrationScore,    higherIsBetter: true)
                         detailRow(label: AppStrings.inflammation, val1: older.inflammationScore, val2: newer.inflammationScore, higherIsBetter: false)
                         detailRow(label: AppStrings.oiliness,     val1: older.oilinessScore,     val2: newer.oilinessScore,     higherIsBetter: false)
                     }
@@ -303,7 +303,7 @@ private func mockRecord(ctx: NSManagedObjectContext, overall: Double, acne: Doub
     r.pigmentationScore = 30
     r.wrinkleScore      = 20
     r.eyebagScore       = 15
-    r.drynessScore      = 40
+    r.hydrationScore    = 62
     r.inflammationScore = 35
     r.oilinessScore     = 50
     r.condition         = "Acne"
