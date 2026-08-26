@@ -114,11 +114,18 @@ Sensitive data:
 
 ### Weekly
 
-Product ID: `com.keremoztopuz.skincare.pro.weekly` was never created — the product
-keeps its original `com.keremoztopuz.skincare.pro.monthly` identifier and its
-duration was changed to one week on 26 August 2026, before it ever went on
-sale. The identifier no longer describes the period; the store duration does.
-It is attached to the RevenueCat `$rc_weekly` package of the `default` offering.
+Product ID: `com.keremoztopuz.skincare.pro.monthly` — the identifier is kept and
+the plan is sold as a weekly one, so the identifier no longer describes the
+period. It is attached to the RevenueCat `$rc_weekly` package of the `default`
+offering.
+
+**Open item.** App Store Connect still reports this product's duration as
+`ONE_MONTH`. RevenueCat's store-state API accepts a `P1W` duration and reports
+the operation as succeeded, but Apple silently drops it — a read-back on
+26 August 2026 still returned `ONE_MONTH`. The duration has to be changed in the
+App Store Connect UI, or, if the UI locks the field, a new weekly product must
+be created and attached to `$rc_weekly` in its place. Until that is done the app
+sells a monthly subscription while its paywall reads "per week".
 
 Reference name: Weekly Pro
 
