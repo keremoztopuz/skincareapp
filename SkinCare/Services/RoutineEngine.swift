@@ -45,7 +45,7 @@ class RoutineEngine {
                     }
                 }
             } catch {
-                print("Failed to fetch products for \(conditionKey): \(error)")
+                AppLog.error("Condition product fetch failed", error)
             }
         }
 
