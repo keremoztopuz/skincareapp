@@ -177,7 +177,7 @@ enum AppStrings {
     static let close = String(localized: "close")
     static let pro = String(localized: "pro_plan")
     static let free = String(localized: "free_plan")
-    static let perMonth = String(localized: "per_month")
+    static let perWeek = String(localized: "per_week")
     static let yourPersonalExpert = String(localized: "your_personal_expert")
     static let save = String(localized: "save")
     static let unknown = String(localized: "unknown")
