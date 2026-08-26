@@ -57,7 +57,7 @@ Problem -> Solution -> Demo -> Architecture -> Technical Decisions -> Validation
 
 6. System Architecture
    - High-level only.
-   - Architecture: User -> Swift iOS App -> on-device face crop (Vision) -> FastAPI proxy (Cloud Run) -> Gemini 2.5 Flash on Vertex AI -> scores back to the app -> Core Data (local history) + Supabase (catalogue content).
+   - Architecture: User -> Swift iOS App -> on-device face crop (Vision) -> FastAPI proxy (Cloud Run) -> Gemini 2.5 Flash on Vertex AI -> scores back to the app -> Core Data (local history) + Neon PostgreSQL, read through the same proxy (catalogue content).
    - The app holds no cloud credential; the proxy owns the Vertex key, strips EXIF, downscales, rate-limits and enforces a daily spend ceiling.
 
 7. Technology Stack
@@ -66,7 +66,7 @@ Problem -> Solution -> Demo -> Architecture -> Technical Decisions -> Validation
    - FastAPI on Cloud Run: the analysis proxy, written in Python.
    - Gemini 2.5 Flash on Vertex AI: the analysis model.
    - Core Data: local profile and scan history.
-   - Supabase (PostgreSQL): product catalogue, articles, routine content (read-only).
+   - Neon (PostgreSQL): product catalogue, articles, routine content. Read-only, and only through the proxy's /v1/catalogue/* endpoints — the app holds no database credential.
    - RevenueCat + StoreKit 2: subscriptions.
    - Earlier phase (retired): PyTorch + timm ConvNeXt Tiny, exported to CoreML.
 
@@ -124,7 +124,7 @@ Problem -> Solution -> Demo -> Architecture -> Technical Decisions -> Validation
    - Bilingual (EN/TR) app with enforced key parity.
 
 14. Future Improvements
-   - Move the content backend from Supabase to Vertex/Firestore.
+   - Fill the 78 product images still missing a photo.
    - Calibrate the model's readings against labelled examples.
    - Add doctor verification workflow.
    - Add more skin condition categories.
