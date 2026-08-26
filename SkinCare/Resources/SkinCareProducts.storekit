@@ -1,82 +1,65 @@
 {
-  "identifier" : "F0A8A3A0-1B2C-4D5E-9F6A-7B8C9D0E1F2A",
-  "nonRenewingSubscriptions" : [],
-  "products" : [
+  "identifier": "F0A8A3A0-1B2C-4D5E-9F6A-7B8C9D0E1F2A",
+  "nonRenewingSubscriptions": [],
+  "products": [
     {
-      "displayPrice" : "17.99",
-      "familyShareable" : false,
-      "internalID" : "C3D4E5F6-A7B8-9012-CDEF-234567890123",
-      "localizations" : [
+      "displayPrice": "699.99",
+      "familyShareable": false,
+      "internalID": "C3D4E5F6-A7B8-9012-CDEF-234567890123",
+      "localizations": [
         {
-          "description" : "AI Powered skin care app",
-          "displayName" : "skinner",
-          "locale" : "en_US"
+          "description": "AI Powered skin care app",
+          "displayName": "skinner",
+          "locale": "en_US"
         }
       ],
-      "productID" : "com.keremoztopuz.skincare.pro.lifetime",
-      "referenceName" : "skinner Pro Lifetime",
-      "type" : "NonConsumable"
+      "productID": "com.keremoztopuz.skincare.pro.lifetime",
+      "referenceName": "skinner Pro Lifetime",
+      "type": "NonConsumable"
     }
   ],
-  "settings" : {},
-  "subscriptionGroups" : [
+  "settings": {
+    "_storefront": "TUR",
+    "_locale": "tr_TR"
+  },
+  "subscriptionGroups": [
     {
-      "id" : "21654321",
-      "localizations" : [],
-      "name" : "skinner Pro",
-      "subscriptions" : [
+      "id": "21654321",
+      "localizations": [],
+      "name": "skinner Pro",
+      "subscriptions": [
         {
-          "adHocOffers" : [],
-          "codeOffers" : [],
-          "displayPrice" : "3.99",
-          "familyShareable" : false,
-          "groupNumber" : 1,
-          "internalID" : "B2C3D4E5-F6A7-8901-BCDE-F23456789012",
-          "introductoryOffer" : {
-            "displayPrice" : "0.00",
-            "internalID" : "C4D5E6F7-A8B9-0123-CDEF-345678901234",
-            "numberOfPeriods" : 1,
-            "paymentMode" : "free",
-            "subscriptionPeriod" : "P3D"
+          "adHocOffers": [],
+          "codeOffers": [],
+          "displayPrice": "99.99",
+          "familyShareable": false,
+          "groupNumber": 1,
+          "internalID": "B2C3D4E5-F6A7-8901-BCDE-F23456789012",
+          "introductoryOffer": {
+            "displayPrice": "0.00",
+            "internalID": "C4D5E6F7-A8B9-0123-CDEF-345678901234",
+            "numberOfPeriods": 1,
+            "paymentMode": "free",
+            "subscriptionPeriod": "P3D"
           },
-          "localizations" : [
+          "localizations": [
             {
-              "description" : "AI Powered skin care app",
-              "displayName" : "skinner",
-              "locale" : "en_US"
+              "description": "AI Powered skin care app",
+              "displayName": "skinner",
+              "locale": "en_US"
             }
           ],
-          "productID" : "com.keremoztopuz.skincare.pro.weekly",
-          "recurringSubscriptionPeriod" : "P1W",
-          "referenceName" : "skinner Pro Weekly",
-          "subscriptionGroupID" : "21654321",
-          "type" : "RecurringSubscription"
-        },
-        {
-          "adHocOffers" : [],
-          "codeOffers" : [],
-          "displayPrice" : "3.99",
-          "familyShareable" : false,
-          "groupNumber" : 2,
-          "internalID" : "A1B2C3D4-E5F6-7890-ABCD-EF1234567890",
-          "localizations" : [
-            {
-              "description" : "AI Powered skin care app",
-              "displayName" : "skinner",
-              "locale" : "en_US"
-            }
-          ],
-          "productID" : "com.keremoztopuz.skincare.pro.monthly",
-          "recurringSubscriptionPeriod" : "P1M",
-          "referenceName" : "skinner Pro Monthly",
-          "subscriptionGroupID" : "21654321",
-          "type" : "RecurringSubscription"
+          "productID": "com.keremoztopuz.skincare.pro.weekly",
+          "recurringSubscriptionPeriod": "P1W",
+          "referenceName": "skinner Pro Weekly",
+          "subscriptionGroupID": "21654321",
+          "type": "RecurringSubscription"
         }
       ]
     }
   ],
-  "version" : {
-    "major" : 4,
-    "minor" : 0
+  "version": {
+    "major": 4,
+    "minor": 0
   }
 }
