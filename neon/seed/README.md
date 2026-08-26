@@ -7,7 +7,12 @@ psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f 00_schema.sql
 psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f 01_products.sql
 psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f 02_product_conditions.sql
 psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f 03_articles.sql
+psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f 04_fill_images.sql
 ```
+
+`04_fill_images.sql` must come **after** `01_products.sql`, which overwrites
+`image_url` from its own values. Run them the other way round and the photos
+silently revert to null.
 
 Use the project owner's URL, not the proxy's. The role the proxy connects with
 (`skinner_reader`) can only `SELECT`, which is the point of it.
@@ -18,13 +23,10 @@ Use the project owner's URL, not the proxy's. The role the proxy connects with
 | `01_products.sql` | 107 cosmetic products across the seven `product_type` keys, with English and Turkish descriptions. |
 | `02_product_conditions.sql` | 111 links from products to the five condition keys. Routine recommendations read only from this table. |
 | `03_articles.sql` | 40 content pieces, English and Turkish, with hero images. |
-| `04_fill_images.sql` | Template for the 78 products still without a photo. Fill in each URL, delete the rest of the lines, then run. |
+| `04_fill_images.sql` | Where product photos live. Four applied URLs, then the 74 products still without one, commented out as a template. |
 
 Every file re-runs safely: products and articles upsert on a fixed id, the rest
-use `on conflict do nothing`.
-
-`04_fill_images.sql` is the only one that is not ready to run — it is a
-template with 78 empty URLs.
+use `on conflict do nothing`, and the image fills are plain updates by id.
 
 ## Where the data came from
 
@@ -36,8 +38,12 @@ Pexels License. All descriptions and article copy were written for this app.
 The catalogue is cosmetics only. Prescription products, medical devices, and
 body, hair, children's and makeup products were excluded.
 
-The remaining 78 products carry no image yet, pending an affiliate feed that
-licenses official product photography.
+33 products now carry a photo. The remaining 74 have none, pending either a
+matching Open Beauty Facts listing or an affiliate feed that licenses official
+product photography.
+
+Open Beauty Facts photos are **CC BY-SA 3.0**: usable, but attribution is
+required. The app needs a visible credit before any of these ship.
 
 ## Regenerating
 
