@@ -1,6 +1,6 @@
 -- Skinner katalog seed
 -- Uretim: scratchpad/generate_sql.py. Elle duzenleme, scripti guncelle.
--- Supabase Dashboard > SQL Editor icinde sirayla calistir.
+-- Neon Console > SQL Editor icinde ya da psql ile, dosya sirasiyla calistir.
 
 insert into public.products (id, name, brand, description, description_tr, image_url, product_type, active_ingredients, usage_time, frequency, contraindications, skin_types, is_active) values
   ('276877c1-a1b3-54ab-ae88-704675c5f81a'::uuid, 'Hydrating Facial Cleanser', 'CeraVe', 'A non-foaming cleanser that lifts dirt and oil without stripping the skin barrier. Leaves a soft finish rather than the tight feeling many face washes give.', 'Köpürmeyen bir temizleyici; kiri ve yağı alırken cilt bariyerini soymuyor. Birçok yüz yıkama jelinin bıraktığı gerginlik hissi yerine yumuşak bir his bırakıyor.', NULL, 'cleanser', 'Ceramides, Hyaluronic Acid, Glycerin', 'Morning & Night', 'Daily', NULL, ARRAY['Dry','Normal','Sensitive']::text[], true),
