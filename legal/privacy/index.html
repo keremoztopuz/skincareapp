@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Skinner — Privacy Policy</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<main>
+  <a class="back" href="../">← Skinner legal</a>
+  <h1>Privacy Policy</h1>
+  <p class="meta">Effective date: 26 August 2026</p>
+
+  <p>Skinner is designed to help you review visible skin features, track changes over time, and organize skincare routines.</p>
+
+  <h2>Information We Process</h2>
+  <ul>
+    <li>Profile information you enter, such as name, age, gender, and skin type.</li>
+    <li>Camera images captured for analysis.</li>
+    <li>Analysis results, scan history, scores, and routine selections, stored on your device.</li>
+    <li>Subscription status and purchase information handled through Apple and RevenueCat.</li>
+    <li>Product and article content fetched from our backend service.</li>
+  </ul>
+
+  <h2>How Analysis Works</h2>
+  <p>Skin analysis runs in the cloud. There is no analysis model on your device.</p>
+  <ol>
+    <li>When you take a photo, your device detects and crops your face locally using Apple's Vision framework. The crop never includes more of the photo than your face.</li>
+    <li>The crop is sent over an encrypted connection to our backend service, which removes image metadata, reduces the image size, and forwards it to Google's Gemini API (Vertex AI) for processing.</li>
+    <li>The service returns numeric readings for five visible features — breakouts, redness, wrinkles, eye bags, and pigmentation — plus a hydration reading. The app then presents three summary metrics (hydration, oiliness and inflammation) and one overall score. All of it is shown to you and saved on your device.</li>
+  </ol>
+  <p>An internet connection is required to run an analysis. Your history, profile, and routine remain available offline.</p>
+  <p>Images sent for analysis are processed in real time and are not stored permanently by us. Google retains requests briefly for abuse monitoring and does not use them to train models. Images are never used for advertising and are never sold.</p>
+  <p>Scan images and results are saved locally on your device so you can review previous results. You can delete this data from within the app, or by deleting the app from your device.</p>
+
+  <h2>Online Content</h2>
+  <p>Skinner connects to our backend service to fetch product catalog information, product recommendations, articles, and routine-related content. These requests are used only to display app content. No captured images and no profile information are sent with them.</p>
+
+  <h2>Purchases and Subscriptions</h2>
+  <p>Skinner offers optional paid purchases. Purchases are processed by Apple. Subscription and purchase status is checked through RevenueCat so the app can unlock paid features. RevenueCat assigns an anonymous identifier for this purpose; it is not linked to your name or profile.</p>
+  <p>We do not receive your full payment card information.</p>
+
+  <h2>Medical Disclaimer</h2>
+  <p>Skinner does not provide medical diagnosis, medical treatment, or professional medical advice. Results describe visible cosmetic features only and are for informational and tracking purposes.</p>
+  <p>If you have a medical concern, a skin condition, pain, rapidly changing symptoms, or an urgent health issue, consult a qualified healthcare professional.</p>
+
+  <h2>Data Sharing</h2>
+  <p>We do not sell your personal information. We use service providers only where needed to operate the app:</p>
+  <ul>
+    <li><strong>Apple</strong> — purchase processing.</li>
+    <li><strong>RevenueCat</strong> — subscription and purchase status.</li>
+    <li><strong>Google (Gemini / Vertex AI)</strong> — image processing for analysis, through our backend service.</li>
+  </ul>
+
+  <h2>Data Retention</h2>
+  <p>Profile, scan history, and routine data remain on your device until you delete them in the app or uninstall the app. Images sent for analysis are not retained by us after the result is returned. Subscription records are retained by Apple and RevenueCat according to their policies.</p>
+
+  <h2>Children's Privacy</h2>
+  <p>Skinner is not intended for children under 13. If you believe a child has provided personal information, contact us so we can help address the issue.</p>
+
+  <h2>Your Choices</h2>
+  <ul>
+    <li>Decline camera access, though analysis will not work without it.</li>
+    <li>Delete your local data from within the app, or by deleting the app from your device.</li>
+    <li>Manage or cancel subscriptions in your Apple Account settings.</li>
+    <li>Contact support for privacy questions.</li>
+  </ul>
+
+  <h2>Contact</h2>
+  <p>Support and privacy requests: <a href="mailto:keremoztopuzzz@gmail.com">keremoztopuzzz@gmail.com</a></p>
+</main>
+</body>
+</html>
