@@ -71,7 +71,8 @@ Bu dosya App Store'a cikis icin teknik, hesap, gizlilik ve icerik hazirliklarini
 - [ ] Analiz kaydi olusturma.
 - [ ] Recents ekrani analiz gecmisini gosteriyor.
 - [x] Search/Home icerik servisi verilerini gosteriyor. Katalog Neon'a tasindi: `neon/seed/` canli projede calistirildi (107 urun, 111 urun-kondisyon bagi, 40 makale). Uygulama artik proxy'nin `/v1/catalogue/*` uclarindan okuyor ve hicbir veritabani kimlik bilgisi tasimiyor.
-- [ ] Proxy'nin Cloud Run dagitimina `DATABASE_URL` secret'i eklendi ve yeniden deploy edildi. Bu yapilmadan katalog uclari canlida 500 doner.
+- [ ] Proxy'nin Cloud Run dagitimina `DATABASE_URL` secret'i eklendi ve yeniden deploy edildi. Bu yapilmadan katalog uclari canlida 500 doner ve Home/Search "icerik yuklenemiyor" gosterir.
+- [x] Katalog kaynaklarina atif verildi. Profil > Ayarlar > Kaynaklar ve Lisanslar ekrani Open Beauty Facts (fotograflar CC BY-SA 3.0, veri ODbL), Pexels ve kullanilan acik kaynak SDK'lari kredilendiriyor. Fotograflarin lisansi atfi sart kosuyor, bu ekran olmadan yayina cikilamaz.
 - [ ] Internet kapaliyken uygulama aciliyor.
 - [ ] Satin alma iptal edildi.
 - [ ] Satin alma basarili.
