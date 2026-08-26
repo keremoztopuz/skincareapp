@@ -15,7 +15,7 @@ class SubscriptionManager: ObservableObject {
     /// price always wins once the offerings load.
     enum FallbackPrice {
         static var monthly: String { forCurrency(turkish: "₺99,99", usd: "$1.99", eur: "€1,99") }
-        static var lifetime: String { forCurrency(turkish: "₺699,99", usd: "$17.99", eur: "€19,99") }
+        static var lifetime: String { forCurrency(turkish: "₺699,99", usd: "$12.99", eur: "€14,99") }
 
         private static func forCurrency(turkish: String, usd: String, eur: String) -> String {
             switch Locale.current.currency?.identifier {
