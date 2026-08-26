@@ -54,23 +54,21 @@ class LocalPersistenceManager {
     /// persisted record from one that would vanish on the next launch —
     /// a failed save must not burn a scan.
     @discardableResult
-    func saveAnalysisRecord(condition: String, confidence: Double, wrinkleScore: Double, eyebagScore: Double, pigmentationScore: Double, date: Date, drynessScore: Double, inflammationScore: Double, oilinessScore: Double, overallScore: Double, userFeedback: Bool, acneScore: Double, eczemaScore: Double, hydrationScore: Double = 0, imageData: Data?) -> AnalysisRecord? {
+    func saveAnalysisRecord(condition: String, confidence: Double, wrinkleScore: Double, eyebagScore: Double, pigmentationScore: Double, date: Date, inflammationScore: Double, oilinessScore: Double, overallScore: Double, acneScore: Double, eczemaScore: Double, hydrationScore: Double, imageData: Data?) -> AnalysisRecord? {
         let record = AnalysisRecord(context: context)
         record.condition = condition
         record.confidence = confidence
         record.date = date
-        record.drynessScore = drynessScore
         record.inflammationScore = inflammationScore
         record.oilinessScore = oilinessScore
         record.overallScore = overallScore
-        record.userFeedback = userFeedback
         record.acneScore = acneScore
         record.eczemaScore = eczemaScore
         record.pigmentationScore = pigmentationScore
         record.wrinkleScore = wrinkleScore
         record.eyebagScore = eyebagScore
-        // Column existed through the offline era but was always 0; the cloud
-        // analysis measures it again. No store migration needed.
+        // Hydration is a measured metric, not a derived one: it comes straight
+        // from the analysis and is the only score where higher means better.
         record.hydrationScore = hydrationScore
         record.imageData = imageData
 
@@ -90,7 +88,7 @@ class LocalPersistenceManager {
     /// Runs once per schema version, guarded by UserDefaults.
     func migrateScoresIfNeeded() {
         let versionKey = "scoreSchemaVersion"
-        let currentVersion = 4
+        let currentVersion = 5
         guard UserDefaults.standard.integer(forKey: versionKey) < currentVersion else { return }
 
         let skinType = fetchUserProfile()?.skinType?.lowercased() ?? "normal"
@@ -105,16 +103,23 @@ class LocalPersistenceManager {
                              record.pigmentationScore, record.wrinkleScore)
             let scale: Double = rawMax <= 1.0 ? 1.0 : 100.0
 
+            // Records taken before hydration was measured stored a flat 0,
+            // which would now render as "Hydration 0%". 50 is the neutral
+            // value the engine assumed for those records all along.
+            if record.hydrationScore == 0 {
+                record.hydrationScore = 50
+            }
+
             let scores = engine.calculateScore(
                 acne: record.acneScore / scale,
                 redness: record.eczemaScore / scale,
                 pigmentation: record.pigmentationScore / scale,
                 wrinkles: record.wrinkleScore / scale,
                 eyebags: record.eyebagScore / scale,
+                hydration: record.hydrationScore / 100.0,
                 skinType: skinType
             )
 
-            record.drynessScore = scores.drynessScore
             record.oilinessScore = scores.oilinessScore
             record.inflammationScore = scores.inflammationScore
             record.overallScore = scores.overallScore
