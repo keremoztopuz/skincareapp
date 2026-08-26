@@ -150,6 +150,7 @@
 "compare" = "Karşılaştır";
 "try_again" = "Tekrar Dene";
 "internet_connection_required" = "Ürünler ve makaleler için internet bağlantısı gerekli.";
+"content_unavailable" = "İçerik şu an yüklenemiyor. Lütfen daha sonra tekrar deneyin.";
 "product_details" = "Ürün Detayları";
 "article" = "Makale";
 "loading_full_details" = "Tüm detaylar yükleniyor...";
@@ -249,7 +250,7 @@
 
 /* UI polish and compliance additions */
 "preparing_profile" = "Profiliniz hazırlanıyor...";
-"search_no_products" = "Ürünler yüklenemedi. Bağlantınızı kontrol edip tekrar deneyin.";
+"search_catalog_empty" = "Katalogda henüz ürün yok.";
 "search_no_results" = "Aramanızla eşleşen ürün bulunamadı.";
 "price_free" = "Ücretsiz";
 "then_price_monthly_%@" = "Sonrasında aylık %@. İptal edilene kadar otomatik yenilenir.";
