@@ -34,7 +34,10 @@ final class CatalogueService {
         return URLSession(configuration: configuration)
     }()
 
-    private let decoder: JSONDecoder = {
+    /// Not private: the wire contract between the proxy and these structs is
+    /// worth a test, and a test that builds its own decoder would pass while
+    /// the app failed.
+    static let payloadDecoder: JSONDecoder = {
         let decoder = JSONDecoder()
         // The proxy pins created_at to milliseconds precisely so this
         // strategy works; Postgres microseconds would not decode.
@@ -54,6 +57,8 @@ final class CatalogueService {
         }
         return decoder
     }()
+
+    private var decoder: JSONDecoder { Self.payloadDecoder }
 
     private struct ProductList: Decodable { let products: [Product] }
     private struct ArticleList: Decodable { let articles: [Articles] }
