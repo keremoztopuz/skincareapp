@@ -6,13 +6,13 @@ struct UpgradeSheetView: View {
     @State private var isPurchasing = false
     @State private var showSuccess = false
     @State private var purchaseError: String?
-    @State private var priceText: String = SubscriptionManager.FallbackPrice.monthly
+    @State private var priceText: String = SubscriptionManager.FallbackPrice.weekly
     @State private var lifetimePriceText: String = SubscriptionManager.FallbackPrice.lifetime
     @State private var trial: SubscriptionManager.TrialPeriod?
-    @State private var selectedPlan: Plan = .monthly
+    @State private var selectedPlan: Plan = .weekly
 
     enum Plan {
-        case monthly, lifetime
+        case weekly, lifetime
     }
 
     var body: some View {
@@ -84,10 +84,10 @@ struct UpgradeSheetView: View {
                 // MARK: Plan picker
                 VStack(spacing: 10) {
                     planRow(
-                        plan: .monthly,
+                        plan: .weekly,
                         title: AppStrings.pro,
                         price: priceText,
-                        period: AppStrings.perMonth,
+                        period: AppStrings.perWeek,
                         badgeKey: nil
                     )
                     planRow(
@@ -182,7 +182,7 @@ struct UpgradeSheetView: View {
         switch selectedPlan {
         case .lifetime:
             return NSLocalizedString("get_lifetime_access", comment: "")
-        case .monthly:
+        case .weekly:
             if let trial {
                 return trial.startCTA
             }
@@ -194,8 +194,8 @@ struct UpgradeSheetView: View {
         switch selectedPlan {
         case .lifetime:
             return String(format: NSLocalizedString("one_time_price_%@", comment: ""), lifetimePriceText)
-        case .monthly:
-            let key = trial == nil ? "price_monthly_%@" : "then_price_monthly_%@"
+        case .weekly:
+            let key = trial == nil ? "price_weekly_%@" : "then_price_weekly_%@"
             return String(format: NSLocalizedString(key, comment: ""), priceText)
         }
     }
@@ -309,19 +309,19 @@ struct UpgradeSheetView: View {
         guard Purchases.isConfigured else { return }
         Purchases.shared.getOfferings { offerings, _ in
             guard let current = offerings?.current else { return }
-            // Only the true $rc_monthly package may feed the monthly row —
+            // Only the true $rc_weekly package may feed the weekly row —
             // falling back to an arbitrary package could show the lifetime
-            // price as if it were monthly.
-            let monthly = current.monthly
+            // price as if it were weekly.
+            let weekly = current.weekly
             let lifetime = current.lifetime
             DispatchQueue.main.async {
-                if let live = monthly?.storeProduct.localizedPriceString {
+                if let live = weekly?.storeProduct.localizedPriceString {
                     priceText = live
                 }
                 if let live = lifetime?.storeProduct.localizedPriceString {
                     lifetimePriceText = live
                 }
-                trial = monthly.flatMap { SubscriptionManager.trialPeriod(in: $0.storeProduct) }
+                trial = weekly.flatMap { SubscriptionManager.trialPeriod(in: $0.storeProduct) }
             }
         }
     }
@@ -341,11 +341,11 @@ struct UpgradeSheetView: View {
             }
 
             let current = offerings?.current
-            // Never substitute another package for monthly: an offering
-            // without a monthly package must fail loudly, not charge lifetime.
+            // Never substitute another package for weekly: an offering
+            // without a weekly package must fail loudly, not charge lifetime.
             let selected: Package? = plan == .lifetime
                 ? current?.lifetime
-                : current?.monthly
+                : current?.weekly
 
             guard let package = selected else {
                 DispatchQueue.main.async {
