@@ -60,7 +60,7 @@ struct PersistenceController {
                 // crash on every launch. Losing local history is bad;
                 // permanently losing the whole app is worse — recreate the
                 // store and carry on.
-                NSLog("Persistent store failed to load, recreating: %@", error)
+                AppLog.error("Persistent store failed to load, recreating", error)
                 if let url = storeDescription.url {
                     try? container.persistentStoreCoordinator.destroyPersistentStore(
                         at: url, ofType: NSSQLiteStoreType, options: nil
