@@ -87,9 +87,9 @@ struct DetailView: View {
             do {
                 switch type {
                 case .product(let product):
-                    self.fullProduct = try await SupabaseService.shared.fetchProductDetail(id: product.id)
+                    self.fullProduct = try await CatalogueService.shared.fetchProductDetail(id: product.id)
                 case .news(let article):
-                    self.fullArticle = try await SupabaseService.shared.fetchArticleDetail(id: article.id)
+                    self.fullArticle = try await CatalogueService.shared.fetchArticleDetail(id: article.id)
                 }
             } catch {
                 loadErrorMessage = AppStrings.loadFailureMessage(for: error)
