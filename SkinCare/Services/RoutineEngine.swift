@@ -86,8 +86,10 @@ class RoutineEngine {
         if record.wrinkleScore > 30 { conditions.append(("wrinkles", record.wrinkleScore / 100.0)) }
         if record.eyebagScore > 30 { conditions.append(("eyebags", record.eyebagScore / 100.0)) }
 
-        if record.drynessScore > 40.0 && !conditions.contains(where: { $0.0 == "redness" }) {
-            conditions.append(("redness", record.drynessScore / 100.0))
+        // Low hydration routes to barrier products, which the catalogue files
+        // under the "redness" key — the conditions table has no dryness row.
+        if record.hydrationScore < 45.0 && !conditions.contains(where: { $0.0 == "redness" }) {
+            conditions.append(("redness", (100.0 - record.hydrationScore) / 100.0))
         }
         if record.inflammationScore > 50.0 && !conditions.contains(where: { $0.0 == "acne" }) {
             conditions.append(("acne", record.inflammationScore / 100.0))
