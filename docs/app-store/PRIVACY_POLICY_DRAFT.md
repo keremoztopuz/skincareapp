@@ -1,10 +1,10 @@
 # Privacy Policy Draft
 
-Effective date: TODO
+Effective date: 26 August 2026
 
 Skinner is designed to help users review visible skin features, track changes over time, and organize skincare routines.
 
-This draft must be published on a public URL before App Store submission.
+Published at https://keremoztopuz.github.io/skincare-legal/privacy — the same URL the app links to from every purchase screen.
 
 ## Information We Process
 
@@ -22,7 +22,7 @@ Skin analysis runs in the cloud. There is no analysis model on your device.
 
 1. When you take a photo, your device detects and crops your face locally using Apple's Vision framework. The crop never includes more of the photo than your face.
 2. The crop is sent over an encrypted connection to our backend service, which removes image metadata, reduces the image size, and forwards it to Google's Gemini API (Vertex AI) for processing.
-3. The service returns numeric readings for six visible features — breakouts, redness, wrinkles, eye bags, pigmentation, and hydration-related signs — which are shown to you and saved on your device.
+3. The service returns numeric readings for five visible features — breakouts, redness, wrinkles, eye bags, and pigmentation — along with a hydration reading. From these, the app derives three summary metrics: hydration, oiliness, and inflammation, plus an overall score. All of it is shown to you and saved on your device.
 
 An internet connection is required to run an analysis. Your history, profile, and routine remain available offline.
 
@@ -81,8 +81,8 @@ You can:
 
 ## Contact
 
-Support email: TODO
+Support email: keremoztopuzzz@gmail.com
 
-Support URL: TODO
+Support URL: https://keremoztopuz.github.io/skincare-legal/
 
-Privacy contact: TODO
+Privacy contact: keremoztopuzzz@gmail.com
