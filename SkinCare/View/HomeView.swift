@@ -50,7 +50,11 @@ struct HomeView: View {
                         
                         if let error = vm.errorMessage {
                             VStack(spacing: 12) {
-                                Image(systemName: "wifi.slash")
+                                // A backend fault is not a dead radio; the
+                                // glyph has to match the message.
+                                Image(systemName: error == AppStrings.internetConnectionRequired
+                                      ? "wifi.slash"
+                                      : "exclamationmark.icloud")
                                     .font(.scaled(size: 24))
                                     .foregroundColor(.gray)
                                     .accessibilityHidden(true)
