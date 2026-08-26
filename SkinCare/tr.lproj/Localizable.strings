@@ -60,7 +60,6 @@
 "limited_recommendations" = "Sınırlı öneriler";
 "last_5_scans" = "Son 5 tarama";
 "unlimited_analysis" = "Sınırsız analiz";
-"all_conditions_detected" = "Tüm durumlar tespit edilir";
 "full_recommendations" = "Tam ürün önerileri";
 "complete_history" = "Tam geçmiş ve takip";
 "purchase_error" = "Satın Alma Hatası";
@@ -138,7 +137,6 @@
 "cancel" = "İptal";
 "low" = "Düşük";
 "high" = "Yüksek";
-"heatmap_description" = "Kırmızı ile vurgulanan bölgeler %@ belirtilerinin tespit edildiği yerleri gösterir.";
 "ok" = "Tamam";
 "your_personal_expert" = "Kişisel yapay zeka destekli cilt bakım uzmanınız";
 "pro_plan" = "Pro";
@@ -176,12 +174,11 @@
 "condition_acne" = "Sivilce";
 "condition_redness" = "Kızarıklık";
 "condition_pigmentation" = "Pigmentasyon";
-"condition_hydration" = "Nem";
 "condition_wrinkles" = "Kırışıklık";
 "condition_eyebags" = "Göz Altı Torbaları";
 "condition_eye_bags" = "Göz Altı Torbaları";
 "condition_healthy" = "Sağlıklı";
-"metric_dryness" = "Kuruluk";
+"metric_hydration" = "Nem";
 "metric_inflammation" = "İltihaplanma";
 "metric_oiliness" = "Yağlılık";
 "condition_recommendation_acne" = "Salisilik asit içeren temizleyiciler kullanın. Komedojenik olmayan nemlendiricileri tercih edin.";
@@ -258,7 +255,7 @@
 "then_price_monthly_%@" = "Sonrasında aylık %@. İptal edilene kadar otomatik yenilenir.";
 "price_monthly_%@" = "Aylık %@. Ayarlar'dan iptal edilene kadar otomatik yenilenir.";
 "upgrade_feature_unlimited_scans" = "Sınırsız aylık tarama";
-"upgrade_feature_full_analysis" = "Tam analiz: kırışıklık, göz altı torbası, pigmentasyon, nem";
+"upgrade_feature_full_analysis" = "Tam analiz: kırışıklık, göz altı torbası, pigmentasyon";
 "upgrade_feature_full_history" = "Tüm geçmiş taramalara erişim";
 "upgrade_feature_unlimited_recommendations" = "Sınırsız ürün önerisi";
 "free_feature_5_scans" = "Ayda 5 tarama";
