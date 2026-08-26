@@ -79,7 +79,6 @@ enum AppStrings {
     static let limitedRecommendations = String(localized: "limited_recommendations")
     static let last5Scans = String(localized: "last_5_scans")
     static let unlimitedAnalysis = String(localized: "unlimited_analysis")
-    static let allConditionsDetected = String(localized: "all_conditions_detected")
     static let fullRecommendations = String(localized: "full_recommendations")
     static let completeHistory = String(localized: "complete_history")
     static let purchaseError = String(localized: "purchase_error")
@@ -200,11 +199,10 @@ enum AppStrings {
     static let acne = String(localized: "condition_acne")
     static let redness = String(localized: "condition_redness")
     static let pigmentation = String(localized: "condition_pigmentation")
-    static let hydration = String(localized: "condition_hydration")
     static let wrinkles = String(localized: "condition_wrinkles")
     static let eyebags = String(localized: "condition_eyebags")
     static let eyeBags = String(localized: "condition_eye_bags")
-    static let dryness = String(localized: "metric_dryness")
+    static let hydration = String(localized: "metric_hydration")
     static let inflammation = String(localized: "metric_inflammation")
     static let oiliness = String(localized: "metric_oiliness")
     static let unlimitedSkinAnalyses = String(localized: "feature_unlimited_skin_analyses")
@@ -225,7 +223,6 @@ enum AppStrings {
         case "acne": return acne
         case "redness", "eczema": return redness
         case "pigmentation": return pigmentation
-        case "hydration": return hydration
         case "wrinkles", "wrinkle": return wrinkles
         case "eyebags", "eye_bags", "eye bags": return eyebags
         case "healthy": return String(localized: "condition_healthy")
