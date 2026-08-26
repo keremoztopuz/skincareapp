@@ -189,6 +189,7 @@
 "compare" = "Compare";
 "try_again" = "Try Again";
 "internet_connection_required" = "Internet connection required for products and articles.";
+"content_unavailable" = "Content can't be loaded right now. Please try again later.";
 "product_details" = "Product Details";
 "article" = "Article";
 "loading_full_details" = "Loading full details...";
@@ -296,7 +297,7 @@
 
 /* UI polish and compliance additions */
 "preparing_profile" = "Preparing your profile...";
-"search_no_products" = "Products could not be loaded. Check your connection and try again.";
+"search_catalog_empty" = "There are no products in the catalogue yet.";
 "search_no_results" = "No products match your search.";
 "price_free" = "Free";
 "then_price_monthly_%@" = "Then %@ per month. Auto-renews until canceled.";
