@@ -185,6 +185,8 @@ enum AppStrings {
     static let compare = String(localized: "compare")
     static let tryAgain = String(localized: "try_again")
     static let internetConnectionRequired = String(localized: "internet_connection_required")
+    static let contentUnavailable = String(localized: "content_unavailable")
+    static let catalogEmpty = String(localized: "search_catalog_empty")
     static let productDetails = String(localized: "product_details")
     static let article = String(localized: "article")
     static let loadingFullDetails = String(localized: "loading_full_details")
@@ -217,6 +219,14 @@ enum AppStrings {
     static let genderMale = String(localized: "gender_male")
     static let genderFemale = String(localized: "gender_female")
     static let genderPreferNotToSay = String(localized: "gender_prefer_not_to_say")
+
+    /// Picks the message that matches what actually went wrong.
+    /// Only a transport failure is the user's connection; a backend fault
+    /// reported as "check your internet" sends them chasing a problem they
+    /// cannot fix.
+    static func loadFailureMessage(for error: Error) -> String {
+        error is URLError ? internetConnectionRequired : contentUnavailable
+    }
 
     static func localizedCondition(_ condition: String?) -> String {
         switch condition?.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() {
