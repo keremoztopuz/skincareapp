@@ -142,12 +142,14 @@ The app's placeholder prices — shown only until StoreKit returns the real stor
 
 | Storefront | Monthly | Lifetime |
 | --- | --- | --- |
-| US | $1.99 | $12.99 |
-| EU | €1,99 | €14,99 |
-| TR | ₺99,99 | ₺699,99 |
+| US | $3.99 | $12.99 |
+| EU | €3,99 | €14,99 |
+| TR | ₺149,99 | ₺699,99 |
 
-Turkey is the pricing base. The monthly subscription was equalized from the TR
-price across every territory, which is why the US monthly sits at $1.99.
+The monthly price was raised on 26 August 2026 from ₺99,99 / $1.99 / €1,99.
+The three storefronts above were set by hand rather than equalized from a base
+territory, so monthly is no longer a single Apple equalization of one price —
+each of the three is its own decision.
 
 The lifetime product could not be equalized through RevenueCat — its equalize
 endpoint rejects non-consumables — so its non-TR tiers were set by hand in App
