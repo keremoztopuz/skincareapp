@@ -56,11 +56,7 @@ class ResultsViewModel: ObservableObject {
             recommendation = [String(localized: "recommendation_consult_dermatologist")]
         }
         
-        do {
-            self.recommendProduct = try await SupabaseService.shared.fetchRecommendedProducts(for: condition)
-        } catch {
-            self.errorMessage = AppStrings.internetConnectionRequired
-        }
+        await fetchRecommendedProducts()
 
         if let record = self.record, !isHistorical {
             let skinType = LocalPersistenceManager.shared.fetchUserProfile()?.skinType ?? SkinType.normal.rawValue
@@ -71,5 +67,19 @@ class ResultsViewModel: ObservableObject {
         }
 
         isLoading = false
+    }
+
+    /// Product fetch on its own, so a retry does not re-run the routine
+    /// suggestion pass and duplicate the suggestions of a fresh scan.
+    @MainActor
+    func fetchRecommendedProducts() async {
+        guard let condition = record?.condition else { return }
+        errorMessage = nil
+        do {
+            self.recommendProduct = try await SupabaseService.shared.fetchRecommendedProducts(for: condition)
+        } catch {
+            self.errorMessage = AppStrings.loadFailureMessage(for: error)
+            AppLog.error("Recommended products fetch failed", error)
+        }
     }
 }
