@@ -235,6 +235,7 @@ struct CameraView: View {
             }
         }) {
             CameraGuideView()
+                .edgeSwipeToDismiss { showGuide = false }
         }
         .onChange(of: vm.analysisRecord) { oldValue, newValue in
             if vm.capturedImage != nil && newValue != nil {
@@ -249,6 +250,7 @@ struct CameraView: View {
             ResultView(record: vm.analysisRecord, isFromRecents: false) {
                 showResult = false
             }
+            .edgeSwipeToDismiss { showResult = false }
         }
     }
 
