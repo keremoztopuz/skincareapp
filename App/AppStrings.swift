@@ -128,6 +128,8 @@ enum AppStrings {
     /// screen is higher-is-better, so the readings have to say that they are
     /// the opposite or 68 reads as healthier than 21.
     static let conditionScaleHint = String(localized: "condition_scale_hint")
+    /// Accessibility hint on a selectable condition row.
+    static let showZoneHint = String(localized: "show_zone_hint")
     static let seeRecommendations = String(localized: "see_recommendations")
 
     // MARK: - Detail
