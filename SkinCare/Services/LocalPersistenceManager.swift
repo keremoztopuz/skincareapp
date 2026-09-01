@@ -54,7 +54,7 @@ class LocalPersistenceManager {
     /// persisted record from one that would vanish on the next launch —
     /// a failed save must not burn a scan.
     @discardableResult
-    func saveAnalysisRecord(condition: String, confidence: Double, wrinkleScore: Double, eyebagScore: Double, pigmentationScore: Double, date: Date, inflammationScore: Double, oilinessScore: Double, overallScore: Double, acneScore: Double, eczemaScore: Double, hydrationScore: Double, imageData: Data?) -> AnalysisRecord? {
+    func saveAnalysisRecord(condition: String, confidence: Double, wrinkleScore: Double, eyebagScore: Double, pigmentationScore: Double, date: Date, inflammationScore: Double, oilinessScore: Double, overallScore: Double, acneScore: Double, eczemaScore: Double, hydrationScore: Double, imageData: Data?, zonesData: Data? = nil) -> AnalysisRecord? {
         let record = AnalysisRecord(context: context)
         record.condition = condition
         record.confidence = confidence
@@ -71,6 +71,9 @@ class LocalPersistenceManager {
         // from the analysis and is the only score where higher means better.
         record.hydrationScore = hydrationScore
         record.imageData = imageData
+        // Where each condition sits on the photo, as StoredZones JSON. Nil
+        // for records from before regions existed — the overlay just stays off.
+        record.zonesData = zonesData
 
         do {
             try context.save()
