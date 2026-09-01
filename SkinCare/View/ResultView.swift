@@ -7,6 +7,8 @@
 
 import Foundation
 import SwiftUI
+// Only the #Preview touches Core Data directly (to seed its own context).
+internal import CoreData
 
 struct ResultView: View {
     @Environment(\.dismiss) var dismiss
@@ -599,6 +601,12 @@ struct ConditionAxisBar: View {
     }
 }
 
+// Seeded with the mock acne scan — portrait, scores and zone regions — so the
+// canvas shows the selectable rows and the photo overlay, not an empty shell.
 #Preview {
-    ResultView(record: nil, isFromRecents: true)
+    let manager = LocalPersistenceManager(context: PersistenceController.preview.container.viewContext)
+    if manager.fetchAnalysisRecords().isEmpty {
+        MockScanSeeder.seed(into: manager)
+    }
+    return ResultView(record: manager.fetchAnalysisRecords().last, isFromRecents: true)
 }
