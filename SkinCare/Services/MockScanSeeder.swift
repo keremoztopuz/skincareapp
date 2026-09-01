@@ -5,6 +5,7 @@
 
 #if DEBUG
 import Foundation
+import UIKit
 
 /// Two ready-made analysis records, so the history, comparison and result
 /// screens can be exercised without a camera or a live analysis proxy.
@@ -48,6 +49,12 @@ enum MockScanSeeder {
             wrinkles: 20, eyebags: 26, hydration: 52,
             daysAgo: 6,
             skinType: skinType,
+            // The camera guide's own bundled portrait plus hand-placed
+            // regions, so the zone overlay can be exercised with no camera
+            // and no live proxy. The newer record stays photo-less on
+            // purpose — the unselectable path has to stay visible too.
+            imageData: UIImage(named: "guidegood1")?.jpegData(compressionQuality: 0.5),
+            zonesData: mockZones.encoded(),
             into: manager
         )
 
@@ -58,6 +65,32 @@ enum MockScanSeeder {
             daysAgo: 0,
             skinType: skinType,
             into: manager
+        )
+    }
+
+    /// Boxes sitting on the guidegood1 face (its face spans roughly
+    /// x 0.40-0.68, y 0.22-0.62 of the frame). The wrinkles boxes are real
+    /// output from a live Gemini probe of this very image; the others are
+    /// hand-placed in the same style. Crop is the full frame, matching a
+    /// scan where face detection found nothing to crop.
+    private static var mockZones: StoredZones {
+        StoredZones(
+            crop: StoredZones.Rect.fullFrame,
+            regions: [
+                "acne": [
+                    StoredZones.Rect(x: 0.46, y: 0.26, w: 0.14, h: 0.07),
+                    StoredZones.Rect(x: 0.50, y: 0.55, w: 0.10, h: 0.06)
+                ],
+                "redness": [
+                    StoredZones.Rect(x: 0.42, y: 0.42, w: 0.08, h: 0.08),
+                    StoredZones.Rect(x: 0.58, y: 0.42, w: 0.09, h: 0.08)
+                ],
+                "wrinkles": [
+                    StoredZones.Rect(x: 0.40, y: 0.46, w: 0.08, h: 0.04),
+                    StoredZones.Rect(x: 0.50, y: 0.45, w: 0.08, h: 0.04),
+                    StoredZones.Rect(x: 0.40, y: 0.35, w: 0.10, h: 0.05)
+                ]
+            ]
         )
     }
 
@@ -75,6 +108,8 @@ enum MockScanSeeder {
         hydration: Double,
         daysAgo: Double,
         skinType: String,
+        imageData: Data? = nil,
+        zonesData: Data? = nil,
         into manager: LocalPersistenceManager
     ) {
         let scores = ScoringEngine().calculateScore(
@@ -87,9 +122,6 @@ enum MockScanSeeder {
             skinType: skinType
         )
 
-        // No image: `RecordCard` and `ResultView` both draw their own
-        // placeholder for a record without one, which reads as a mock rather
-        // than passing a fabricated photo off as a real scan.
         manager.saveAnalysisRecord(
             condition: condition,
             confidence: max(acne, redness) / 100.0,
@@ -103,7 +135,8 @@ enum MockScanSeeder {
             acneScore: acne,
             eczemaScore: redness,
             hydrationScore: hydration,
-            imageData: nil
+            imageData: imageData,
+            zonesData: zonesData
         )
     }
 }
