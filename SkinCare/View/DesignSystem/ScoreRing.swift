@@ -47,6 +47,17 @@ enum Severity {
         case .high: return NSLocalizedString("severity_high", comment: "")
         }
     }
+
+    /// One hue, three depths. Severity has to be legible before the number is
+    /// read, but a green-amber-red ramp would drag a foreign palette into a
+    /// screen that is otherwise entirely burgundy.
+    var tint: Color {
+        switch self {
+        case .low: return Color.brandPrimary.opacity(0.35)
+        case .moderate: return Color.brandPrimary.opacity(0.65)
+        case .high: return Color.brandPrimary
+        }
+    }
 }
 
 /// Animated circular gauge for the overall skin score.
