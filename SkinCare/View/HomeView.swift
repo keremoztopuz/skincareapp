@@ -253,9 +253,7 @@ struct HomeView: View {
                                 ScrollView(.horizontal, showsIndicators: false) {
                                     HStack(spacing: 16) {
                                         ForEach(0..<3, id: \.self) { _ in
-                                            RoundedRectangle(cornerRadius: Radius.card)
-                                                .fill(Color.brandBlush)
-                                                .frame(width: 172, height: 222)
+                                            SkeletonCard(width: 172, height: 222, imageHeight: 132)
                                         }
                                     }
                                     .padding(.horizontal, 20)
@@ -286,9 +284,7 @@ struct HomeView: View {
                                 ScrollView(.horizontal, showsIndicators: false) {
                                     HStack(spacing: 16) {
                                         ForEach(0..<2, id: \.self) { _ in
-                                            RoundedRectangle(cornerRadius: Radius.card)
-                                                .fill(Color.brandBlush)
-                                                .frame(width: 282, height: 246)
+                                            SkeletonCard(width: 282, height: 246, imageHeight: 148)
                                         }
                                     }
                                     .padding(.horizontal, 20)
@@ -385,7 +381,7 @@ struct ProductCard: View {
                     AsyncImage(url: url) { image in
                         image.resizable().scaledToFill()
                     } placeholder: {
-                        ProgressView()
+                        SkeletonBox()
                     }
                     .frame(width: 148, height: 132)
                     .clipShape(RoundedRectangle(cornerRadius: Radius.card))
@@ -433,7 +429,7 @@ struct ArticleCard: View {
                     AsyncImage(url: url) { image in
                         image.resizable().scaledToFill()
                     } placeholder: {
-                        ProgressView()
+                        SkeletonBox()
                     }
                     .frame(width: 258, height: 148)
                     .clipShape(RoundedRectangle(cornerRadius: Radius.card))
