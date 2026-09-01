@@ -66,6 +66,9 @@ final class AnalysisService {
 
     private struct Envelope: Decodable {
         let scores: AnalysisScores
+        // Optional on purpose: a proxy that predates regions simply omits
+        // the field, and this client keeps working against it.
+        let regions: [String: [StoredZones.Rect]]?
     }
 
     private struct ErrorEnvelope: Decodable {
@@ -76,7 +79,11 @@ final class AnalysisService {
     /// One shot, no client-side retry: the proxy already retries transient
     /// upstream failures internally, and retrying here would double-spend
     /// the daily budget on every flake.
-    func analyze(image: UIImage, skinType: String?, age: Int?) async throws -> AnalysisScores {
+    /// The regions dictionary is keyed by the five visible condition names
+    /// and is empty against a proxy that does not return regions yet.
+    func analyze(
+        image: UIImage, skinType: String?, age: Int?
+    ) async throws -> (scores: AnalysisScores, regions: [String: [StoredZones.Rect]]) {
         guard let jpeg = uploadJPEG(from: image), jpeg.count < 4 * 1024 * 1024 else {
             throw AnalysisError.encodingFailed
         }
@@ -113,7 +120,8 @@ final class AnalysisService {
             throw AnalysisError.server(code: code ?? "http_\(http.statusCode)")
         }
         do {
-            return try JSONDecoder().decode(Envelope.self, from: data).scores
+            let envelope = try JSONDecoder().decode(Envelope.self, from: data)
+            return (envelope.scores, envelope.regions ?? [:])
         } catch {
             throw AnalysisError.server(code: "bad_payload")
         }
