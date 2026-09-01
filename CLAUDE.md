@@ -16,17 +16,18 @@
 - **Pattern:** MVVM
 
 ## App Flow
-Splash (4.5s) → OnBoarding (4 pages) → Disclaimer → Profile Setup → Loading (1.5s) → Subscription → Loading (1.5s) → Main App
+Splash (4.5s) → OnBoarding (4 pages) → Profile Setup → Loading (1.5s) → Subscription → Loading (1.5s) → Main App
 
 ## AppState (ContentViewModel)
 ```
-.splash → .onboarding → .disclaimer → .profileSetup → .loading → .subscription → .loading → .mainApp
+.splash → .onboarding → .profileSetup → .loading → .subscription → .loading → .mainApp
 ```
 - `currentState` is computed, not assigned: it resolves the first unmet step in the order above, so the flags are the only state.
 - `showSplash = true` → false after 4.5s; `showLoading` gates each 1.5s pause.
-- Flags: `hasCompletedOnBoarding`, `hasAcceptedDisclaimer`, `hasCompletedProfile`, `hasCompletedSubscription`, plus `isPremium` on `SubscriptionManager`.
+- Flags: `hasCompletedOnBoarding`, `hasCompletedProfile`, `hasCompletedSubscription`, plus `isPremium` on `SubscriptionManager`.
 - All flags are persisted via `UserDefaults` (didSet).
-- User sees OnBoarding, Disclaimer, Profile, and Subscription steps once.
+- User sees OnBoarding, Profile, and Subscription steps once.
+- The medical disclaimer is **not** a flow step: `DisclaimerView` is a reference page presented from More > Important Notice, so a first scan is never gated behind a consent checkbox.
 
 ## Color Palette
 - **Primary (buttons, accents):** rgb(0.47, 0.11, 0.17) = #781A2B (dark burgundy/maroon)
@@ -52,6 +53,8 @@ Splash (4.5s) → OnBoarding (4 pages) → Disclaimer → Profile Setup → Load
 - **Camera:** Scan Your Face — camera preview + capture button.
 - **Recents:** Recent Analyses list, score + trend, progress bars.
 - **More:** Subscription status + Settings.
+
+The paywall is one screen for every entry point: `UpgradeSheetView(context:)` — `.onboarding` (the flow step, advances the state machine via `onFlowStep`), `.upgrade` (a sheet), `.scanLimit` (a sheet, thrown when the 5 free monthly scans run out).
 
 Not a tab: **Routine** (`RoutineView`) is pushed from Home and from a finished analysis; **Compare**, **Detail** and **Result** are likewise pushed, not tabbed.
 
