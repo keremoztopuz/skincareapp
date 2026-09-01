@@ -18,6 +18,9 @@ enum AppStrings {
     static let yourRoutine = String(localized: "your_routine")
     static let tapToSetupRoutine = String(localized: "tap_to_setup_routine")
     static let recommendedProducts = String(localized: "recommended_products")
+    /// Title for the product list when the scan found nothing to treat: these
+    /// are staples, not an answer to a detected condition.
+    static let generalCareProducts = String(localized: "general_care_products")
     static let latestArticles = String(localized: "latest_articles")
     static let morningRoutine = String(localized: "morning_routine")
     static let eveningRoutine = String(localized: "evening_routine")
