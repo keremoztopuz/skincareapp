@@ -16,6 +16,8 @@ struct ResultView: View {
     let record: AnalysisRecord?
     let isFromRecents: Bool
     @State private var selectedProduct: Product? = nil
+    /// The condition whose regions are drawn on the photo; nil = no overlay.
+    @State private var selectedConditionKey: String? = nil
     @State private var showUpgrade = false
     @State private var showRoutine = false
     @State private var routineCreated = false
@@ -29,16 +31,16 @@ struct ResultView: View {
     /// condition, not by position, so the rows can be sorted freely.
     private var freeReadings: [ConditionReading] {
         [
-            ConditionReading(title: AppStrings.acne,    score: record?.acneScore   ?? 0),
-            ConditionReading(title: AppStrings.redness, score: record?.eczemaScore ?? 0)
+            ConditionReading(key: "acne",    title: AppStrings.acne,    score: record?.acneScore   ?? 0),
+            ConditionReading(key: "redness", title: AppStrings.redness, score: record?.eczemaScore ?? 0)
         ]
     }
 
     private var proReadings: [ConditionReading] {
         [
-            ConditionReading(title: AppStrings.wrinkles,     score: record?.wrinkleScore      ?? 0),
-            ConditionReading(title: AppStrings.eyebags,      score: record?.eyebagScore       ?? 0),
-            ConditionReading(title: AppStrings.pigmentation, score: record?.pigmentationScore ?? 0)
+            ConditionReading(key: "wrinkles",     title: AppStrings.wrinkles,     score: record?.wrinkleScore      ?? 0),
+            ConditionReading(key: "eyebags",      title: AppStrings.eyebags,      score: record?.eyebagScore       ?? 0),
+            ConditionReading(key: "pigmentation", title: AppStrings.pigmentation, score: record?.pigmentationScore ?? 0)
         ]
     }
 
@@ -92,17 +94,52 @@ struct ResultView: View {
         vm.recommendProduct.count - visibleProducts.count
     }
 
+    /// Decoded once: the body used to re-decode the JPEG on every render.
+    private let photo: UIImage?
+    /// Where each condition sits on the photo; nil for records from before
+    /// the model returned regions — the rows simply stop being selectable.
+    private let zones: StoredZones?
+
+    private let scannedImageID = "scanned-image"
+
     init(record: AnalysisRecord?, isFromRecents: Bool, onDismiss: (() -> Void)? = nil) {
         self.record = record
         self.isFromRecents = isFromRecents
         self.onDismiss = onDismiss
+        self.photo = record?.imageData.flatMap(UIImage.init(data:))
+        self.zones = StoredZones.decode(record?.zonesData)
         self._vm = StateObject(wrappedValue: ResultsViewModel(record: record, isHistorical: isFromRecents))
+    }
+
+    /// Keys that have both a photo to draw on and regions to draw.
+    private var selectableKeys: Set<String> {
+        guard photo != nil, let zones else { return [] }
+        return zones.availableKeys
+    }
+
+    private func score(forKey key: String) -> Double {
+        (freeReadings + proReadings).first { $0.key == key }?.score ?? 0
+    }
+
+    private func toggleCondition(_ key: String, proxy: ScrollViewProxy) {
+        let selecting = selectedConditionKey != key
+        withAnimation(.spring(response: 0.2)) {
+            selectedConditionKey = selecting ? key : nil
+        }
+        // Bring the photo into view so the selection visibly does something —
+        // same screen, just scrolled; nothing is presented.
+        if selecting {
+            withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                proxy.scrollTo(scannedImageID, anchor: .top)
+            }
+        }
     }
 
     var body: some View {
         ZStack(alignment: .topLeading) {
             Color.brandBackground.ignoresSafeArea()
 
+            ScrollViewReader { scrollProxy in
             ScrollView(.vertical, showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 32) {
 
@@ -119,8 +156,8 @@ struct ResultView: View {
                             .frame(maxWidth: .infinity)
                             .frame(height: 370)
                             .overlay {
-                                if let data = record?.imageData, let uiImage = UIImage(data: data) {
-                                    Image(uiImage: uiImage)
+                                if let photo {
+                                    Image(uiImage: photo)
                                         .resizable()
                                         .scaledToFill()
                                 } else {
@@ -129,9 +166,20 @@ struct ResultView: View {
                                         .foregroundColor(Color.brandPrimary.opacity(0.3))
                                 }
                             }
+                            .overlay {
+                                if let key = selectedConditionKey, let zones, let photo {
+                                    ConditionZoneOverlay(
+                                        regions: zones.frameRegions(for: key),
+                                        imageSize: photo.size,
+                                        score: score(forKey: key)
+                                    )
+                                    .transition(.opacity)
+                                }
+                            }
                             .clipShape(RoundedRectangle(cornerRadius: Radius.card))
                             .cardShadow()
                     }
+                    .id(scannedImageID)
                     .padding(.horizontal, 20)
                     .padding(.top, isFromRecents ? 0 : 20)
 
@@ -175,40 +223,41 @@ struct ResultView: View {
                         // separate cards they were five unrelated facts and
                         // nothing said which finding mattered.
                         VStack(spacing: 0) {
-                            Grid(alignment: .leading, horizontalSpacing: 14, verticalSpacing: 14) {
-                                ForEach(visibleReadings) { reading in
-                                    GridRow {
-                                        Text(reading.title)
-                                            .font(.scaled(size: 15, weight: .semibold))
-                                            .foregroundColor(.brandText)
-                                            .lineLimit(1)
-                                            .minimumScaleFactor(0.7)
-
-                                        ConditionAxisBar(score: reading.score)
-
-                                        Text("\(Int(reading.score))")
-                                            .font(.scaled(size: 16, weight: .bold))
-                                            .foregroundColor(.brandText)
-                                            .monospacedDigit()
+                            let allTitles = visibleReadings.map(\.title)
+                            ForEach(visibleReadings) { reading in
+                                if selectableKeys.contains(reading.key) {
+                                    Button {
+                                        toggleCondition(reading.key, proxy: scrollProxy)
+                                    } label: {
+                                        ConditionRow(
+                                            reading: reading,
+                                            allTitles: allTitles,
+                                            isSelected: selectedConditionKey == reading.key
+                                        )
                                     }
-                                    .accessibilityElement(children: .combine)
-                                    .accessibilityLabel(
-                                        Text("\(reading.title): \(Int(reading.score))/100, \(Severity(score: reading.score).localizedTitle)")
-                                    )
+                                    .buttonStyle(.plain)
+                                    .accessibilityHint(Text(AppStrings.showZoneHint))
+                                } else {
+                                    // No regions stored (an older record, or the
+                                    // model found nothing) — the row is data only.
+                                    ConditionRow(reading: reading, allTitles: allTitles, isSelected: false)
                                 }
                             }
 
                             if !lockedReadings.isEmpty {
                                 Divider()
-                                    .padding(.vertical, 16)
+                                    .padding(.vertical, 14)
+                                    .padding(.horizontal, 8)
 
                                 Button { showUpgrade = true } label: {
                                     lockedReadingsRow
+                                        .padding(.horizontal, 8)
                                 }
                                 .buttonStyle(.plain)
                             }
                         }
-                        .padding(20)
+                        .padding(.vertical, 13)
+                        .padding(.horizontal, 12)
                         .background(Color.white)
                         .cornerRadius(Radius.card)
                         .cardShadow()
@@ -307,6 +356,7 @@ struct ResultView: View {
                         .padding(.bottom, 24)
                 }
                 .padding(.top, 70)
+            }
             }
 
             Button(action: closeResult) {
@@ -457,10 +507,68 @@ struct ResultView: View {
 /// One measured condition. A value type so the rows can be sorted and the
 /// free/Pro split stays a property of the condition, not of its position.
 struct ConditionReading: Identifiable {
+    /// The canonical condition key ("acne", …) — the same vocabulary as
+    /// `ConditionDetector` and the stored zones. Never the localized title:
+    /// that changes with the device language.
+    let key: String
     let title: String
     let score: Double
 
-    var id: String { title }
+    var id: String { key }
+}
+
+/// One reading on the shared axis. Invisible copies of every visible title
+/// and of "100" fix the two side columns to their widest members, so all the
+/// bars start and end at the same x without a Grid — which matters because a
+/// row must be a single view to take a tap and a selection stroke.
+struct ConditionRow: View {
+    let reading: ConditionReading
+    let allTitles: [String]
+    let isSelected: Bool
+
+    var body: some View {
+        HStack(spacing: 14) {
+            ZStack(alignment: .leading) {
+                ForEach(allTitles, id: \.self) { title in
+                    Text(title)
+                        .font(.scaled(size: 15, weight: .semibold))
+                        .opacity(0)
+                        .accessibilityHidden(true)
+                }
+                Text(reading.title)
+                    .font(.scaled(size: 15, weight: .semibold))
+                    .foregroundColor(.brandText)
+            }
+            .lineLimit(1)
+            .minimumScaleFactor(0.7)
+
+            ConditionAxisBar(score: reading.score)
+
+            ZStack(alignment: .trailing) {
+                Text(verbatim: "100")
+                    .font(.scaled(size: 16, weight: .bold))
+                    .monospacedDigit()
+                    .opacity(0)
+                    .accessibilityHidden(true)
+                Text("\(Int(reading.score))")
+                    .font(.scaled(size: 16, weight: .bold))
+                    .foregroundColor(.brandText)
+                    .monospacedDigit()
+            }
+        }
+        .padding(.vertical, 7)
+        .padding(.horizontal, 8)
+        .contentShape(Rectangle())
+        .background(
+            RoundedRectangle(cornerRadius: Radius.small)
+                .stroke(isSelected ? Color.brandPrimary : Color.clear, lineWidth: 2)
+        )
+        .animation(.spring(response: 0.2), value: isSelected)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(
+            Text("\(reading.title): \(Int(reading.score))/100, \(Severity(score: reading.score).localizedTitle)")
+        )
+    }
 }
 
 /// A single severity on the shared 0-100 axis.
