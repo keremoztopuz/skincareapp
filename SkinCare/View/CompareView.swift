@@ -143,6 +143,7 @@ struct CompareView: View {
             }
         }
         .navigationBarBackButtonHidden(true)
+        .interactiveSwipeBack()
     }
 
     // MARK: - Date Label
