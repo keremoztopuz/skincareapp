@@ -1,7 +1,27 @@
 import SwiftUI
 import RevenueCat
 
+/// Where the paywall is being shown from. It is the same screen everywhere —
+/// only its headline, its sheet chrome, and what leaving it means change.
+enum PaywallContext {
+    /// The onboarding step. Not a sheet: there is nothing to dismiss back to,
+    /// so this one advances the app flow itself via `onFlowStep`.
+    case onboarding
+    /// A sheet from Settings or one of the locked Pro surfaces.
+    case upgrade
+    /// A sheet thrown when the free monthly scan quota is spent.
+    case scanLimit
+}
+
 struct UpgradeSheetView: View {
+    var context: PaywallContext = .upgrade
+
+    /// Set only by the onboarding step, which owns a flow transition instead
+    /// of a dismissal. `true` when the user bought or restored Pro.
+    /// A closure rather than an `@EnvironmentObject` so the five sheet call
+    /// sites cannot crash on a missing environment value.
+    var onFlowStep: ((Bool) -> Void)? = nil
+
     @Environment(\.dismiss) var dismiss
     @State private var isPurchasing = false
     @State private var showSuccess = false
@@ -23,32 +43,41 @@ struct UpgradeSheetView: View {
             // tail (restore / continue free / legal) stays reachable on short
             // screens without changing how it feels on tall ones.
             GeometryReader { proxy in
+            // Short screens (iPhone SE) get a smaller crown and tighter
+            // spacing so the plan picker stays above the fold.
+            let isCompact = proxy.size.height < 700
             ScrollView {
             VStack(spacing: 0) {
 
                 // MARK: Drag handle
-                RoundedRectangle(cornerRadius: Radius.small)
-                    .fill(Color.gray.opacity(0.3))
-                    .frame(width: 40, height: 4)
-                    .padding(.top, 14)
-                    .padding(.bottom, 24)
+                // Sheets only: as a flow step there is nothing to drag away.
+                if isSheet {
+                    RoundedRectangle(cornerRadius: Radius.small)
+                        .fill(Color.gray.opacity(0.3))
+                        .frame(width: 40, height: 4)
+                        .padding(.top, 14)
+                        .padding(.bottom, 24)
+                } else {
+                    Color.clear.frame(height: 24)
+                }
 
                 // MARK: Icon
-                BrandCircleIcon(systemImage: "crown.fill", size: 110)
-                    .padding(.bottom, 20)
+                BrandCircleIcon(systemImage: "crown.fill", size: isCompact ? 84 : 110)
+                    .padding(.bottom, isCompact ? 12 : 20)
 
                 // MARK: Title
                 VStack(spacing: 8) {
-                    Text(NSLocalizedString("upgrade_to_pro", comment: ""))
-                        .font(.scaled(size: 28, weight: .bold))
+                    Text(title)
+                        .font(.scaled(size: isCompact ? 23 : 28, weight: .bold))
                         .foregroundColor(.brandText)
-                    Text(NSLocalizedString("unlock_full_capabilities", comment: ""))
+                        .multilineTextAlignment(.center)
+                    Text(subtitle)
                         .font(.scaled(size: 15))
                         .foregroundColor(.gray)
                         .multilineTextAlignment(.center)
                 }
                 .padding(.horizontal, 24)
-                .padding(.bottom, 28)
+                .padding(.bottom, isCompact ? 18 : 28)
 
                 // MARK: Feature list
                 VStack(spacing: 0) {
@@ -63,20 +92,6 @@ struct UpgradeSheetView: View {
                 .background(Color.white)
                 .cornerRadius(Radius.card)
                 .cardShadow()
-                .padding(.horizontal, 20)
-                .padding(.bottom, 12)
-
-                // MARK: Free tier reminder
-                VStack(spacing: 0) {
-                    featureRow(icon: "camera.viewfinder", text: NSLocalizedString("free_feature_5_scans", comment: ""), isFree: true)
-                    Divider().padding(.horizontal, 20)
-                    featureRow(icon: "face.dashed", text: NSLocalizedString("free_feature_conditions", comment: ""), isFree: true)
-                    Divider().padding(.horizontal, 20)
-                    featureRow(icon: "clock", text: NSLocalizedString("free_feature_last_5", comment: ""), isFree: true)
-                }
-                .background(Color.white.opacity(0.6))
-                .cornerRadius(Radius.card)
-                .overlay(RoundedRectangle(cornerRadius: Radius.card).stroke(Color.gray.opacity(0.12), lineWidth: 1))
                 .padding(.horizontal, 20)
 
                 Spacer()
@@ -142,9 +157,9 @@ struct UpgradeSheetView: View {
                 .disabled(isPurchasing)
 
                 Button {
-                    dismiss()
+                    finish(isPremium: false)
                 } label: {
-                    Text(NSLocalizedString("continue_with_free_plan", comment: ""))
+                    Text(NSLocalizedString("continue_with_free", comment: ""))
                         .font(.scaled(size: 15))
                         .foregroundColor(.gray)
                         .padding(.vertical, 10)
@@ -159,7 +174,7 @@ struct UpgradeSheetView: View {
             .scrollBounceBehavior(.basedOnSize)
             }
         }
-        .presentationDetents([.large])
+        .presentationDetents(isSheet ? [.large] : [])
         .onAppear { loadPrices() }
         .alert(AppStrings.purchaseError, isPresented: Binding(
             get: { purchaseError != nil },
@@ -173,6 +188,39 @@ struct UpgradeSheetView: View {
             if showSuccess {
                 successOverlay
             }
+        }
+    }
+
+    // MARK: - Context
+    private var isSheet: Bool { context != .onboarding }
+
+    private var title: String {
+        switch context {
+        case .scanLimit: return AppStrings.scanLimitReached
+        case .onboarding, .upgrade: return NSLocalizedString("upgrade_to_pro", comment: "")
+        }
+    }
+
+    private var subtitle: String {
+        switch context {
+        case .scanLimit:
+            return String(
+                format: NSLocalizedString("free_scans_used", comment: ""),
+                SubscriptionManager.shared.freeMonthlyLimit
+            )
+        case .onboarding, .upgrade:
+            return NSLocalizedString("unlock_full_capabilities", comment: "")
+        }
+    }
+
+    /// The single exit point. A flow step hands control back to the app state
+    /// machine; a sheet just closes. Calling `dismiss()` in the onboarding
+    /// context would strand the user on a screen nothing presented.
+    private func finish(isPremium: Bool) {
+        if let onFlowStep {
+            onFlowStep(isPremium)
+        } else {
+            dismiss()
         }
     }
 
@@ -372,7 +420,7 @@ struct UpgradeSheetView: View {
                         SubscriptionManager.shared.isPremium = true
                         withAnimation(.spring(response: 0.4, dampingFraction: 0.6)) { showSuccess = true }
                         DispatchQueue.main.asyncAfter(deadline: .now() + 1.8) {
-                            dismiss()
+                            finish(isPremium: true)
                         }
                     } else if transaction != nil {
                         purchaseError = NSLocalizedString("purchase_pending_message", comment: "")
@@ -396,7 +444,7 @@ struct UpgradeSheetView: View {
                     SubscriptionManager.shared.isPremium = true
                     withAnimation(.spring(response: 0.4, dampingFraction: 0.6)) { showSuccess = true }
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1.8) {
-                        dismiss()
+                        finish(isPremium: true)
                     }
                 } else {
                     purchaseError = NSLocalizedString("restore_no_subscription", comment: "")
@@ -406,6 +454,14 @@ struct UpgradeSheetView: View {
     }
 }
 
-#Preview {
+#Preview("Sheet") {
     UpgradeSheetView()
+}
+
+#Preview("Scan limit") {
+    UpgradeSheetView(context: .scanLimit)
+}
+
+#Preview("Onboarding") {
+    UpgradeSheetView(context: .onboarding) { _ in }
 }
