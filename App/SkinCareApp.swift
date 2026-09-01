@@ -27,6 +27,13 @@ struct SkinCareApp: App {
     }
     
     init() {
+        // Set before configure, or the SDK's own start-up diagnostics — the
+        // storefront, the product fetch and the reason an offering failed to
+        // load — are gone by the time the level takes effect. Debug builds
+        // only: the verbose log names product identifiers and prices.
+        #if DEBUG
+        Purchases.logLevel = .debug
+        #endif
         Purchases.configure(withAPIKey: RevenueCatConfig.apiKey)
         LocalPersistenceManager.shared.migrateScoresIfNeeded()
     }
