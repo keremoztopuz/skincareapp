@@ -95,6 +95,7 @@
 "please_select_skin_type" = "Lütfen cilt tipinizi seçin.";
 "scanned_image" = "Taranan Görüntü";
 "results" = "Sonuçlar";
+"condition_scale_hint" = "0 = yok  ·  100 = şiddetli";
 "see_recommendations" = "Önerileri Gör";
 "description" = "Açıklama";
 "active_ingredients" = "Aktif İçerikler";
