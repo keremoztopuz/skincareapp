@@ -96,6 +96,7 @@
 "scanned_image" = "Taranan Görüntü";
 "results" = "Sonuçlar";
 "condition_scale_hint" = "0 = yok  ·  100 = şiddetli";
+"show_zone_hint" = "Değerlendirilen bölgeyi fotoğrafınızda gösterir";
 "see_recommendations" = "Önerileri Gör";
 "description" = "Açıklama";
 "active_ingredients" = "Aktif İçerikler";
