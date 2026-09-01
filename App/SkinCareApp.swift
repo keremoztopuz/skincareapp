@@ -36,5 +36,10 @@ struct SkinCareApp: App {
         #endif
         Purchases.configure(withAPIKey: RevenueCatConfig.apiKey)
         LocalPersistenceManager.shared.migrateScoresIfNeeded()
+        // After the migration, so the seeded pair is written on the current
+        // score scale and the version flag never rewrites it.
+        #if DEBUG
+        MockScanSeeder.seedIfRequested()
+        #endif
     }
 }
