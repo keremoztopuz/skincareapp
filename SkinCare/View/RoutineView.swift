@@ -23,6 +23,7 @@ struct RoutineView: View {
             }
         }
         .navigationBarHidden(true)
+        .interactiveSwipeBack()
         .sheet(isPresented: $showUpgrade) { UpgradeSheetView() }
         .sheet(isPresented: $vm.showAddProduct) {
             ProductPickerSheet(
@@ -392,7 +393,14 @@ struct ProductPickerSheet: View {
                 Color.brandBackground.ignoresSafeArea()
 
                 if isLoading {
-                    ProgressView()
+                    ScrollView {
+                        LazyVStack(spacing: 12) {
+                            ForEach(0..<5, id: \.self) { _ in
+                                SkeletonRow(thumbnailSize: 50)
+                            }
+                        }
+                        .padding(20)
+                    }
                 } else if products.isEmpty {
                     VStack(spacing: 12) {
                         Image(systemName: loadErrorMessage == nil ? "tray" : "exclamationmark.icloud")
@@ -465,8 +473,7 @@ struct ProductPickerSheet: View {
                 AsyncImage(url: imageUrl) { image in
                     image.resizable().aspectRatio(contentMode: .fill)
                 } placeholder: {
-                    RoundedRectangle(cornerRadius: Radius.small)
-                        .fill(Color.brandBlush)
+                    SkeletonBox(cornerRadius: Radius.small)
                 }
                 .frame(width: 50, height: 50)
                 .clipShape(RoundedRectangle(cornerRadius: Radius.small))
