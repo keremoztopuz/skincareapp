@@ -34,13 +34,14 @@ struct DetailView: View {
                 ScrollView(.vertical, showsIndicators: false) {
                     VStack(alignment: .leading, spacing: 24) {
                         if isLoadingFullDetail {
-                            VStack {
-                                Spacer()
-                                ProgressView(AppStrings.loadingFullDetails)
-                                    .padding(.top, 100)
-                                Spacer()
+                            // The page in outline: hero image, title, body.
+                            VStack(alignment: .leading, spacing: 20) {
+                                SkeletonBox()
+                                    .frame(height: 260)
+                                SkeletonText(lines: 2, lineHeight: 20)
+                                SkeletonText(lines: 6)
                             }
-                            .frame(maxWidth: .infinity)
+                            .frame(maxWidth: .infinity, alignment: .leading)
                         } else {
                             if let loadErrorMessage {
                                 HStack(spacing: 10) {
@@ -73,6 +74,7 @@ struct DetailView: View {
             }
         }
         .navigationBarBackButtonHidden(true)
+        .interactiveSwipeBack()
         .onAppear {
             loadFullDetail()
         }
@@ -125,7 +127,7 @@ struct ProductDetailContent: View {
                             .aspectRatio(contentMode: .fill)
                             .clipped()
                     } placeholder: {
-                        ProgressView()
+                        SkeletonBox()
                     }
                     .frame(height: 350)
                     .clipShape(RoundedRectangle(cornerRadius: Radius.card))
@@ -193,7 +195,7 @@ struct ArticleDetailContent: View {
                             .aspectRatio(contentMode: .fill)
                             .clipped()
                     } placeholder: {
-                        ProgressView()
+                        SkeletonBox()
                     }
                     .frame(height: 250)
                     .clipShape(RoundedRectangle(cornerRadius: Radius.card))
