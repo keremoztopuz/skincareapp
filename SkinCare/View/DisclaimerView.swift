@@ -1,9 +1,12 @@
 import SwiftUI
 import Lottie
 
+/// The medical notice. It used to be a consent gate in onboarding; it is now
+/// a reference page reachable any time from Settings, so the patch-test and
+/// liability warnings stay in the app without standing between a new user and
+/// their first scan.
 struct DisclaimerView: View {
-    @EnvironmentObject var appVM: ContentViewModel
-    @State private var hasAccepted = false
+    @Environment(\.dismiss) private var dismiss
     @State private var isPulsing = false
     @State private var iconScale: CGFloat = 0
     @State private var contentScale: CGFloat = 0
@@ -86,51 +89,16 @@ struct DisclaimerView: View {
                 }
 
                 Button {
-                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                        hasAccepted.toggle()
-                    }
+                    dismiss()
                 } label: {
-                    HStack(spacing: 12) {
-                        ZStack {
-                            RoundedRectangle(cornerRadius: Radius.small)
-                                .stroke(hasAccepted ? Color.brandPrimary : Color.gray.opacity(0.4), lineWidth: 2)
-                                .frame(width: 24, height: 24)
-
-                            if hasAccepted {
-                                Image(systemName: "checkmark")
-                                    .font(.scaled(size: 14, weight: .bold))
-                                    .foregroundColor(.white)
-                                    .frame(width: 24, height: 24)
-                                    .background(Color.brandPrimary)
-                                    .cornerRadius(Radius.small)
-                                    .transition(.scale)
-                            }
-                        }
-
-                        Text(NSLocalizedString("accept_terms", comment: ""))
-                            .font(.scaled(size: 15, weight: .medium))
-                            .foregroundColor(.brandText)
-                            .multilineTextAlignment(.leading)
-                    }
+                    Text(NSLocalizedString("close", comment: ""))
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 18)
+                        .background(Color.brandPrimary)
+                        .foregroundColor(.white)
+                        .font(.scaled(size: 18, weight: .bold))
+                        .cornerRadius(Radius.card)
                 }
-                .padding(.horizontal, 30)
-                .padding(.bottom, 20)
-
-                Button {
-                    appVM.acceptDisclaimer()
-                } label: {
-                    HStack {
-                        Text(NSLocalizedString("continue", comment: ""))
-                        Image(systemName: "chevron.right")
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 18)
-                    .background(hasAccepted ? Color.brandPrimary : Color.gray.opacity(0.3))
-                    .foregroundColor(hasAccepted ? .white : .gray)
-                    .font(.scaled(size: 18, weight: .bold))
-                    .cornerRadius(Radius.card)
-                }
-                .disabled(!hasAccepted)
                 .padding(.horizontal, 30)
                 .padding(.bottom, 40)
             }
@@ -172,5 +140,4 @@ struct DisclaimerItem: View {
 
 #Preview {
     DisclaimerView()
-        .environmentObject(ContentViewModel())
 }
