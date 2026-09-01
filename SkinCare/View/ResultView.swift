@@ -25,6 +25,63 @@ struct ResultView: View {
     @StateObject private var subscriptionManager = SubscriptionManager.shared
     private var isPremium: Bool { subscriptionManager.isPremium }
 
+    /// Acne and redness are free, the other three are Pro — the split is by
+    /// condition, not by position, so the rows can be sorted freely.
+    private var freeReadings: [ConditionReading] {
+        [
+            ConditionReading(title: AppStrings.acne,    score: record?.acneScore   ?? 0),
+            ConditionReading(title: AppStrings.redness, score: record?.eczemaScore ?? 0)
+        ]
+    }
+
+    private var proReadings: [ConditionReading] {
+        [
+            ConditionReading(title: AppStrings.wrinkles,     score: record?.wrinkleScore      ?? 0),
+            ConditionReading(title: AppStrings.eyebags,      score: record?.eyebagScore       ?? 0),
+            ConditionReading(title: AppStrings.pigmentation, score: record?.pigmentationScore ?? 0)
+        ]
+    }
+
+    /// Worst first, so the card leads with the finding that needs attention.
+    private var visibleReadings: [ConditionReading] {
+        let readings = isPremium ? freeReadings + proReadings : freeReadings
+        return readings.sorted { $0.score > $1.score }
+    }
+
+    private var lockedReadings: [ConditionReading] {
+        isPremium ? [] : proReadings
+    }
+
+    /// The three locked conditions as one row. Three identical empty cards
+    /// said the same thing three times and read as padding.
+    private var lockedReadingsRow: some View {
+        HStack(spacing: 14) {
+            Image(systemName: "lock.fill")
+                .font(.scaled(size: 15))
+                .foregroundColor(.brandPrimary)
+
+            Text(ListFormatter.localizedString(byJoining: lockedReadings.map(\.title)))
+                .font(.scaled(size: 15, weight: .semibold))
+                .foregroundColor(.gray)
+                .multilineTextAlignment(.leading)
+                .fixedSize(horizontal: false, vertical: true)
+
+            Spacer(minLength: 8)
+
+            Text(AppStrings.pro)
+                .font(.scaled(size: 12, weight: .bold))
+                .foregroundColor(.brandPrimary)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 4)
+                .background(Color.brandBlush)
+                .cornerRadius(Radius.small)
+
+            Image(systemName: "chevron.right")
+                .font(.scaled(size: 13, weight: .bold))
+                .foregroundColor(.gray.opacity(0.3))
+        }
+    }
+
     /// The free tier sees the first two only. The list arrives ordered by
     /// condition weight, so those two answer the worst finding.
     private var visibleProducts: [Product] {
@@ -100,26 +157,61 @@ struct ResultView: View {
 
                     // MARK: - Results Section
                     VStack(alignment: .leading, spacing: 16) {
-                        Text(AppStrings.results)
-                            .font(.scaled(size: 18, weight: .bold))
-                            .foregroundColor(.brandText)
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(AppStrings.results)
+                                .font(.scaled(size: 18, weight: .bold))
+                                .foregroundColor(.brandText)
 
-                        // Stacked, not a horizontal scroller: all five
-                        // measurements are the point of this screen, and the
-                        // three past the fold were being missed entirely.
-                        VStack(spacing: 16) {
-                            ResultBar(title: AppStrings.acne,    score: record?.acneScore   ?? 0, icon: "face.dashed")
-                            ResultBar(title: AppStrings.redness, score: record?.eczemaScore ?? 0, icon: "drop.fill")
-                            if isPremium {
-                                ResultBar(title: AppStrings.wrinkles,     score: record?.wrinkleScore      ?? 0, icon: "sun.max.fill")
-                                ResultBar(title: AppStrings.eyebags,      score: record?.eyebagScore       ?? 0, icon: "eye.fill")
-                                ResultBar(title: AppStrings.pigmentation, score: record?.pigmentationScore ?? 0, icon: "circle.hexagongrid")
-                            } else {
-                                Button { showUpgrade = true } label: { ResultBar(title: AppStrings.wrinkles, score: 0, icon: "lock.fill", locked: true) }.buttonStyle(.plain)
-                                Button { showUpgrade = true } label: { ResultBar(title: AppStrings.eyebags, score: 0, icon: "lock.fill", locked: true) }.buttonStyle(.plain)
-                                Button { showUpgrade = true } label: { ResultBar(title: AppStrings.pigmentation, score: 0, icon: "lock.fill", locked: true) }.buttonStyle(.plain)
+                            // The overall score on this same screen runs the
+                            // other way, so the readings have to name their
+                            // direction or 68 reads as healthier than 21.
+                            Text(AppStrings.conditionScaleHint)
+                                .font(.scaled(size: 12))
+                                .foregroundColor(.gray)
+                        }
+
+                        // One card, one axis. The five severities share a
+                        // scale, so they belong on a common baseline: in
+                        // separate cards they were five unrelated facts and
+                        // nothing said which finding mattered.
+                        VStack(spacing: 0) {
+                            Grid(alignment: .leading, horizontalSpacing: 14, verticalSpacing: 14) {
+                                ForEach(visibleReadings) { reading in
+                                    GridRow {
+                                        Text(reading.title)
+                                            .font(.scaled(size: 15, weight: .semibold))
+                                            .foregroundColor(.brandText)
+                                            .lineLimit(1)
+                                            .minimumScaleFactor(0.7)
+
+                                        ConditionAxisBar(score: reading.score)
+
+                                        Text("\(Int(reading.score))")
+                                            .font(.scaled(size: 16, weight: .bold))
+                                            .foregroundColor(.brandText)
+                                            .monospacedDigit()
+                                    }
+                                    .accessibilityElement(children: .combine)
+                                    .accessibilityLabel(
+                                        Text("\(reading.title): \(Int(reading.score))/100, \(Severity(score: reading.score).localizedTitle)")
+                                    )
+                                }
+                            }
+
+                            if !lockedReadings.isEmpty {
+                                Divider()
+                                    .padding(.vertical, 16)
+
+                                Button { showUpgrade = true } label: {
+                                    lockedReadingsRow
+                                }
+                                .buttonStyle(.plain)
                             }
                         }
+                        .padding(20)
+                        .background(Color.white)
+                        .cornerRadius(Radius.card)
+                        .cardShadow()
                     }
                     .padding(.horizontal, 20)
 
@@ -360,89 +452,42 @@ struct ResultView: View {
     }
 }
 
-// MARK: - ResultBar Struct
-struct ResultBar: View {
+// MARK: - Condition axis
+
+/// One measured condition. A value type so the rows can be sorted and the
+/// free/Pro split stays a property of the condition, not of its position.
+struct ConditionReading: Identifiable {
     let title: String
     let score: Double
-    let icon: String
-    var locked: Bool = false
+
+    var id: String { title }
+}
+
+/// A single severity on the shared 0-100 axis.
+///
+/// The track spans the whole column, so every bar in the card starts and ends
+/// at the same x and their lengths compare directly — the point of putting the
+/// readings in one card instead of five.
+struct ConditionAxisBar: View {
+    let score: Double
+
+    private var fraction: Double { min(max(score, 0), 100) / 100 }
 
     var body: some View {
-        HStack(spacing: 16) {
-            ZStack {
-                RoundedRectangle(cornerRadius: Radius.small)
-                    .fill(locked ? Color.gray.opacity(0.15) : Color.brandPrimary)
-                    .frame(width: 44, height: 44)
+        GeometryReader { geo in
+            ZStack(alignment: .leading) {
+                Capsule()
+                    .fill(Color.brandPrimary.opacity(0.08))
 
-                Image(systemName: icon)
-                    .font(.scaled(size: 20))
-                    .foregroundColor(locked ? .gray.opacity(0.5) : .white)
-            }
-
-            VStack(alignment: .leading, spacing: 10) {
-                HStack(alignment: .firstTextBaseline, spacing: 2) {
-                    Text(title)
-                        .font(.scaled(size: 16, weight: .bold))
-                        .foregroundColor(locked ? .gray.opacity(0.5) : .brandText)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.8)
-
-                    Spacer(minLength: 8)
-
-                    if locked {
-                        Text(AppStrings.pro)
-                            .font(.scaled(size: 12, weight: .bold))
-                            .foregroundColor(.brandPrimary)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 4)
-                            .background(Color.brandBlush)
-                            .cornerRadius(Radius.small)
-                    } else {
-                        Text("\(Int(score))")
-                            .font(.scaled(size: 20, weight: .bold))
-                            .foregroundColor(.brandPrimary)
-
-                        Text("/100")
-                            .font(.scaled(size: 13, weight: .semibold))
-                            .foregroundColor(.gray)
-
-                        Text(Severity(score: score).localizedTitle)
-                            .font(.scaled(size: 11, weight: .semibold))
-                            .foregroundColor(.brandPrimary)
-                            .padding(.horizontal, 7)
-                            .padding(.vertical, 3)
-                            .background(Color.brandBlush)
-                            .cornerRadius(Radius.small)
-                            .padding(.leading, 8)
-                    }
-                }
-
-                GeometryReader { geo in
-                    ZStack(alignment: .leading) {
-                        RoundedRectangle(cornerRadius: Radius.small)
-                            .fill(locked ? Color.gray.opacity(0.12) : Color.brandPrimary.opacity(0.1))
-                            .frame(height: 6)
-                        if !locked {
-                            RoundedRectangle(cornerRadius: Radius.small)
-                                .fill(Color.brandPrimary)
-                                .frame(width: geo.size.width * (min(max(score, 0), 100) / 100), height: 6)
-                        }
-                    }
-                }
-                .frame(height: 6)
+                Capsule()
+                    .fill(Severity(score: score).tint)
+                    // A zero-width capsule draws nothing at all; the floor
+                    // keeps a near-zero reading visible as a dot.
+                    .frame(width: max(geo.size.width * fraction, 8))
             }
         }
-        .padding(16)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.white)
-        .cornerRadius(Radius.card)
-        .cardShadow()
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel(
-            locked
-                ? Text("\(title), \(AppStrings.pro)")
-                : Text("\(title): \(Int(score))/100, \(Severity(score: score).localizedTitle)")
-        )
+        .frame(height: 8)
+        .frame(minWidth: 60, maxWidth: .infinity)
     }
 }
 
