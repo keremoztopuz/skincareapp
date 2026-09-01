@@ -8,6 +8,7 @@ struct MoreView: View {
     @State private var showUpgrade = false
     @State private var showDeleteConfirm = false
     @State private var showCredits = false
+    @State private var showDisclaimer = false
     @State private var isRestoring = false
     @State private var restoreMessage: String?
 
@@ -223,15 +224,6 @@ struct MoreView: View {
                             .buttonStyle(.plain)
                             .disabled(isRestoring)
 
-                            Button { showDeleteConfirm = true } label: {
-                                SettingsRow(
-                                    icon: "trash",
-                                    title: NSLocalizedString("delete_all_data", comment: ""),
-                                    isDestructive: true
-                                )
-                            }
-                            .buttonStyle(.plain)
-
                             Button { showCredits = true } label: {
                                 SettingsRow(
                                     icon: "text.book.closed",
@@ -240,20 +232,56 @@ struct MoreView: View {
                             }
                             .buttonStyle(.plain)
 
-                            SettingsRow(
-                                icon: "info.circle",
-                                title: NSLocalizedString("version", comment: ""),
-                                value: appVersion,
-                                showsChevron: false
-                            )
+                            // The medical notice, the terms and the privacy
+                            // policy each get their own row: they used to be a
+                            // consent screen and a pair of 12pt footer links,
+                            // neither of which reads as something you can go
+                            // back and check.
+                            Button { showDisclaimer = true } label: {
+                                SettingsRow(
+                                    icon: "exclamationmark.triangle",
+                                    title: NSLocalizedString("important_notice", comment: "")
+                                )
+                            }
+                            .buttonStyle(.plain)
+
+                            Link(destination: LegalURLs.terms) {
+                                SettingsRow(
+                                    icon: "doc.text",
+                                    title: NSLocalizedString("terms_of_use", comment: "")
+                                )
+                            }
+                            .buttonStyle(.plain)
+
+                            Link(destination: LegalURLs.privacy) {
+                                SettingsRow(
+                                    icon: "hand.raised",
+                                    title: NSLocalizedString("privacy_policy", comment: "")
+                                )
+                            }
+                            .buttonStyle(.plain)
+
+                            // Last, and on its own: the only destructive row
+                            // on the screen should not sit between two
+                            // harmless ones.
+                            Button { showDeleteConfirm = true } label: {
+                                SettingsRow(
+                                    icon: "trash",
+                                    title: NSLocalizedString("delete_all_data", comment: ""),
+                                    isDestructive: true
+                                )
+                            }
+                            .buttonStyle(.plain)
                         }
 
                         HStack {
                             Spacer()
-                            LegalFooter()
+                            Text(appVersion)
+                                .font(.scaled(size: 12))
+                                .foregroundColor(.gray)
                             Spacer()
                         }
-                        .padding(.top, 4)
+                        .padding(.top, 8)
                     }
 
                     Color.clear.frame(height: 20)
@@ -292,13 +320,24 @@ struct MoreView: View {
         .sheet(isPresented: $showCredits) {
             CreditsView()
         }
+        .sheet(isPresented: $showDisclaimer) {
+            DisclaimerView()
+        }
         .onAppear {
             vm.loadProfile()
         }
     }
 
+    /// "Skinner 1.0 (2)" — the marketing version plus the build, because a
+    /// bug report that names only "1.0" cannot be matched to a TestFlight build.
     private var appVersion: String {
-        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "-"
+        let info = Bundle.main.infoDictionary
+        let name = info?["CFBundleDisplayName"] as? String
+            ?? info?["CFBundleName"] as? String
+            ?? "Skinner"
+        let short = info?["CFBundleShortVersionString"] as? String ?? "-"
+        let build = info?["CFBundleVersion"] as? String
+        return build.map { "\(name) \(short) (\($0))" } ?? "\(name) \(short)"
     }
 
     private func restorePurchases() {
