@@ -32,6 +32,11 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
     /// False when the analysis failed, so a broken run never persists a
     /// record that would read as a flawless complexion.
     private var didProduceModelScores = false
+    /// What the region overlay needs from this scan: the uploaded face crop
+    /// normalized to the full frame, and the regions the model returned
+    /// relative to that crop. Carried until buildRecord persists them.
+    private var lastCropRect = CGRect(x: 0, y: 0, width: 1, height: 1)
+    private var lastRegions: [String: [StoredZones.Rect]] = [:]
 
     private let engine = ScoringEngine()
 
@@ -168,7 +173,7 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
                 return
             }
 
-            let (croppedImage, _) = await withCheckedContinuation { continuation in
+            let (croppedImage, faceNormRect) = await withCheckedContinuation { continuation in
                 detectFaceAndCrop(normalizedImage) { cropped, faceNormRect in
                     continuation.resume(returning: (cropped, faceNormRect))
                 }
@@ -176,7 +181,13 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
 
             let imageToAnalyze = croppedImage ?? normalizedImage
 
-            await self.analyzeWithCloud(imageToAnalyze)
+            // The model's regions come back relative to what was uploaded:
+            // the crop when one was made, the full frame otherwise.
+            let cropRect = (croppedImage != nil && faceNormRect != .zero)
+                ? faceNormRect
+                : CGRect(x: 0, y: 0, width: 1, height: 1)
+
+            await self.analyzeWithCloud(imageToAnalyze, cropRect: cropRect)
 
             let elapsed = Date().timeIntervalSince(startTime)
             if elapsed < 3.0 {
@@ -259,7 +270,7 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
     /// `buildRecord()` refuses to persist: an all-zero record would read as
     /// flawless skin, and it would still burn one of the user's five monthly
     /// scans.
-    func analyzeWithCloud(_ image: UIImage) async {
+    func analyzeWithCloud(_ image: UIImage, cropRect: CGRect = CGRect(x: 0, y: 0, width: 1, height: 1)) async {
         // The persistence manager wraps the main-queue viewContext; fetching
         // from this background task would be a Core Data threading violation.
         let (skinType, age) = await MainActor.run { () -> (String?, Int?) in
@@ -272,10 +283,12 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
         }
 
         do {
-            let scores = try await AnalysisService.shared.analyze(
+            let (scores, regions) = try await AnalysisService.shared.analyze(
                 image: image, skinType: skinType, age: age
             )
             await MainActor.run {
+                self.lastCropRect = cropRect
+                self.lastRegions = regions
                 self.currentAcneScore = scores.acne
                 self.currentRednessScore = scores.redness
                 self.wrinkleScore = scores.wrinkles
@@ -342,6 +355,16 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
 
         let imageData = capturedImage?.jpegData(compressionQuality: 0.5)
 
+        // Only worth a row when the model located something; the overlay
+        // treats a missing blob and an empty one the same way.
+        let zonesData = lastRegions.isEmpty ? nil : StoredZones(
+            crop: StoredZones.Rect(
+                x: lastCropRect.origin.x, y: lastCropRect.origin.y,
+                w: lastCropRect.width, h: lastCropRect.height
+            ),
+            regions: lastRegions
+        ).encoded()
+
         let record = LocalPersistenceManager.shared.saveAnalysisRecord(
             condition: detectedCondition ?? "Healthy",
             confidence: max(currentAcneScore, currentRednessScore) / 100.0,
@@ -355,7 +378,8 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
             acneScore: currentAcneScore,
             eczemaScore: currentRednessScore,
             hydrationScore: hydrationScore,
-            imageData: imageData
+            imageData: imageData,
+            zonesData: zonesData
         )
 
         // A record that failed to persist would vanish on the next launch;
@@ -385,6 +409,8 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
             self.hydrationScore = 0
             self.didProduceModelScores = false
             self.isAnalyzing = false
+            self.lastCropRect = CGRect(x: 0, y: 0, width: 1, height: 1)
+            self.lastRegions = [:]
         }
         if !session.isRunning {
             DispatchQueue.global(qos: .background).async {
