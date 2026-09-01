@@ -15,6 +15,7 @@
 "routine_steps_done_%lld_%lld" = "%1$lld/%2$lld tamamlandı";
 "new_suggestions_%lld" = "%lld yeni öneri";
 "recommended_products" = "Önerilen Ürünler";
+"general_care_products" = "Günlük Bakım Ürünleri";
 "latest_articles" = "Son Makaleler";
 "morning_routine" = "Sabah Rutini";
 "evening_routine" = "Akşam Rutini";
