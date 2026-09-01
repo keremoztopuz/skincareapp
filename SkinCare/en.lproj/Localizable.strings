@@ -18,6 +18,7 @@
 "routine_steps_done_%lld_%lld" = "%1$lld of %2$lld done";
 "new_suggestions_%lld" = "%lld new suggestions";
 "recommended_products" = "Recommended Products";
+"general_care_products" = "Everyday Care Products";
 "latest_articles" = "Latest Articles";
 "morning_routine" = "Morning Routine";
 "evening_routine" = "Evening Routine";
