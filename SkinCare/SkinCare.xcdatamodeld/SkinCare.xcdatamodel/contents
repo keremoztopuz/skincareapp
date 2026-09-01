@@ -14,6 +14,7 @@
         <attribute name="overallScore" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="pigmentationScore" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="wrinkleScore" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="zonesData" optional="YES" attributeType="Binary"/>
     </entity>
     <entity name="RoutineItem" representedClassName="RoutineItem" syncable="YES" codeGenerationType="class">
         <attribute name="addedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
