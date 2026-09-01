@@ -15,7 +15,6 @@ private func resetAppFlowDefaults() {
     // simulator) may have seeded these true, and an explicit write is
     // authoritative even when a stale cfprefsd cache survives removal.
     UserDefaults.standard.set(false, forKey: "hasCompletedOnBoarding")
-    UserDefaults.standard.set(false, forKey: "hasAcceptedDisclaimer")
     UserDefaults.standard.set(false, forKey: "hasCompletedProfile")
     UserDefaults.standard.set(false, forKey: "hasCompletedSubscription")
     UserDefaults.standard.set(false, forKey: "isPremium")
@@ -28,8 +27,6 @@ private func resetAppFlowDefaults() {
     vm.showSplash = false
     #expect(vm.currentState == .onboarding)
     vm.completeOnBoarding()
-    #expect(vm.currentState == .disclaimer)
-    vm.acceptDisclaimer()
     #expect(vm.currentState == .profileSetup)
     vm.completeProfile()
     #expect(vm.currentState == .loading)
@@ -127,7 +124,6 @@ private func resetAppFlowDefaults() {
     let vm = ContentViewModel()
     vm.showSplash = false
     vm.completeOnBoarding()
-    vm.acceptDisclaimer()
     vm.completeProfile()
     vm.showLoading = false
     vm.completePurchaseStep(isPremium: false)
