@@ -116,6 +116,7 @@
 /* Result */
 "scanned_image" = "Scanned Image";
 "results" = "Results";
+"condition_scale_hint" = "0 = none  ·  100 = severe";
 "see_recommendations" = "See Recommendations";
 
 /* Detail */
