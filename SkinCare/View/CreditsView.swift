@@ -202,3 +202,7 @@ struct WrappingRow: Layout {
         }
     }
 }
+
+#Preview(){
+    CreditsView()
+}
