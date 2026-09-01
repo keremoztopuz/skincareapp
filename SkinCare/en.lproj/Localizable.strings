@@ -117,6 +117,7 @@
 "scanned_image" = "Scanned Image";
 "results" = "Results";
 "condition_scale_hint" = "0 = none  ·  100 = severe";
+"show_zone_hint" = "Shows the assessed area on your photo";
 "see_recommendations" = "See Recommendations";
 
 /* Detail */
