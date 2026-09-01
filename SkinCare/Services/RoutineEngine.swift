@@ -28,7 +28,7 @@ class RoutineEngine {
     ]
 
     func generateRoutine(from record: AnalysisRecord, skinType: String) async -> [RoutineRecommendation] {
-        let activeConditions = detectActiveConditions(from: record)
+        let activeConditions = ConditionDetector.activeConditions(from: record)
 
         guard !activeConditions.isEmpty else { return [] }
 
@@ -73,33 +73,6 @@ class RoutineEngine {
         }
 
         return recommendations
-    }
-
-    private func detectActiveConditions(from record: AnalysisRecord) -> [(String, Double)] {
-        var conditions: [(String, Double)] = []
-
-        // Raw scores are stored on a 0-100 scale; normalize to 0-1 so the
-        // skin-type adjustment in rankProducts stays meaningful.
-        if record.acneScore > 35 { conditions.append(("acne", record.acneScore / 100.0)) }
-        if record.eczemaScore > 35 { conditions.append(("redness", record.eczemaScore / 100.0)) }
-        if record.pigmentationScore > 35 { conditions.append(("pigmentation", record.pigmentationScore / 100.0)) }
-        if record.wrinkleScore > 30 { conditions.append(("wrinkles", record.wrinkleScore / 100.0)) }
-        if record.eyebagScore > 30 { conditions.append(("eyebags", record.eyebagScore / 100.0)) }
-
-        // Low hydration routes to barrier products, which the catalogue files
-        // under the "redness" key — the conditions table has no dryness row.
-        if record.hydrationScore < 45.0 && !conditions.contains(where: { $0.0 == "redness" }) {
-            conditions.append(("redness", (100.0 - record.hydrationScore) / 100.0))
-        }
-        if record.inflammationScore > 50.0 && !conditions.contains(where: { $0.0 == "acne" }) {
-            conditions.append(("acne", record.inflammationScore / 100.0))
-        }
-
-        if conditions.isEmpty, let condition = record.condition, !condition.isEmpty {
-            conditions.append((condition.lowercased(), record.confidence))
-        }
-
-        return conditions
     }
 
     private func rankProducts(_ candidates: [(product: Product, conditionScores: [String: Double])], skinType: String) -> (product: Product, score: Double)? {
