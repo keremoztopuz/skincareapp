@@ -44,13 +44,18 @@ struct SearchView: View {
                 .padding(.horizontal, 20)
 
                 if vm.isLoading {
-                    VStack {
-                        Spacer()
-                        ProgressView()
-                            .tint(.brandPrimary)
-                        Spacer()
+                    // Rows in the shape the real list will take, so the
+                    // layout does not jump when the catalogue lands.
+                    ScrollView(.vertical, showsIndicators: false) {
+                        LazyVStack(spacing: 16) {
+                            ForEach(0..<6, id: \.self) { _ in
+                                SkeletonRow()
+                            }
+                        }
+                        .padding(.top, 10)
+                        .padding(.bottom, 20)
                     }
-                    .frame(maxWidth: .infinity)
+                    .padding(.horizontal, 20)
                 } else if vm.loadFailed {
                     // A failed fetch is not "no products": say so and offer
                     // a retry, or the tab stays empty until the app restarts.
@@ -129,7 +134,7 @@ struct SearchProductCard: View {
                     AsyncImage(url: url) { image in
                         image.resizable().scaledToFill()
                     } placeholder: {
-                        ProgressView()
+                        SkeletonBox(cornerRadius: Radius.small)
                     }
                     .frame(width: 60, height: 60)
                     .clipShape(RoundedRectangle(cornerRadius: Radius.small))
