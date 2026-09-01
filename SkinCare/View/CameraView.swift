@@ -9,7 +9,6 @@ struct CameraView: View {
     @AppStorage("hasSeenCameraGuide") private var hasSeenCameraGuide = false
     @State private var showGuide = false
     @State private var showResult = false
-    @State private var showQuotaAlert = false
     @State private var showUpgrade = false
     /// TabView keeps this view alive across tab switches, so notification
     /// observers fire even while another tab is showing. Only react when visible.
@@ -168,8 +167,11 @@ struct CameraView: View {
 
                     Button(action: {
                         guard !vm.isAnalyzing else { return }
+                        // The paywall itself, not an alert with an "OK" that
+                        // dismisses to nothing: out of scans is exactly the
+                        // moment the upgrade is worth showing.
                         guard subscriptionManager.canScan else {
-                            showQuotaAlert = true
+                            showUpgrade = true
                             return
                         }
 
@@ -198,17 +200,7 @@ struct CameraView: View {
         } message: {
             Text(vm.errorMessage ?? "")
         }
-        .alert(AppStrings.scanLimitReached, isPresented: $showQuotaAlert) {
-            Button(AppStrings.goPro) {
-                // Presenting a sheet in the same runloop as an alert's
-                // dismissal silently fails; defer one cycle.
-                DispatchQueue.main.async { showUpgrade = true }
-            }
-            Button(AppStrings.ok, role: .cancel) {}
-        } message: {
-            Text(String(format: NSLocalizedString("free_scans_used", comment: ""), SubscriptionManager.shared.freeMonthlyLimit))
-        }
-        .sheet(isPresented: $showUpgrade) { UpgradeSheetView() }
+        .sheet(isPresented: $showUpgrade) { UpgradeSheetView(context: .scanLimit) }
         .onAppear {
             isCameraVisible = true
             if !hasSeenCameraGuide {
