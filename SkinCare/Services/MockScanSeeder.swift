@@ -78,8 +78,8 @@ enum MockScanSeeder {
             crop: StoredZones.Rect.fullFrame,
             regions: [
                 "acne": [
-                    StoredZones.Rect(x: 0.46, y: 0.21, w: 0.14, h: 0.06),
-                    StoredZones.Rect(x: 0.50, y: 0.55, w: 0.10, h: 0.06)
+                    StoredZones.Rect(x: 0.475, y: 0.225, w: 0.055, h: 0.04),
+                    StoredZones.Rect(x: 0.52, y: 0.56, w: 0.045, h: 0.035)
                 ],
                 "redness": [
                     StoredZones.Rect(x: 0.42, y: 0.42, w: 0.08, h: 0.08),
