@@ -344,7 +344,10 @@ struct SettingsRow: View {
             Spacer()
 
             if showsProgress {
+                // An action in flight, not content arriving: a spinner is the
+                // right indicator here, so it only picks up the brand tint.
                 ProgressView()
+                    .tint(.brandPrimary)
             } else if let value {
                 Text(value)
                     .font(.scaled(size: 15, weight: .medium))
