@@ -13,7 +13,7 @@ Bu dosya App Store'a cikis icin teknik, hesap, gizlilik ve icerik hazirliklarini
 - [x] RevenueCat production API key hazir. `RevenueCatConfig.apiKey`, `app91511d0d30` uygulamasinin production public key'i ile birebir ayni.
 - [x] App Store Connect subscription urunu hazir. `com.keremoztopuz.skincare.pro.weekly` (ONE_WEEK, 175 bolgede fiyatli, TR ₺99,99, 3 gunluk deneme) ve `...pro.lifetime` `READY_TO_SUBMIT`. Ikisi de `skanner_pro` entitlement'ina bagli — dogrulandi. `...pro.monthly` emekli: hicbir pakete bagli degil ve StoreKit test dosyasindan da cikarildi. Ilk build ile birlikte incelemeye gidecekler.
 - [x] RevenueCat entitlement adi **`skanner_pro`** olarak App Store urunune baglandi. (`SubscriptionManager.swift` bu id'yi okur; `pro` yazilirsa hicbir satin alma kilidi acmaz.) `default` offering current ve `$rc_weekly` / `$rc_lifetime` paketleri iki App Store urunune bagli.
-- [ ] **BLOKE — Paid Applications Agreement.** App Store Connect > Business icinde "Paid Apps" satiri **New** durumunda; yalnizca "Free Apps" Active. Bu sozlesme Active olmadan StoreKit hicbir urun dondurmez: RevenueCat `OfferingsManager.Error 1` verir, paywall bos kalir, sandbox dahil hicbir odeme alinamaz. Sirasiyla: sozlesmeyi kabul et (yalnizca Account Holder yapabilir), Contact Info (Financial / Senior Management / Technical), Bank Account (tuzel kisiyle eslesen IBAN), Tax Forms (ABD icin W-8BEN veya W-8BEN-E, arti yerel vergi bilgisi). Durum New > Pending User Info > Active seklinde ilerler; banka dogrulamasi birkac gun surebilir.
+- [x] **Paid Applications Agreement — Active (28 Agu 2026).** Gecmis kayit: App Store Connect > Business icinde "Paid Apps" satiri **New** durumunda; yalnizca "Free Apps" Active. Bu sozlesme Active olmadan StoreKit hicbir urun dondurmez: RevenueCat `OfferingsManager.Error 1` verir, paywall bos kalir, sandbox dahil hicbir odeme alinamaz. Sirasiyla: sozlesmeyi kabul et (yalnizca Account Holder yapabilir), Contact Info (Financial / Senior Management / Technical), Bank Account (tuzel kisiyle eslesen IBAN), Tax Forms (ABD icin W-8BEN veya W-8BEN-E, arti yerel vergi bilgisi). Durum New > Pending User Info > Active seklinde ilerler; banka dogrulamasi birkac gun surebilir.
 - [x] Uygulama icindeki fiyat/deneme metinleri App Store Connect ile birebir ayni. `FallbackPrice.lifetime` canli tier'lere gore duzeltildi ($17.99/€19,99 yerine $12.99/€14,99); abonelik 26 Agustos'ta haftaliga cevrildi, `FallbackPrice.weekly` TR ₺99,99 / $3.99 / €3,99 ile uyuyor. Hicbir yerde deneme suresi vaadi yok — App Store Connect'te tanimli bir `trial_offer` da yok.
 - [ ] TestFlight build yuklendi ve gercek cihazda test edildi.
 
@@ -56,7 +56,7 @@ Bu dosya App Store'a cikis icin teknik, hesap, gizlilik ve icerik hazirliklarini
 
 ## Yasal ve Metin Kontrolleri
 
-- [x] App icinde disclaimer var.
+- [x] App icinde disclaimer var: More > Onemli Uyari (akis adimi degil, her an ulasilabilir sayfa) + her sonuc ekraninda tibbi olmayan ibare.
 - [ ] Privacy Policy URL App Store Connect'e eklendi.
 - [ ] Support URL App Store Connect'e eklendi.
 - [x] Abonelik varsa Terms of Use/EULA linki hazir: `https://keremoztopuz.github.io/skincare-legal/terms` — yayinda.
@@ -65,7 +65,7 @@ Bu dosya App Store'a cikis icin teknik, hesap, gizlilik ve icerik hazirliklarini
 
 ## Release Oncesi Test Senaryolari
 
-- [ ] Temiz kurulum: splash -> onboarding -> disclaimer -> profile -> subscription -> main app.
+- [ ] Temiz kurulum: splash -> onboarding -> profile -> subscription -> main app.
 - [ ] Kamera izni verildi.
 - [ ] Kamera izni reddedildi.
 - [ ] Yuz bulunamayan fotograf.
