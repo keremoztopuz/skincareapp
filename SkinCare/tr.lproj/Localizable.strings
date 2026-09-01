@@ -51,13 +51,9 @@
 "go_premium" = "Premium'a Geç";
 "unlock_advanced_features" = "Tüm gelişmiş özellikleri açın";
 "upgrade_now" = "Şimdi Yükselt";
-"unlock_premium" = "Premium'u Aç";
 "continue_with_free" = "Ücretsiz Devam Et";
-"no_thanks_free" = "Hayır, ücretsiz devam et";
 "restore_purchases" = "Satın Alımları Geri Yükle";
 "popular" = "POPÜLER";
-"5_analysis_per_month" = "Ayda 5 cilt analizi";
-"basic_insights" = "Temel analizler (Sivilce ve Kızarıklık)";
 "limited_recommendations" = "Sınırlı öneriler";
 "last_5_scans" = "Son 5 tarama";
 "unlimited_analysis" = "Sınırsız analiz";
@@ -111,7 +107,6 @@
 "dos" = "Yapılması Gerekenler";
 "donts" = "Yapılmaması Gerekenler";
 "important_notice" = "Önemli Uyarı";
-"accept_terms" = "Yukarıdaki koşulları okudum ve kabul ediyorum";
 
 /* Disclaimer Bullet Points */
 "disclaimer_medical" = "Bu uygulama tıbbi teşhis veya tedavi sağlamaz. Analizler yalnızca bilgilendirme amaçlıdır ve profesyonel tıbbi tavsiyenin yerini tutmaz.";
@@ -120,7 +115,6 @@
 
 "upgrade_to_pro" = "Pro'ya Yükselt";
 "unlock_full_capabilities" = "Tam cilt analizi özelliklerini açın";
-"continue_with_free_plan" = "Ücretsiz Plan ile Devam Et";
 "welcome_to_pro" = "Pro'ya Hoş Geldiniz!";
 "all_features_now_unlocked" = "Tüm özellikler artık açık.";
 "skin_journey" = "Cilt Yolculuğu";
@@ -262,9 +256,6 @@
 "upgrade_feature_full_analysis" = "Tam analiz: kırışıklık, göz altı torbası, pigmentasyon";
 "upgrade_feature_full_history" = "Tüm geçmiş taramalara erişim";
 "upgrade_feature_unlimited_recommendations" = "Sınırsız ürün önerisi";
-"free_feature_5_scans" = "Ayda 5 tarama";
-"free_feature_conditions" = "Sivilce ve kızarıklık tespiti";
-"free_feature_last_5" = "Son 5 analiz görünür";
 "terms_of_use" = "Kullanım Koşulları";
 "privacy_policy" = "Gizlilik Politikası";
 "results_not_medical_advice" = "Sonuçlar yalnızca bilgilendirme amaçlıdır ve tıbbi tanı değildir. Cildinizle ilgili endişeleriniz için bir dermatoloğa danışın.";
@@ -315,7 +306,6 @@
 "start_free_trial_%lld_weeks" = "%lld Haftalık Ücretsiz Denemeyi Başlat";
 "start_free_trial_%lld_months" = "%lld Aylık Ücretsiz Denemeyi Başlat";
 "start_free_trial_%lld_years" = "%lld Yıllık Ücretsiz Denemeyi Başlat";
-"get_pro" = "Pro'ya Geç";
 
 /* Kaynaklar ve lisanslar */
 "credits" = "Kaynaklar ve Lisanslar";
