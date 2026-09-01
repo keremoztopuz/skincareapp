@@ -603,6 +603,11 @@ struct ConditionAxisBar: View {
 
 // Seeded with the mock acne scan — portrait, scores and zone regions — so the
 // canvas shows the selectable rows and the photo overlay, not an empty shell.
+//
+// #if DEBUG because `#Preview` is compiled in every configuration, and the
+// seeder it calls is debug-only: without the guard a release build fails to
+// compile on this file.
+#if DEBUG
 #Preview {
     let manager = LocalPersistenceManager(context: PersistenceController.preview.container.viewContext)
     if manager.fetchAnalysisRecords().isEmpty {
@@ -610,3 +615,4 @@ struct ConditionAxisBar: View {
     }
     return ResultView(record: manager.fetchAnalysisRecords().last, isFromRecents: true)
 }
+#endif
