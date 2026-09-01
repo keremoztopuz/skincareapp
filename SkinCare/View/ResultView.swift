@@ -15,7 +15,6 @@ struct ResultView: View {
 
     let record: AnalysisRecord?
     let isFromRecents: Bool
-    @State private var showRecommendations = false
     @State private var selectedProduct: Product? = nil
     @State private var showUpgrade = false
     @State private var showRoutine = false
@@ -25,6 +24,16 @@ struct ResultView: View {
     // the upgrade sheet this very screen presents.
     @StateObject private var subscriptionManager = SubscriptionManager.shared
     private var isPremium: Bool { subscriptionManager.isPremium }
+
+    /// The free tier sees the first two only. The list arrives ordered by
+    /// condition weight, so those two answer the worst finding.
+    private var visibleProducts: [Product] {
+        isPremium ? vm.recommendProduct : Array(vm.recommendProduct.prefix(2))
+    }
+
+    private var hiddenProductCount: Int {
+        vm.recommendProduct.count - visibleProducts.count
+    }
 
     init(record: AnalysisRecord?, isFromRecents: Bool, onDismiss: (() -> Void)? = nil) {
         self.record = record
@@ -91,88 +100,91 @@ struct ResultView: View {
 
                     // MARK: - Results Section
                     VStack(alignment: .leading, spacing: 16) {
-                        Text(NSLocalizedString("results", comment: ""))
+                        Text(AppStrings.results)
                             .font(.scaled(size: 18, weight: .bold))
                             .foregroundColor(.brandText)
-                            .padding(.horizontal, 20)
 
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 16) {
-                                ResultBar(title: AppStrings.acne,    score: record?.acneScore   ?? 0, icon: "face.dashed")
-                                ResultBar(title: AppStrings.redness, score: record?.eczemaScore ?? 0, icon: "drop.fill")
-                                if isPremium {
-                                    ResultBar(title: AppStrings.wrinkles,     score: record?.wrinkleScore      ?? 0, icon: "sun.max.fill")
-                                    ResultBar(title: AppStrings.eyebags,      score: record?.eyebagScore       ?? 0, icon: "eye.fill")
-                                    ResultBar(title: AppStrings.pigmentation, score: record?.pigmentationScore ?? 0, icon: "circle.hexagongrid")
-                                } else {
-                                    Button { showUpgrade = true } label: { ResultBar(title: AppStrings.wrinkles, score: 0, icon: "lock.fill", locked: true) }.buttonStyle(.plain)
-                                    Button { showUpgrade = true } label: { ResultBar(title: AppStrings.eyebags, score: 0, icon: "lock.fill", locked: true) }.buttonStyle(.plain)
-                                    Button { showUpgrade = true } label: { ResultBar(title: AppStrings.pigmentation, score: 0, icon: "lock.fill", locked: true) }.buttonStyle(.plain)
-                                }
+                        // Stacked, not a horizontal scroller: all five
+                        // measurements are the point of this screen, and the
+                        // three past the fold were being missed entirely.
+                        VStack(spacing: 16) {
+                            ResultBar(title: AppStrings.acne,    score: record?.acneScore   ?? 0, icon: "face.dashed")
+                            ResultBar(title: AppStrings.redness, score: record?.eczemaScore ?? 0, icon: "drop.fill")
+                            if isPremium {
+                                ResultBar(title: AppStrings.wrinkles,     score: record?.wrinkleScore      ?? 0, icon: "sun.max.fill")
+                                ResultBar(title: AppStrings.eyebags,      score: record?.eyebagScore       ?? 0, icon: "eye.fill")
+                                ResultBar(title: AppStrings.pigmentation, score: record?.pigmentationScore ?? 0, icon: "circle.hexagongrid")
+                            } else {
+                                Button { showUpgrade = true } label: { ResultBar(title: AppStrings.wrinkles, score: 0, icon: "lock.fill", locked: true) }.buttonStyle(.plain)
+                                Button { showUpgrade = true } label: { ResultBar(title: AppStrings.eyebags, score: 0, icon: "lock.fill", locked: true) }.buttonStyle(.plain)
+                                Button { showUpgrade = true } label: { ResultBar(title: AppStrings.pigmentation, score: 0, icon: "lock.fill", locked: true) }.buttonStyle(.plain)
                             }
-                            .padding(.horizontal, 20)
                         }
                     }
+                    .padding(.horizontal, 20)
 
                     // MARK: - Recommended Products
-                    if isFromRecents || showRecommendations {
-                        VStack(alignment: .leading, spacing: 16) {
-                            Text(NSLocalizedString("recommended_products", comment: ""))
-                                .font(.scaled(size: 18, weight: .bold))
-                                .foregroundColor(.brandText)
-                                .padding(.horizontal, 20)
+                    // Always drawn. Hiding the list behind a "see
+                    // recommendations" tap meant a fresh scan ended on a screen
+                    // that appeared to have no products at all.
+                    VStack(alignment: .leading, spacing: 16) {
+                        Text(vm.isGeneralCare ? AppStrings.generalCareProducts : AppStrings.recommendedProducts)
+                            .font(.scaled(size: 18, weight: .bold))
+                            .foregroundColor(.brandText)
 
-                            if let error = vm.errorMessage, vm.recommendProduct.isEmpty, !vm.isLoading {
-                                VStack(alignment: .leading, spacing: 8) {
-                                    Text(error)
-                                        .font(.scaled(size: 14))
-                                        .foregroundColor(.gray)
-                                    Button(AppStrings.tryAgain) {
-                                        Task { await vm.fetchRecommendedProducts() }
-                                    }
-                                    .font(.scaled(size: 14, weight: .bold))
-                                    .foregroundColor(.brandPrimary)
+                        if vm.isLoading {
+                            // Placeholders in the shape of the rows that are
+                            // coming, so nothing jumps when they land.
+                            VStack(spacing: 16) {
+                                ForEach(0..<3, id: \.self) { _ in
+                                    SkeletonRow()
                                 }
-                                .padding(.horizontal, 20)
                             }
-
-                            ScrollView(.horizontal, showsIndicators: false) {
-                                HStack(spacing: 16) {
-                                    if vm.isLoading {
-                                        ProgressView()
-                                            .frame(width: 160, height: 160)
-                                    } else {
-                                        ForEach(isPremium ? vm.recommendProduct : Array(vm.recommendProduct.prefix(2))) { product in
-                                            Button {
-                                                selectedProduct = product
-                                            } label: {
-                                                ProductCard(product: product)
-                                            }
-                                            .buttonStyle(.plain)
-                                        }
-                                    }
+                        } else if let error = vm.errorMessage, vm.recommendProduct.isEmpty {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text(error)
+                                    .font(.scaled(size: 14))
+                                    .foregroundColor(.gray)
+                                Button(AppStrings.tryAgain) {
+                                    Task { await vm.fetchRecommendedProducts() }
                                 }
-                                .padding(.horizontal, 20)
+                                .font(.scaled(size: 14, weight: .bold))
+                                .foregroundColor(.brandPrimary)
+                            }
+                        } else if vm.recommendProduct.isEmpty {
+                            // An empty catalogue answer still says something;
+                            // the header used to sit above blank space.
+                            Text(AppStrings.noProductsFound)
+                                .font(.scaled(size: 14))
+                                .foregroundColor(.gray)
+                                .frame(maxWidth: .infinity, alignment: .center)
+                                .padding(.vertical, 24)
+                        } else {
+                            VStack(spacing: 16) {
+                                ForEach(visibleProducts) { product in
+                                    Button {
+                                        selectedProduct = product
+                                    } label: {
+                                        SearchProductCard(product: product)
+                                    }
+                                    .buttonStyle(.plain)
+                                }
+
+                                // A stacked list gives no hint that more exist
+                                // below the free cut-off, the way a scroller did.
+                                if hiddenProductCount > 0 {
+                                    Button { showUpgrade = true } label: {
+                                        lockedProductsRow
+                                    }
+                                    .buttonStyle(.plain)
+                                }
                             }
                         }
                     }
+                    .padding(.horizontal, 20)
 
-                    // MARK: - Action Buttons
-                    if !isFromRecents && !showRecommendations {
-                        Button(action: {
-                            withAnimation { showRecommendations = true }
-                        }) {
-                            HStack(spacing: 12) {
-                                Image(systemName: "bag.fill")
-                                    .font(.scaled(size: 20))
-                                Text(NSLocalizedString("see_recommendations", comment: ""))
-                            }
-                        }
-                        .buttonStyle(PrimaryButtonStyle())
-                        .padding(.horizontal, 20)
-                        .padding(.top, 10)
-                        .padding(.bottom, 40)
-                    } else if (isFromRecents || showRecommendations) && !vm.recommendProduct.isEmpty {
+                    // MARK: - Action Button
+                    if !vm.recommendProduct.isEmpty {
                         Button(action: {
                             createRoutineFromProducts()
                         }) {
@@ -221,6 +233,9 @@ struct ResultView: View {
             .zIndex(10)
         }
         .navigationBarBackButtonHidden(true)
+        // No-op when this screen is a cover; restores the edge pop when
+        // Recents pushes it onto a NavigationStack.
+        .interactiveSwipeBack()
         .sheet(isPresented: $showUpgrade) { UpgradeSheetView() }
         // item-based so the sheet body always carries the tapped product;
         // the isPresented+if-let form intermittently presents blank.
@@ -232,8 +247,50 @@ struct ResultView: View {
         .fullScreenCover(isPresented: $showRoutine) {
             NavigationStack {
                 RoutineView(selectedTab: .constant(0))
+                    .edgeSwipeToDismiss { showRoutine = false }
             }
         }
+    }
+
+    /// Same shape as the product rows above it, so the locked remainder reads
+    /// as the next item in the list rather than a banner bolted underneath.
+    private var lockedProductsRow: some View {
+        HStack(spacing: 16) {
+            ZStack {
+                RoundedRectangle(cornerRadius: Radius.small)
+                    .fill(Color.brandBlush)
+                    .frame(width: 60, height: 60)
+
+                Image(systemName: "lock.fill")
+                    .font(.scaled(size: 22))
+                    .foregroundColor(.brandPrimary)
+            }
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(AppStrings.fullRecommendations)
+                    .font(.scaled(size: 16, weight: .bold))
+                    .foregroundColor(.brandText)
+                    .lineLimit(1)
+
+                Text(AppStrings.pro)
+                    .font(.scaled(size: 12, weight: .bold))
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(Color.brandBlush)
+                    .foregroundColor(.brandPrimary)
+                    .cornerRadius(Radius.small)
+            }
+
+            Spacer()
+
+            Image(systemName: "chevron.right")
+                .font(.scaled(size: 14, weight: .bold))
+                .foregroundColor(.gray.opacity(0.3))
+        }
+        .padding(16)
+        .background(Color.white)
+        .cornerRadius(Radius.card)
+        .cardShadow()
     }
 
     private func closeResult() {
@@ -311,7 +368,7 @@ struct ResultBar: View {
     var locked: Bool = false
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        HStack(spacing: 16) {
             ZStack {
                 RoundedRectangle(cornerRadius: Radius.small)
                     .fill(locked ? Color.gray.opacity(0.15) : Color.brandPrimary)
@@ -322,60 +379,70 @@ struct ResultBar: View {
                     .foregroundColor(locked ? .gray.opacity(0.5) : .white)
             }
 
-            Text(title)
-                .font(.scaled(size: 16, weight: .bold))
-                .foregroundColor(locked ? .gray.opacity(0.5) : .brandText)
+            VStack(alignment: .leading, spacing: 10) {
+                HStack(alignment: .firstTextBaseline, spacing: 2) {
+                    Text(title)
+                        .font(.scaled(size: 16, weight: .bold))
+                        .foregroundColor(locked ? .gray.opacity(0.5) : .brandText)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
 
-            HStack(alignment: .firstTextBaseline, spacing: 2) {
-                if locked {
-                    Text(AppStrings.pro)
-                        .font(.scaled(size: 12, weight: .bold))
-                        .foregroundColor(.brandPrimary)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(Color.brandBlush)
-                        .cornerRadius(Radius.small)
-                } else {
-                    Text("\(Int(score))")
-                        .font(.scaled(size: 28, weight: .bold))
-                        .foregroundColor(.brandPrimary)
+                    Spacer(minLength: 8)
 
-                    Text("/100")
-                        .font(.scaled(size: 14, weight: .semibold))
-                        .foregroundColor(.gray)
+                    if locked {
+                        Text(AppStrings.pro)
+                            .font(.scaled(size: 12, weight: .bold))
+                            .foregroundColor(.brandPrimary)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(Color.brandBlush)
+                            .cornerRadius(Radius.small)
+                    } else {
+                        Text("\(Int(score))")
+                            .font(.scaled(size: 20, weight: .bold))
+                            .foregroundColor(.brandPrimary)
 
-                    Spacer(minLength: 6)
+                        Text("/100")
+                            .font(.scaled(size: 13, weight: .semibold))
+                            .foregroundColor(.gray)
 
-                    Text(Severity(score: score).localizedTitle)
-                        .font(.scaled(size: 11, weight: .semibold))
-                        .foregroundColor(.brandPrimary)
-                        .padding(.horizontal, 7)
-                        .padding(.vertical, 3)
-                        .background(Color.brandBlush)
-                        .cornerRadius(Radius.small)
-                }
-            }
-            .frame(height: 34)
-
-            GeometryReader { geo in
-                ZStack(alignment: .leading) {
-                    RoundedRectangle(cornerRadius: Radius.small)
-                        .fill(locked ? Color.gray.opacity(0.12) : Color.brandPrimary.opacity(0.1))
-                        .frame(height: 6)
-                    if !locked {
-                        RoundedRectangle(cornerRadius: Radius.small)
-                            .fill(Color.brandPrimary)
-                            .frame(width: geo.size.width * (min(max(score, 0), 100) / 100), height: 6)
+                        Text(Severity(score: score).localizedTitle)
+                            .font(.scaled(size: 11, weight: .semibold))
+                            .foregroundColor(.brandPrimary)
+                            .padding(.horizontal, 7)
+                            .padding(.vertical, 3)
+                            .background(Color.brandBlush)
+                            .cornerRadius(Radius.small)
+                            .padding(.leading, 8)
                     }
                 }
+
+                GeometryReader { geo in
+                    ZStack(alignment: .leading) {
+                        RoundedRectangle(cornerRadius: Radius.small)
+                            .fill(locked ? Color.gray.opacity(0.12) : Color.brandPrimary.opacity(0.1))
+                            .frame(height: 6)
+                        if !locked {
+                            RoundedRectangle(cornerRadius: Radius.small)
+                                .fill(Color.brandPrimary)
+                                .frame(width: geo.size.width * (min(max(score, 0), 100) / 100), height: 6)
+                        }
+                    }
+                }
+                .frame(height: 6)
             }
-            .frame(height: 6)
         }
-        .padding(20)
-        .frame(width: 170)
+        .padding(16)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.white)
         .cornerRadius(Radius.card)
         .cardShadow()
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(
+            locked
+                ? Text("\(title), \(AppStrings.pro)")
+                : Text("\(title): \(Int(score))/100, \(Severity(score: score).localizedTitle)")
+        )
     }
 }
 
