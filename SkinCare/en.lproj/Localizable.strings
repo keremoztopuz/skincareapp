@@ -64,13 +64,9 @@
 "upgrade_now" = "Upgrade Now";
 
 /* Subscription */
-"unlock_premium" = "Unlock Premium";
 "continue_with_free" = "Continue with Free";
-"no_thanks_free" = "No thanks, continue with Free";
 "restore_purchases" = "Restore Purchases";
 "popular" = "POPULAR";
-"5_analysis_per_month" = "5 skin analysis per month";
-"basic_insights" = "Basic insights (Breakouts & Redness)";
 "limited_recommendations" = "Limited recommendations";
 "last_5_scans" = "Last 5 recent scans";
 "unlimited_analysis" = "Unlimited analysis";
@@ -140,7 +136,6 @@
 
 /* Disclaimer */
 "important_notice" = "Important Notice";
-"accept_terms" = "I have read and accept the terms above";
 
 /* Disclaimer Bullet Points */
 "disclaimer_medical" = "This app does not provide medical diagnosis or treatment. The analyses are for informational purposes only and do not replace professional medical advice.";
@@ -150,7 +145,6 @@
 /* Upgrade Sheet */
 "upgrade_to_pro" = "Upgrade to Pro";
 "unlock_full_capabilities" = "Unlock full skin analysis capabilities";
-"continue_with_free_plan" = "Continue with Free Plan";
 "welcome_to_pro" = "Welcome to Pro!";
 "all_features_now_unlocked" = "All features are now unlocked.";
 
@@ -309,9 +303,6 @@
 "upgrade_feature_full_analysis" = "Full analysis: wrinkles, eye bags, pigmentation";
 "upgrade_feature_full_history" = "Full history of all past scans";
 "upgrade_feature_unlimited_recommendations" = "Unlimited product recommendations";
-"free_feature_5_scans" = "5 scans per month";
-"free_feature_conditions" = "Breakout and redness detection";
-"free_feature_last_5" = "Last 5 analyses visible";
 "terms_of_use" = "Terms of Use";
 "privacy_policy" = "Privacy Policy";
 "results_not_medical_advice" = "Results are informational only and not a medical diagnosis. Consult a dermatologist for concerns about your skin.";
@@ -362,7 +353,6 @@
 "start_free_trial_%lld_weeks" = "Start %lld-Week Free Trial";
 "start_free_trial_%lld_months" = "Start %lld-Month Free Trial";
 "start_free_trial_%lld_years" = "Start %lld-Year Free Trial";
-"get_pro" = "Get Pro";
 
 /* Credits and licences */
 "credits" = "Credits & Licences";
