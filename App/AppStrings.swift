@@ -124,6 +124,10 @@ enum AppStrings {
     // MARK: - Result
     static let scannedImage = String(localized: "scanned_image")
     static let results = String(localized: "results")
+    /// Which way the condition scale runs. The overall score on the same
+    /// screen is higher-is-better, so the readings have to say that they are
+    /// the opposite or 68 reads as healthier than 21.
+    static let conditionScaleHint = String(localized: "condition_scale_hint")
     static let seeRecommendations = String(localized: "see_recommendations")
 
     // MARK: - Detail
