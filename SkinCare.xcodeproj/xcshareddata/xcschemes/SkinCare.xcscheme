@@ -62,6 +62,7 @@
          </BuildableReference>
       </BuildableProductRunnable>
       <StoreKitConfigurationFileReference
+         disabled = "YES"
          identifier = "../../../SkinCare/Resources/SkinCareProducts.storekit">
       </StoreKitConfigurationFileReference>
    </LaunchAction>
