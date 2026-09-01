@@ -84,7 +84,7 @@ Processing flow:
 
 No account or sign-in is required. Profile details and scan history are stored only on the device using Core Data and are never uploaded. Product and article content is read from our backend; no user data is sent with those requests.
 
-The app shows a medical disclaimer during onboarding that the user must accept before continuing, and repeats a non-diagnostic notice on every result screen.
+The app carries a medical disclaimer under Settings > Important Notice, reachable at any time, and repeats a non-diagnostic notice on every result screen.
 
 Free tier: 5 scans per month, breakouts and redness readings only, last 5 analyses visible. Paid tier unlocks unlimited scans, all five visible-feature readings, full history, and routine recommendations. The three summary metrics and the overall score are free on both tiers.
 
