@@ -36,3 +36,6 @@ secrets/
 *~
 SkinCare/Model/AnalysisConfig.swift
 SkinCare/Model/RevenueCatConfig.swift
+
+# Editor / canvas state
+.nodeterm/
