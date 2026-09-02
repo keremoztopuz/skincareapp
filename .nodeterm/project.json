@@ -1,0 +1,122 @@
+{
+  "version": 1,
+  "rev": 67,
+  "savedAt": "2026-09-02T08:14:07.636Z",
+  "id": "project-ou6m89",
+  "name": "SkinCare",
+  "color": "#bf5af2",
+  "viewport": {
+    "x": -362.31779351123544,
+    "y": 71.06182861328125,
+    "zoom": 1
+  },
+  "nodes": [
+    {
+      "id": "term-mtda4zak-07b989ef",
+      "kind": "terminal",
+      "position": {
+        "x": 1182,
+        "y": 8.93817138671875
+      },
+      "size": {
+        "width": 640,
+        "height": 440
+      },
+      "title": "swipe-back-gesture-fix",
+      "titleAuto": true,
+      "color": "#d97757",
+      "group": null,
+      "tags": [],
+      "collapsed": false,
+      "cwd": ".",
+      "agentId": "claude",
+      "agentSessionId": "b79791b8-4e16-47dc-8dac-816c03955332"
+    },
+    {
+      "id": "term-mtda58ga-cbc2a95c",
+      "kind": "terminal",
+      "position": {
+        "x": 1190.0046232158936,
+        "y": 474.91736691519753
+      },
+      "size": {
+        "width": 640,
+        "height": 440
+      },
+      "title": "fix-recommended-products-empty",
+      "titleAuto": true,
+      "color": "#d97757",
+      "group": null,
+      "tags": [],
+      "collapsed": false,
+      "cwd": ".",
+      "agentId": "claude",
+      "agentSessionId": "1603a9e7-e526-462d-8e1b-dd239fc65f0d"
+    },
+    {
+      "id": "term-mtda5zhr-ba113931",
+      "kind": "terminal",
+      "position": {
+        "x": 442.31779351123544,
+        "y": 491.2585640323104
+      },
+      "size": {
+        "width": 640,
+        "height": 440
+      },
+      "title": "skeleton-loading-states",
+      "titleAuto": true,
+      "color": "#d97757",
+      "group": null,
+      "tags": [],
+      "collapsed": false,
+      "cwd": ".",
+      "agentId": "claude",
+      "agentSessionId": "13e10d2e-87f9-4b89-88a0-e6dd083c8c38"
+    },
+    {
+      "id": "term-mtj5h0dv-a84d0b5a",
+      "kind": "terminal",
+      "position": {
+        "x": 451.5642972822808,
+        "y": 13.626064945044902
+      },
+      "size": {
+        "width": 640,
+        "height": 440
+      },
+      "title": "Skeleton loading states",
+      "titleAuto": true,
+      "color": "#d97757",
+      "group": null,
+      "tags": [],
+      "collapsed": false,
+      "cwd": ".",
+      "agentId": "claude",
+      "agentSessionId": "9e747094-4e8b-4e6c-9770-7adebe800a69"
+    }
+  ],
+  "bridges": [
+    {
+      "id": "bridge-term-mtda4zak-07b989ef-term-mtda58ga-cbc2a95c",
+      "source": "term-mtda4zak-07b989ef",
+      "target": "term-mtda58ga-cbc2a95c"
+    },
+    {
+      "id": "bridge-term-mtda5zhr-ba113931-term-mtda58ga-cbc2a95c",
+      "source": "term-mtda5zhr-ba113931",
+      "target": "term-mtda58ga-cbc2a95c"
+    },
+    {
+      "id": "bridge-term-mtda4zak-07b989ef-term-mtda5zhr-ba113931",
+      "source": "term-mtda4zak-07b989ef",
+      "target": "term-mtda5zhr-ba113931"
+    },
+    {
+      "id": "bridge-term-mtj5h0dv-a84d0b5a-term-mtda5zhr-ba113931",
+      "source": "term-mtj5h0dv-a84d0b5a",
+      "target": "term-mtda5zhr-ba113931"
+    }
+  ],
+  "ropes": []
+}
