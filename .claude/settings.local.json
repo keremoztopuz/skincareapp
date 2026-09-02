@@ -14,7 +14,8 @@
       "Bash(kaggle --version)",
       "Bash(python3 -c ' *)",
       "Bash(python3 *)",
-      "WebFetch(domain:universe.roboflow.com)"
+      "WebFetch(domain:universe.roboflow.com)",
+      "Bash(git merge *)"
     ]
   }
 }
