@@ -30,7 +30,8 @@ Aşağıdaki tarihsel işaretler canlı hesabın bugün tekrar doğrulandığı 
 - [x] RevenueCat entitlement adi **`skanner_pro`** olarak App Store urunune baglandi. (`SubscriptionManager.swift` bu id'yi okur; `pro` yazilirsa hicbir satin alma kilidi acmaz.) `default` offering current ve `$rc_weekly` / `$rc_lifetime` paketleri iki App Store urunune bagli.
 - [x] **Paid Applications Agreement — Active (28 Agu 2026).** Gecmis kayit: App Store Connect > Business icinde "Paid Apps" satiri **New** durumunda; yalnizca "Free Apps" Active. Bu sozlesme Active olmadan StoreKit hicbir urun dondurmez: RevenueCat `OfferingsManager.Error 1` verir, paywall bos kalir, sandbox dahil hicbir odeme alinamaz. Sirasiyla: sozlesmeyi kabul et (yalnizca Account Holder yapabilir), Contact Info (Financial / Senior Management / Technical), Bank Account (tuzel kisiyle eslesen IBAN), Tax Forms (ABD icin W-8BEN veya W-8BEN-E, arti yerel vergi bilgisi). Durum New > Pending User Info > Active seklinde ilerler; banka dogrulamasi birkac gun surebilir.
 - [x] Sabit fallback fiyatlar kaldırıldı. Fiyat ve deneme süresi StoreKit'ten, deneme uygunluğu RevenueCat'ten alınır; belirsiz uygunlukta deneme vaadi gösterilmez.
-- [ ] TestFlight build yuklendi ve gercek cihazda test edildi.
+- [x] Build 1.1 (2) App Store Connect'e yüklendi; Apple işleme kuyruğuna kabul etti.
+- [ ] İşlenen build TestFlight'ta gerçek cihazda test edildi.
 
 ## Teknik Kontroller
 
