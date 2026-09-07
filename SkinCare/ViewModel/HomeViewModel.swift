@@ -11,7 +11,7 @@ internal import CoreData
 internal import Combine
 
 struct ScoreTrendPoint: Identifiable {
-    let id = UUID()
+    let id: NSManagedObjectID
     let date: Date
     let score: Double
 }
@@ -35,6 +35,7 @@ class HomeViewModel: ObservableObject {
     @Published var avgHydration: Int = 0
     @Published var avgOiliness: Int = 0
     @Published var avgInflammation: Int = 0
+    @Published var hasStatistics = false
 
     // Overall score trend, oldest first, capped to the last 10 scans.
     @Published var scoreTrend: [ScoreTrendPoint] = []
@@ -50,11 +51,11 @@ class HomeViewModel: ObservableObject {
         Calendar.current.component(.hour, from: Date()) < 18 ? "morning" : "evening"
     }
 
-    init() {
+    init(loadCloudData: Bool = true) {
         // Local data is loaded from the view's onAppear, which also fires on
         // first appearance — fetching here too just doubled the work.
-        Task {
-            await fetchAllCloudData()
+        if loadCloudData {
+            Task { await fetchAllCloudData() }
         }
     }
     
@@ -84,10 +85,18 @@ class HomeViewModel: ObservableObject {
         isLoading = false
     }
     
-    func fetchStatistics() {
-        let records = LocalPersistenceManager.shared.fetchAnalysisRecords()
-        
-        guard !records.isEmpty else { return }
+    @MainActor
+    func fetchStatistics(using manager: LocalPersistenceManager? = nil) {
+        let records = (manager ?? .shared).fetchAnalysisRecords()
+        hasStatistics = !records.isEmpty
+        guard hasStatistics else {
+            avgOverallScore = 0
+            avgHydration = 0
+            avgOiliness = 0
+            avgInflammation = 0
+            scoreTrend = []
+            return
+        }
         
         let count = Double(records.count)
         let totalOverall = records.reduce(0.0) { $0 + $1.overallScore }
@@ -98,18 +107,16 @@ class HomeViewModel: ObservableObject {
         let trend = records
             .compactMap { record -> ScoreTrendPoint? in
                 guard let date = record.date else { return nil }
-                return ScoreTrendPoint(date: date, score: record.overallScore)
+                return ScoreTrendPoint(id: record.objectID, date: date, score: record.overallScore)
             }
             .sorted { $0.date < $1.date }
             .suffix(10)
 
-        DispatchQueue.main.async {
-            self.avgOverallScore = Int(totalOverall / count)
-            self.avgHydration = Int(totalHydration / count)
-            self.avgOiliness = Int(totalOiliness / count)
-            self.avgInflammation = Int(totalInflammation / count)
-            self.scoreTrend = Array(trend)
-        }
+        avgOverallScore = Int(totalOverall / count)
+        avgHydration = Int(totalHydration / count)
+        avgOiliness = Int(totalOiliness / count)
+        avgInflammation = Int(totalInflammation / count)
+        scoreTrend = Array(trend)
     }
     
     func fetchRoutineSummary() {

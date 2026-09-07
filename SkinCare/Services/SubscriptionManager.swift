@@ -10,22 +10,6 @@ class SubscriptionManager: ObservableObject {
     /// Both the weekly subscription and the lifetime purchase unlock it.
     static let proEntitlementID = "skanner_pro"
 
-    /// Shown until StoreKit returns the storefront price (and if it never
-    /// does). Keep in step with the App Store Connect price tiers — the live
-    /// price always wins once the offerings load.
-    enum FallbackPrice {
-        static var weekly: String { forCurrency(turkish: "₺99,99", usd: "$3.99", eur: "€3,99") }
-        static var lifetime: String { forCurrency(turkish: "₺699,99", usd: "$12.99", eur: "€14,99") }
-
-        private static func forCurrency(turkish: String, usd: String, eur: String) -> String {
-            switch Locale.current.currency?.identifier {
-            case "TRY": return turkish
-            case "EUR": return eur
-            default: return usd
-            }
-        }
-    }
-
     /// A product's introductory free-trial length in its own store unit, or
     /// nil when App Store Connect carries no free-trial offer on it. Drives
     /// whether the paywalls may mention a trial at all. Kept in the store's
@@ -44,8 +28,9 @@ class SubscriptionManager: ObservableObject {
         }
     }
 
-    static func trialPeriod(in product: StoreProduct) -> TrialPeriod? {
-        guard let intro = product.introductoryDiscount, intro.paymentMode == .freeTrial else { return nil }
+    static func trialPeriod(in product: StoreProduct, eligibility: IntroEligibilityStatus) -> TrialPeriod? {
+        guard eligibility == .eligible,
+              let intro = product.introductoryDiscount, intro.paymentMode == .freeTrial else { return nil }
         let period = intro.subscriptionPeriod
         switch period.unit {
         case .day: return .days(period.value)

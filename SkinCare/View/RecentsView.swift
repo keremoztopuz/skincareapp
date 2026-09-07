@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct RecentsView: View {
+    // MARK: - Properties
+    @StateObject private var subscriptionManager = SubscriptionManager.shared
     @Binding var selectedTab: Int
     @StateObject private var vm = RecentsViewModel()
     @State private var selectedRecord: AnalysisRecord? = nil
@@ -15,7 +17,7 @@ struct RecentsView: View {
                 Color.brandBackground.ignoresSafeArea()
 
                 ScrollView(.vertical, showsIndicators: false) {
-                    VStack(alignment: .leading, spacing: 16) {
+                    LazyVStack(alignment: .leading, spacing: 16) {
 
                         // The header and filter stay visible even when the
                         // current filter matches nothing — otherwise picking
@@ -120,6 +122,7 @@ struct RecentsView: View {
                                     }
                                     .blur(radius: 8)
                                     .allowsHitTesting(false)
+                                    .accessibilityHidden(true)
 
                                     VStack(spacing: 14) {
                                         ZStack {
@@ -190,6 +193,9 @@ struct RecentsView: View {
                 }
             }
             .sheet(isPresented: $showUpgrade) { UpgradeSheetView() }
+            .alert("delete_data_failed", isPresented: $vm.deleteFailed) {
+                Button(AppStrings.ok, role: .cancel) {}
+            }
             // item-based so the pushed screen always carries the tapped
             // record; the isPresented+if-let form can push a blank page.
             .navigationDestination(item: $selectedRecord) { record in
@@ -205,6 +211,11 @@ struct RecentsView: View {
         }
         .onAppear {
             vm.fetchRecords()
+        }
+        .onChange(of: subscriptionManager.isPremium) { _, _ in
+            vm.fetchRecords()
+            compareRecords = []
+            showCompare = false
         }
     }
 

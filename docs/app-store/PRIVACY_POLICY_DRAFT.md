@@ -1,6 +1,6 @@
 # Privacy Policy Draft
 
-Effective date: 26 August 2026
+Effective date: 7 September 2026
 
 Skinner is designed to help users review visible skin features, track changes over time, and organize skincare routines.
 
@@ -20,13 +20,13 @@ Skinner may process the following information:
 
 Skin analysis runs in the cloud. There is no analysis model on your device.
 
-1. When you take a photo, your device detects and crops your face locally using Apple's Vision framework. The crop never includes more of the photo than your face.
-2. The crop is sent over an encrypted connection to our backend service, which removes image metadata, reduces the image size, and forwards it to Google's Gemini API (Vertex AI) for processing.
+1. Before analysis, the app requests explicit permission to share your face crop, age and skin type with our backend and Google Gemini on Vertex AI. Declining leaves local history and routines available.
+2. Your device detects and crops one face using Apple's Vision framework. If this fails or multiple faces are found, no photo is sent. With permission, the crop, age and skin type are sent over HTTPS to our service and then Vertex AI. Name and gender are not transmitted.
 3. The service returns numeric readings for five visible features — breakouts, redness, wrinkles, eye bags, and pigmentation — plus a hydration reading. The app then presents three summary metrics (hydration, oiliness and inflammation) and one overall score. All of it is shown to you and saved on your device.
 
 An internet connection is required to run an analysis. Your history, profile, and routine remain available offline.
 
-Images sent for analysis are processed in real time and are not stored permanently by us. Google retains requests briefly for abuse monitoring and does not use them to train models. Images are never used for advertising and are never sold.
+Images sent for analysis are not stored permanently by us. Google may retain request data for abuse monitoring and temporary caching under its [Vertex AI policies](https://docs.cloud.google.com/vertex-ai/generative-ai/docs/vertex-ai-zero-data-retention). Google does not train its models on customer data without prior permission or instruction. Images are never used for advertising and are never sold.
 
 Scan images and results are saved locally on your device so you can review previous results. You can delete this data from within the app, or by deleting the app from your device.
 
@@ -75,6 +75,7 @@ Skinner is not intended for children under 13. If you believe a child has provid
 You can:
 
 - Decline camera access, though analysis will not work without it.
+- Decline AI sharing permission or withdraw it in Settings before future scans. Withdrawal does not undo processing of an already-sent request.
 - Delete your local data from within the app, or by deleting the app from your device.
 - Manage or cancel subscriptions in your Apple Account settings.
 - Contact support for privacy questions.

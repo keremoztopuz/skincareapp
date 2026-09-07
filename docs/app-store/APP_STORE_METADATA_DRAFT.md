@@ -80,11 +80,11 @@ Processing flow:
 1. The user takes a photo with the front camera.
 2. The photo is cropped to the detected face on-device using Apple's Vision framework.
 3. The crop is sent over HTTPS to our own backend service, which strips image metadata, downscales the image, and forwards it to Google's Gemini API (Vertex AI) for processing.
-4. Five visible-feature readings plus a hydration reading are returned; the app shows them alongside three summary metrics and an overall score. The crop is not stored permanently by our service. Google retains requests briefly for abuse monitoring only; they are not used to train models.
+4. Five visible-feature estimates plus a hydration estimate are returned; oiliness, inflammation and the overall score are derived by the app. These are not validated medical measurements. The crop is not stored permanently by our service. Google may retain request data for abuse monitoring and temporary caching under Vertex AI policies.
 
 No account or sign-in is required. Profile details and scan history are stored only on the device using Core Data and are never uploaded. Product and article content is read from our backend; no user data is sent with those requests.
 
-The app carries a medical disclaimer under Settings > Important Notice, reachable at any time, and repeats a non-diagnostic notice on every result screen.
+The app asks for explicit AI sharing permission before the first upload, naming Google Gemini on Vertex AI and the face crop, age and skin type sent. Permission can be withdrawn in Settings. A medical disclaimer is available under Settings > Important Notice, and every result screen describes the scores as photo-based estimates rather than medical measurements.
 
 Free tier: 5 scans per month, breakouts and redness readings only, last 5 analyses visible. Paid tier unlocks unlimited scans, all five visible-feature readings, full history, and routine recommendations. The three summary metrics and the overall score are free on both tiers.
 
@@ -94,7 +94,7 @@ Confirm these answers against the final implementation before submitting.
 
 Data collected:
 - **Photos** — the face crop is transmitted for processing on each scan. Not linked to an identity, not used for tracking, not stored permanently by us.
-- **Other user content** — self-reported profile (name, age, gender, skin type). Stored on device only; not transmitted.
+- **Profile information** — name and gender remain on device. Age and skin type are transmitted with the face crop after explicit AI sharing permission. Confirm the applicable App Privacy categories against provider retention before submitting.
 - **Purchases** — subscription status handled by Apple and RevenueCat.
 - **Identifiers** — RevenueCat assigns an anonymous app user ID for entitlement lookup.
 
@@ -108,7 +108,7 @@ Tracking:
 - None. No third-party advertising SDKs.
 
 Sensitive data:
-- Face images are processed to produce cosmetic readings. Declare under "Photos" with the "App Functionality" purpose. Do not declare a Health purpose — the app makes no health claims.
+- Face images, age, skin type and skin estimates must be assessed against Apple's data categories and provider retention. The app manifest currently declares Photos and Health for App Functionality; do not omit a category solely because the app has a cosmetic disclaimer. Reconcile the final archive's SDK privacy report, RevenueCat identifier/purchase linkage, and App Store Connect answers before submission.
 
 ## Subscription Metadata
 
@@ -143,7 +143,7 @@ subscribe to it.
 
 ### Lifetime
 
-Product ID: `com.keremoztopuz.skincare.pro.lifetime`, attached to the RevenueCat `$rc_lifetime` package of the `default` offering. Without that package the lifetime card falls back to placeholder pricing.
+Product ID: `com.keremoztopuz.skincare.pro.lifetime`, attached to the RevenueCat `$rc_lifetime` package of the `default` offering. Without that package the lifetime purchase is disabled and the screen offers a retry; no fallback price is shown.
 
 Reference name: Lifetime Pro
 
@@ -179,7 +179,7 @@ cosmetic.
 The lifetime product could not be equalized through RevenueCat — its equalize
 endpoint rejects non-consumables — so its non-TR tiers were set by hand in App
 Store Connect. The table above is the live App Store Connect state as read back
-on 26 August 2026; `SubscriptionManager.FallbackPrice` matches it. TR ₺699,99
+on 26 August 2026; the app now displays StoreKit prices only. TR ₺699,99
 is still roughly 7x the weekly while US $12.99 is roughly 3.3x, so the two
 storefronts are not a strict multiple of each other. Change a tier in App Store
 Connect and this table and the fallback both have to move with it.

@@ -24,6 +24,13 @@ struct RoutineView: View {
         }
         .navigationBarHidden(true)
         .interactiveSwipeBack()
+        .alert("local_change_failed", isPresented: $vm.saveFailed) {
+            Button(AppStrings.ok, role: .cancel) {}
+        }
+        .onAppear { vm.loadRoutine() }
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
+            vm.loadRoutine()
+        }
         .sheet(isPresented: $showUpgrade) { UpgradeSheetView() }
         .sheet(isPresented: $vm.showAddProduct) {
             ProductPickerSheet(

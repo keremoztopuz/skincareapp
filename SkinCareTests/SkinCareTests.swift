@@ -24,17 +24,12 @@ private func resetAppFlowDefaults() {
     resetAppFlowDefaults()
 
     let vm = ContentViewModel()
-    vm.showSplash = false
     #expect(vm.currentState == .onboarding)
     vm.completeOnBoarding()
     #expect(vm.currentState == .profileSetup)
     vm.completeProfile()
-    #expect(vm.currentState == .loading)
-    vm.showLoading = false
     #expect(vm.currentState == .subscription)
     vm.completePurchaseStep(isPremium: true)
-    vm.showLoading = false
-    vm.hasCompletedSubscription = true
     #expect(vm.currentState == .mainApp)
 }
 
@@ -122,13 +117,9 @@ private func resetAppFlowDefaults() {
     resetAppFlowDefaults()
 
     let vm = ContentViewModel()
-    vm.showSplash = false
     vm.completeOnBoarding()
     vm.completeProfile()
-    vm.showLoading = false
     vm.completePurchaseStep(isPremium: false)
-    vm.showLoading = false
-    vm.hasCompletedSubscription = true
 
     #expect(vm.currentState == .mainApp)
     #expect(!SubscriptionManager.shared.isPremium)

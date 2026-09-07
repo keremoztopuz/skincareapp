@@ -2,6 +2,8 @@ import SwiftUI
 import RevenueCat
 
 struct MoreView: View {
+    @AppStorage(AIAnalysisConsent.key) private var aiConsent = false
+    @State private var deleteFailed = false
     @StateObject private var vm = MoreViewModel()
     @StateObject private var subscriptionManager = SubscriptionManager.shared
     @State private var showEditProfile = false
@@ -214,6 +216,11 @@ struct MoreView: View {
                             .padding(.horizontal, 20)
 
                         VStack(spacing: 12) {
+                            if aiConsent {
+                                Button("ai_consent_revoke") { aiConsent = false }
+                                    .frame(maxWidth: .infinity, minHeight: 44)
+                                    .foregroundStyle(Color.brandPrimary)
+                            }
                             Button { restorePurchases() } label: {
                                 SettingsRow(
                                     icon: "arrow.clockwise",
@@ -291,17 +298,24 @@ struct MoreView: View {
         .alert(NSLocalizedString("delete_all_data", comment: ""), isPresented: $showDeleteConfirm) {
             Button(NSLocalizedString("cancel", comment: ""), role: .cancel) {}
             Button(NSLocalizedString("delete", comment: ""), role: .destructive) {
-                LocalPersistenceManager.shared.deleteAllUserData()
+                guard LocalPersistenceManager.shared.deleteAllUserData() else {
+                    deleteFailed = true
+                    return
+                }
                 // User-generated state outside Core Data goes too. The scan
                 // quota deliberately stays: it is a billing control, and
                 // clearing it would turn "delete my data" into a free-scan
                 // reset.
                 RoutineCompletionStore.shared.removeAll()
                 UserDefaults.standard.removeObject(forKey: "hasSeenCameraGuide")
+                aiConsent = false
                 vm.loadProfile()
             }
         } message: {
             Text(NSLocalizedString("delete_all_data_message", comment: ""))
+        }
+        .alert("delete_data_failed", isPresented: $deleteFailed) {
+            Button(AppStrings.ok, role: .cancel) {}
         }
         .alert(NSLocalizedString("restore_purchases", comment: ""), isPresented: Binding(
             get: { restoreMessage != nil },
@@ -408,12 +422,15 @@ struct SettingsRow: View {
 }
 
 struct ProfileEditSheet: View {
+    // MARK: - Properties
+    @State private var saveFailed = false
     @Environment(\.dismiss) var dismiss
     @State private var name: String = ""
     @State private var age: Int = 25
     @State private var gender: Gender? = nil
     @State private var skinType: SkinType? = nil
 
+    // MARK: - Body
     var body: some View {
         NavigationStack {
             ZStack {
@@ -495,19 +512,22 @@ struct ProfileEditSheet: View {
                         // knownIssues is not edited here, so carry the stored
                         // value through instead of wiping it on every save.
                         let existingIssues = LocalPersistenceManager.shared.fetchUserProfile()?.knownIssues ?? ""
-                        LocalPersistenceManager.shared.saveUserProfile(
+                        let saved = LocalPersistenceManager.shared.saveUserProfile(
                             name: name.trimmingCharacters(in: .whitespacesAndNewlines),
                             skinType: skinType?.rawValue ?? "Normal",
                             ageRange: String(age),
                             gender: gender?.rawValue ?? "Prefer not to say",
                             knownIssues: existingIssues
                         )
-                        dismiss()
+                        if saved { dismiss() } else { saveFailed = true }
                     }
                     .foregroundColor(.brandPrimary)
                     .fontWeight(.bold)
                 }
             }
+        }
+        .alert("profile_save_error", isPresented: $saveFailed) {
+            Button(AppStrings.ok, role: .cancel) {}
         }
         .onAppear {
             let profile = LocalPersistenceManager.shared.fetchUserProfile()

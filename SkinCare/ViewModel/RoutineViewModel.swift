@@ -4,6 +4,8 @@ internal import CoreData
 internal import Combine
 
 class RoutineViewModel: ObservableObject {
+    // MARK: - Properties
+    @Published var saveFailed = false
     @Published var morningItems: [RoutineItem] = []
     @Published var eveningItems: [RoutineItem] = []
     @Published var pendingSuggestions: [RoutineSuggestion] = []
@@ -19,10 +21,12 @@ class RoutineViewModel: ObservableObject {
     private let manager = LocalPersistenceManager.shared
     private let completionStore = RoutineCompletionStore.shared
 
+    // MARK: - Initialization
     init() {
         loadRoutine()
     }
 
+    // MARK: - Methods
     func loadRoutine() {
         morningItems = manager.fetchRoutineItems(for: "morning")
         eveningItems = manager.fetchRoutineItems(for: "evening")
@@ -46,39 +50,32 @@ class RoutineViewModel: ObservableObject {
     }
 
     func acceptSuggestion(_ suggestion: RoutineSuggestion) {
-        manager.acceptSuggestion(suggestion)
+        saveFailed = !manager.acceptSuggestions([suggestion])
         loadRoutine()
     }
 
     func dismissSuggestion(_ suggestion: RoutineSuggestion) {
-        manager.dismissSuggestion(suggestion)
+        saveFailed = !manager.dismissSuggestion(suggestion)
         pendingSuggestions = manager.fetchPendingSuggestions()
     }
 
     func acceptAllSuggestions() {
-        for suggestion in pendingSuggestions {
-            manager.acceptSuggestion(suggestion)
-        }
+        saveFailed = !manager.acceptSuggestions(pendingSuggestions)
         loadRoutine()
     }
 
     func dismissAllSuggestions() {
-        manager.dismissAllSuggestions()
+        saveFailed = !manager.dismissAllSuggestions()
         loadRoutine()
     }
 
     func removeItem(_ item: RoutineItem) {
-        manager.deleteRoutineItem(item)
+        saveFailed = !manager.deleteRoutineItem(item)
         loadRoutine()
     }
 
     func addProductManually(product: Product, routineTime: String, stepOrder: Int16) {
-        let existing = routineTime == "morning" ? morningItems : eveningItems
-        if let duplicate = existing.first(where: { $0.stepOrder == stepOrder }) {
-            manager.deleteRoutineItem(duplicate)
-        }
-
-        manager.saveRoutineItem(
+        saveFailed = !manager.saveRoutineItem(
             productId: product.id,
             productName: product.name,
             productBrand: product.brand,

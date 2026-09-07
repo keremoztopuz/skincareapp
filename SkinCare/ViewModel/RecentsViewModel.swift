@@ -25,6 +25,9 @@ enum RecordFilter: CaseIterable {
 }
 
 class RecentsViewModel: ObservableObject {
+    // MARK: - Properties
+    @Published var deleteFailed = false
+    private var deltas: [NSManagedObjectID: Double] = [:]
     @Published var records: [AnalysisRecord] = []
     @Published var lockedRecords: [AnalysisRecord] = []
     @Published var selectedFilter: RecordFilter = .allTime {
@@ -45,10 +48,14 @@ class RecentsViewModel: ObservableObject {
     let freeHistoryLimit = 5
     var isPremium: Bool { SubscriptionManager.shared.isPremium }
 
+    // MARK: - Methods
     func fetchRecords() {
         // fetchAnalysisRecords already sorts newest-first via its
         // NSSortDescriptor; no client-side re-sort needed.
         allRecords = LocalPersistenceManager.shared.fetchAnalysisRecords()
+        deltas = Dictionary(uniqueKeysWithValues: zip(allRecords, allRecords.dropFirst()).map {
+            ($0.objectID, $0.overallScore - $1.overallScore)
+        })
         let filtered = applyFilter(allRecords)
         if isPremium {
             self.records = filtered
@@ -62,9 +69,7 @@ class RecentsViewModel: ObservableObject {
     /// Change in overall score against the chronologically previous scan,
     /// or nil for the oldest record.
     func delta(for record: AnalysisRecord) -> Double? {
-        guard let index = allRecords.firstIndex(of: record),
-              index + 1 < allRecords.count else { return nil }
-        return record.overallScore - allRecords[index + 1].overallScore
+        deltas[record.objectID]
     }
 
     private func applyFilter(_ records: [AnalysisRecord]) -> [AnalysisRecord] {
@@ -79,7 +84,7 @@ class RecentsViewModel: ObservableObject {
     }
 
     func deleteRecord(_ record: AnalysisRecord) {
-        LocalPersistenceManager.shared.deleteAnalysisRecord(record)
+        deleteFailed = !LocalPersistenceManager.shared.deleteAnalysisRecord(record)
         fetchRecords()
     }
 

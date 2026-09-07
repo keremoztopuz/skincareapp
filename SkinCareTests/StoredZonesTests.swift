@@ -8,7 +8,7 @@ import CoreGraphics
 import Foundation
 @testable import SkinCare
 
-@Test func testStoredZonesRoundTrip() throws {
+@Test @MainActor func testStoredZonesRoundTrip() throws {
     let zones = StoredZones(
         crop: StoredZones.Rect(x: 0.2, y: 0.1, w: 0.5, h: 0.6),
         regions: [

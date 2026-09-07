@@ -1,4 +1,18 @@
 /* Tabs */
+"ai_consent_title" = "Allow AI photo analysis?";
+"ai_consent_body" = "With your permission, Skinner sends a crop of your face, your age and your skin type to our analysis service and Google Gemini on Vertex AI to estimate visible skin features. Your name and gender are not sent. These estimates are not medical measurements or a diagnosis.";
+"ai_consent_storage" = "Your photo and results are saved on this device for your history. Our service does not permanently store the uploaded photo. Google may retain request data for abuse monitoring and temporary caching. You can decline and keep using your history and routine, or withdraw permission in Settings before future scans.";
+"ai_consent_accept" = "Allow and start analysis";
+"ai_consent_decline" = "Not now";
+"ai_consent_revoke" = "Withdraw AI sharing permission";
+"ai_consent_required" = "Allow AI data sharing before starting an analysis.";
+"analysis_error_face" = "Keep one face clearly visible in the frame and try again. No photo was sent.";
+"delete_data_failed" = "Your data could not be deleted. Please try again.";
+"local_change_failed" = "This change could not be saved. Please try again.";
+"camera_unavailable" = "The front camera is unavailable. Return to the Camera tab to try again. A real iPhone is required to take a photo.";
+"storage_unavailable_title" = "Your history could not be opened";
+"storage_unavailable_message" = "Your saved data has not been erased. Try again after checking available storage or restarting the app. Do not delete the app if you want to keep your history.";
+"purchase_prices_unavailable" = "Store prices are unavailable. Please retry before purchasing.";
 "tab_home" = "Home";
 "tab_search" = "Search";
 "tab_camera" = "Camera";
@@ -31,7 +45,7 @@
 "face_analysis" = "Face Analysis";
 "position_face" = "Position your face within the oval frame";
 "camera_access_required" = "Camera Access Required";
-"camera_access_description" = "To analyze your skin, we need access to your camera. Your face photo is sent securely for analysis and is not stored permanently.";
+"camera_access_description" = "Allow camera access to take a skin photo. AI sharing permission is requested separately; your photo and results are saved in your on-device history.";
 "open_settings" = "Open Settings";
 "ready_to_scan" = "Ready to Scan?";
 "enable_camera_description" = "Enable camera access to start your skin analysis journey.";
@@ -80,7 +94,7 @@
 "onboarding_title_2" = "AI-Powered Skin Analysis";
 "onboarding_desc_2" = "Let AI analyze your skin in seconds.";
 "onboarding_title_3" = "Secure & Private";
-"onboarding_desc_3" = "Your profile and history stay on your device. Your face photo is sent securely for analysis and is not stored permanently.";
+"onboarding_desc_3" = "Your history is saved on this device. With your permission, your face crop, age and skin type are sent securely for AI analysis.";
 "onboarding_title_4" = "Track Your Progress";
 "onboarding_desc_4" = "Save every analysis and see how you improve over time.";
 "back" = "Back";
@@ -114,6 +128,15 @@
 "results" = "Results";
 "condition_scale_hint" = "0 = none  ·  100 = severe";
 "show_zone_hint" = "Shows the assessed area on your photo";
+"score_trend_empty" = "Your progress starts with a scan. Take a photo to add your first score.";
+"score_trend_single" = "Add another scan to see how your score changes over time.";
+"condition_tip_title" = "Explore your results";
+"condition_tip_pro_title" = "Your Pro readings are interactive too";
+"condition_interaction_hint" = "Tap a reading to see areas on your photo, when available, or an explanation.";
+"condition_regions_unavailable" = "No area information";
+"condition_photo_missing" = "This scan has no saved photo to highlight. Your score is still available.";
+"condition_regions_legacy" = "This scan has no saved area information. Take a new scan to check for areas. Your score is still available.";
+"condition_regions_empty" = "No area information was returned for this reading. This does not mean the score is zero.";
 "see_recommendations" = "See Recommendations";
 
 /* Detail */
@@ -305,7 +328,7 @@
 "upgrade_feature_unlimited_recommendations" = "Unlimited product recommendations";
 "terms_of_use" = "Terms of Use";
 "privacy_policy" = "Privacy Policy";
-"results_not_medical_advice" = "Results are informational only and not a medical diagnosis. Consult a dermatologist for concerns about your skin.";
+"results_not_medical_advice" = "These are AI estimates from a photo, not medical measurements or a diagnosis. Lighting and angle can affect results. Consult a dermatologist for skin concerns.";
 "analysis_failed_title" = "Analysis Failed";
 "analysis_error_photo" = "The photo could not be processed. Please try again.";
 "analysis_error_model" = "The analysis could not be completed. Please try again.";

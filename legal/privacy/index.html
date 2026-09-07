@@ -10,7 +10,7 @@
 <main>
   <a class="back" href="../">← Skinner legal</a>
   <h1>Privacy Policy</h1>
-  <p class="meta">Effective date: 26 August 2026</p>
+  <p class="meta">Effective date: 7 September 2026</p>
 
   <p>Skinner is designed to help you review visible skin features, track changes over time, and organize skincare routines.</p>
 
@@ -26,12 +26,13 @@
   <h2>How Analysis Works</h2>
   <p>Skin analysis runs in the cloud. There is no analysis model on your device.</p>
   <ol>
-    <li>When you take a photo, your device detects and crops your face locally using Apple's Vision framework. The crop never includes more of the photo than your face.</li>
-    <li>The crop is sent over an encrypted connection to our backend service, which removes image metadata, reduces the image size, and forwards it to Google's Gemini API (Vertex AI) for processing.</li>
+    <li>Before your first analysis, we ask for explicit permission to share your face crop, age and skin type with our analysis service and Google Gemini on Vertex AI. Declining does not prevent access to your local history or routine.</li>
+    <li>Your device detects one face and crops the photo locally using Apple's Vision framework. If a single face cannot be detected and cropped, the photo is not sent.</li>
+    <li>The crop, age and skin type are sent over an encrypted connection to our backend service, which removes image metadata, reduces the image size, and forwards the request to Google's Gemini API (Vertex AI). Your name and gender are not sent.</li>
     <li>The service returns numeric readings for five visible features — breakouts, redness, wrinkles, eye bags, and pigmentation — plus a hydration reading. The app then presents three summary metrics (hydration, oiliness and inflammation) and one overall score. All of it is shown to you and saved on your device.</li>
   </ol>
   <p>An internet connection is required to run an analysis. Your history, profile, and routine remain available offline.</p>
-  <p>Images sent for analysis are processed in real time and are not stored permanently by us. Google retains requests briefly for abuse monitoring and does not use them to train models. Images are never used for advertising and are never sold.</p>
+  <p>Images sent for analysis are processed in real time and are not stored permanently by us. Google may retain request data for abuse monitoring and temporary caching under its <a href="https://docs.cloud.google.com/vertex-ai/generative-ai/docs/vertex-ai-zero-data-retention">Vertex AI data retention policies</a>. Google does not train its models on customer data without prior permission or instruction. Images are never used for advertising and are never sold.</p>
   <p>Scan images and results are saved locally on your device so you can review previous results. You can delete this data from within the app, or by deleting the app from your device.</p>
 
   <h2>Online Content</h2>
@@ -62,6 +63,7 @@
   <h2>Your Choices</h2>
   <ul>
     <li>Decline camera access, though analysis will not work without it.</li>
+    <li>Decline AI sharing permission, or withdraw it in Settings to prevent future analysis uploads. Withdrawal does not undo processing of a request already sent.</li>
     <li>Delete your local data from within the app, or by deleting the app from your device.</li>
     <li>Manage or cancel subscriptions in your Apple Account settings.</li>
     <li>Contact support for privacy questions.</li>

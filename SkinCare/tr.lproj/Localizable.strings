@@ -1,4 +1,16 @@
 "tab_home" = "Ana Sayfa";
+"ai_consent_title" = "AI fotoğraf analizine izin verilsin mi?";
+"ai_consent_body" = "İzninle Skinner, görünür cilt özelliklerini tahmin etmek için yüzünün kırpılmış fotoğrafını, yaşını ve cilt tipini analiz servisimize ve Vertex AI üzerindeki Google Gemini'ye gönderir. Adın ve cinsiyetin gönderilmez. Bu tahminler tıbbi ölçüm veya teşhis değildir.";
+"ai_consent_storage" = "Fotoğrafın ve sonuçların geçmişin için bu cihazda saklanır. Servisimiz gönderilen fotoğrafı kalıcı olarak saklamaz. Google, kötüye kullanım denetimi ve geçici önbellekleme için istek verilerini tutabilir. İzin vermeden geçmişini ve rutinini kullanabilir; sonraki analizler için iznini Ayarlar'dan geri çekebilirsin.";
+"ai_consent_accept" = "İzin ver ve analizi başlat";
+"ai_consent_decline" = "Şimdi değil";
+"ai_consent_revoke" = "AI paylaşım iznini geri çek";
+"ai_consent_required" = "Analiz başlatmadan önce AI veri paylaşımına izin ver.";
+"analysis_error_face" = "Kadrajda yalnızca bir yüz net görünecek şekilde tekrar dene. Fotoğraf gönderilmedi.";
+"delete_data_failed" = "Verilerin silinemedi. Lütfen tekrar dene.";
+"storage_unavailable_title" = "Geçmişin açılamadı";
+"storage_unavailable_message" = "Kayıtlı verilerin silinmedi. Depolama alanını kontrol edip veya uygulamayı yeniden başlatıp tekrar dene. Geçmişini korumak istiyorsan uygulamayı silme.";
+"purchase_prices_unavailable" = "Mağaza fiyatları alınamadı. Satın almadan önce tekrar dene.";
 "tab_search" = "Arama";
 "tab_camera" = "Kamera";
 "tab_recents" = "Son Analizler";
@@ -24,7 +36,7 @@
 "face_analysis" = "Yüz Analizi";
 "position_face" = "Yüzünüzü oval çerçevenin içine yerleştirin";
 "camera_access_required" = "Kamera Erişimi Gerekli";
-"camera_access_description" = "Cildinizi analiz etmek için kameranıza erişmemiz gerekiyor. Yüz fotoğrafınız analiz için güvenli şekilde iletilir ve kalıcı olarak saklanmaz.";
+"camera_access_description" = "Cilt fotoğrafı çekmek için kamera erişimine izin ver. AI paylaşımı için ayrıca izin istenir; fotoğrafın ve sonuçların bu cihazdaki geçmişine kaydedilir.";
 "open_settings" = "Ayarları Aç";
 "ready_to_scan" = "Taramaya Hazır mısınız?";
 "enable_camera_description" = "Cilt analizi yolculuğunuza başlamak için kamera erişimini etkinleştirin.";
@@ -65,7 +77,7 @@
 "onboarding_title_2" = "Yapay Zeka Destekli Cilt Analizi";
 "onboarding_desc_2" = "Yapay zeka cildinizi saniyeler içinde analiz etsin.";
 "onboarding_title_3" = "Güvenli ve Özel";
-"onboarding_desc_3" = "Profiliniz ve geçmişiniz cihazınızda kalır. Yüz fotoğrafınız analiz için güvenli şekilde iletilir ve kalıcı olarak saklanmaz.";
+"onboarding_desc_3" = "Geçmişin bu cihazda saklanır. İzninle yüz kırpımın, yaşın ve cilt tipin AI analizi için güvenli şekilde gönderilir.";
 "onboarding_title_4" = "İlerlemenizi Takip Edin";
 "onboarding_desc_4" = "Her analizi kaydedin ve zamanla nasıl geliştiğinizi görün.";
 "back" = "Geri";
@@ -93,6 +105,15 @@
 "results" = "Sonuçlar";
 "condition_scale_hint" = "0 = yok  ·  100 = şiddetli";
 "show_zone_hint" = "Değerlendirilen bölgeyi fotoğrafınızda gösterir";
+"score_trend_empty" = "Gelişimin ilk analizle başlar. İlk puanını eklemek için fotoğraf çek.";
+"score_trend_single" = "Puanının zamanla değişimini görmek için yeni bir analiz ekle.";
+"condition_tip_title" = "Sonuçlarını keşfet";
+"condition_tip_pro_title" = "Pro metriklerin de tıklanabilir";
+"condition_interaction_hint" = "Bir metriğe dokun: varsa fotoğraftaki bölgeleri, yoksa açıklamasını gör.";
+"condition_regions_unavailable" = "Bölge bilgisi bulunmuyor";
+"condition_photo_missing" = "Bu analizde işaretlenecek kayıtlı fotoğraf yok. Puanını yine de görebilirsin.";
+"condition_regions_legacy" = "Bu analizde kayıtlı bölge bilgisi yok. Bölgeleri kontrol etmek için yeni bir analiz yapabilirsin. Puanını yine de görebilirsin.";
+"condition_regions_empty" = "Bu metrik için bölge bilgisi dönmedi. Bu, puanın sıfır olduğu anlamına gelmez.";
 "see_recommendations" = "Önerileri Gör";
 "description" = "Açıklama";
 "active_ingredients" = "Aktif İçerikler";
@@ -258,7 +279,7 @@
 "upgrade_feature_unlimited_recommendations" = "Sınırsız ürün önerisi";
 "terms_of_use" = "Kullanım Koşulları";
 "privacy_policy" = "Gizlilik Politikası";
-"results_not_medical_advice" = "Sonuçlar yalnızca bilgilendirme amaçlıdır ve tıbbi tanı değildir. Cildinizle ilgili endişeleriniz için bir dermatoloğa danışın.";
+"results_not_medical_advice" = "Bunlar fotoğraftan üretilen AI tahminleridir; tıbbi ölçüm veya teşhis değildir. Işık ve açı sonuçları etkileyebilir. Cildinle ilgili endişelerinde bir dermatoloğa danış.";
 "analysis_failed_title" = "Analiz Başarısız";
 "analysis_error_photo" = "Fotoğraf işlenemedi. Lütfen tekrar deneyin.";
 "analysis_error_model" = "Analiz tamamlanamadı. Lütfen tekrar deneyin.";
@@ -315,3 +336,5 @@
 "credits_article_photos" = "Makale fotoğrafları";
 "credits_pexels_license" = "Pexels Lisansı";
 "credits_open_source" = "Açık kaynak";
+"local_change_failed" = "Bu değişiklik kaydedilemedi. Lütfen tekrar deneyin.";
+"camera_unavailable" = "Ön kameraya erişilemiyor. Yeniden denemek için Kamera sekmesine dönün. Fotoğraf çekmek için gerçek bir iPhone gereklidir.";

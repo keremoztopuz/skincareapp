@@ -10,6 +10,10 @@ enum CameraPermissionStatus {
 }
 
 class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate {
+    // MARK: - Properties
+    private let sessionQueue = DispatchQueue(label: "com.skinner.camera", qos: .userInitiated)
+    private var wantsSession = false
+    @Published private(set) var isSessionReady = false
     @Published var session = AVCaptureSession()
     @Published var permissionStatus: CameraPermissionStatus = .notDetermined
     @Published var isPermissionGranted = false
@@ -40,7 +44,9 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
 
     private let engine = ScoringEngine()
 
+    // MARK: - Methods
     func checkPermission() {
+        wantsSession = true
         switch AVCaptureDevice.authorizationStatus(for: .video) {
         case .authorized:
             self.permissionStatus = .authorized
@@ -60,7 +66,7 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
             DispatchQueue.main.async {
                 self.isPermissionGranted = granted
                 self.permissionStatus = granted ? .authorized : .denied
-                if granted {
+                if granted && self.wantsSession {
                     self.setupSession()
                 }
             }
@@ -68,16 +74,25 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
     }
 
     func setupSession() {
+        sessionQueue.async { self.configureAndStartSession() }
+    }
+
+    private func configureAndStartSession() {
         // checkPermission() runs on every appear and foreground; once the
         // session is configured, only make sure it is running again instead
         // of re-locking the device and re-adding inputs on the main thread.
         guard session.inputs.isEmpty else {
-            startSessionIfNeeded()
+            if !session.isRunning { session.startRunning() }
+            DispatchQueue.main.async { self.isSessionReady = self.wantsSession && self.session.isRunning }
             return
         }
 
         guard let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front) else {
             AppLog.error("No front camera available")
+            DispatchQueue.main.async {
+                self.isSessionReady = false
+                self.errorMessage = NSLocalizedString("camera_unavailable", comment: "")
+            }
             return
         }
 
@@ -102,20 +117,21 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
         }
 
         session.commitConfiguration()
-
-        startSessionIfNeeded()
-    }
-
-    private func startSessionIfNeeded() {
-        DispatchQueue.global(qos: .background).async {
-            if !self.session.isRunning {
-                self.session.startRunning()
+        guard !session.inputs.isEmpty, session.outputs.contains(photoOutput) else {
+            DispatchQueue.main.async {
+                self.isSessionReady = false
+                self.errorMessage = NSLocalizedString("camera_unavailable", comment: "")
             }
+            return
         }
+        session.startRunning()
+        DispatchQueue.main.async { self.isSessionReady = self.wantsSession && self.session.isRunning }
     }
 
     func stopSession() {
-        DispatchQueue.global(qos: .background).async {
+        wantsSession = false
+        isSessionReady = false
+        sessionQueue.async {
             if self.session.isRunning {
                 self.session.stopRunning()
             }
@@ -123,8 +139,7 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
     }
 
     func capturePhoto() {
-        guard session.isRunning else { return }
-        DispatchQueue.main.async {
+        guard isSessionReady, !isAnalyzing, AIAnalysisConsent.isGranted else { return }
             self.capturedImage = nil
             self.analysisRecord = nil
             self.detectedCondition = nil
@@ -136,9 +151,12 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
             self.hydrationScore = 0
             self.didProduceModelScores = false
             self.isAnalyzing = true
+        guard session.isRunning else {
+            isAnalyzing = false
+            errorMessage = NSLocalizedString("camera_unavailable", comment: "")
+            return
         }
-        let settings = AVCapturePhotoSettings()
-        photoOutput.capturePhoto(with: settings, delegate: self)
+        photoOutput.capturePhoto(with: AVCapturePhotoSettings(), delegate: self)
     }
 
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
@@ -163,8 +181,6 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
         }
 
         Task {
-            let startTime = Date()
-
             guard let normalizedImage = originalImage.fixedOrientation() else {
                 await MainActor.run {
                     self.isAnalyzing = false
@@ -179,20 +195,15 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
                 }
             }
 
-            let imageToAnalyze = croppedImage ?? normalizedImage
-
-            // The model's regions come back relative to what was uploaded:
-            // the crop when one was made, the full frame otherwise.
-            let cropRect = (croppedImage != nil && faceNormRect != .zero)
-                ? faceNormRect
-                : CGRect(x: 0, y: 0, width: 1, height: 1)
-
-            await self.analyzeWithCloud(imageToAnalyze, cropRect: cropRect)
-
-            let elapsed = Date().timeIntervalSince(startTime)
-            if elapsed < 3.0 {
-                try? await Task.sleep(nanoseconds: UInt64((3.0 - elapsed) * 1_000_000_000))
+            guard let croppedImage, faceNormRect != .zero else {
+                await MainActor.run {
+                    self.isAnalyzing = false
+                    self.capturedImage = nil
+                    self.errorMessage = NSLocalizedString("analysis_error_face", comment: "")
+                }
+                return
             }
+            await self.analyzeWithCloud(croppedImage, cropRect: faceNormRect)
 
             await MainActor.run {
                 self.capturedImage = normalizedImage
@@ -201,7 +212,7 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
         }
     }
 
-    private func detectFaceAndCrop(_ image: UIImage, completion rawCompletion: @escaping (UIImage?, CGRect) -> Void) {
+    func detectFaceAndCrop(_ image: UIImage, completion rawCompletion: @escaping (UIImage?, CGRect) -> Void) {
         // Vision can invoke the request's completion handler with an error
         // and then still make perform() throw, which would fire completion
         // twice — fatal for the checked continuation awaiting it.
@@ -219,7 +230,7 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
 
         let request = VNDetectFaceRectanglesRequest { request, error in
             guard let results = request.results as? [VNFaceObservation],
-                  let face = results.first else {
+                  results.count == 1, let face = results.first else {
                 completion(nil, .zero)
                 return
             }
@@ -313,12 +324,14 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
             AppLog.error("Cloud analysis failed", error)
             let messageKey: String
             switch error {
+            case AnalysisError.consentRequired:
+                messageKey = "ai_consent_required"
             case AnalysisError.encodingFailed:
                 messageKey = "analysis_error_photo"
             case AnalysisError.server(let code):
                 // Rate limits and the daily spend ceiling are "try later",
                 // not "check your connection".
-                let busyCodes = ["http_429", "rate_limited", "daily_budget_exceeded"]
+                let busyCodes = ["http_429", "rate_limited", "daily_budget_exceeded", "daily_budget_exhausted", "upstream_busy"]
                 messageKey = busyCodes.contains(code) ? "analysis_error_busy" : "analysis_error_server"
             default:
                 messageKey = "analysis_error_network"
@@ -396,6 +409,7 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
     }
 
     func resetScanner() {
+        guard !isAnalyzing else { return }
         DispatchQueue.main.async {
             self.capturedImage = nil
             self.analysisRecord = nil
@@ -412,11 +426,7 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
             self.lastCropRect = CGRect(x: 0, y: 0, width: 1, height: 1)
             self.lastRegions = [:]
         }
-        if !session.isRunning {
-            DispatchQueue.global(qos: .background).async {
-                self.session.startRunning()
-            }
-        }
+        if wantsSession && isPermissionGranted { setupSession() }
     }
 }
 

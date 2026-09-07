@@ -2,8 +2,10 @@ import SwiftUI
 import Charts
 import AVFoundation
 internal import Combine
+internal import CoreData
 
 struct HomeView: View {
+    @Environment(\.managedObjectContext) private var context
     @StateObject private var vm = HomeViewModel()
     @Binding var selectedTab: Int
     
@@ -115,62 +117,17 @@ struct HomeView: View {
                                 ],
                                 spacing: 12
                             ) {
-                                MetricCard(value: "\(vm.avgOverallScore)", label: AppStrings.overallScore, progress: Double(vm.avgOverallScore))
-                                MetricCard(value: "\(vm.avgHydration)%", label: AppStrings.hydration, progress: Double(vm.avgHydration))
-                                MetricCard(value: "\(vm.avgOiliness)%", label: AppStrings.oiliness, progress: Double(vm.avgOiliness))
-                                MetricCard(value: "\(vm.avgInflammation)%", label: AppStrings.inflammation, progress: Double(vm.avgInflammation))
+                                MetricCard(value: vm.hasStatistics ? "\(vm.avgOverallScore)" : "—", label: AppStrings.overallScore, progress: vm.hasStatistics ? Double(vm.avgOverallScore) : nil)
+                                MetricCard(value: vm.hasStatistics ? "\(vm.avgHydration)%" : "—", label: AppStrings.hydration, progress: vm.hasStatistics ? Double(vm.avgHydration) : nil)
+                                MetricCard(value: vm.hasStatistics ? "\(vm.avgOiliness)%" : "—", label: AppStrings.oiliness, progress: vm.hasStatistics ? Double(vm.avgOiliness) : nil)
+                                MetricCard(value: vm.hasStatistics ? "\(vm.avgInflammation)%" : "—", label: AppStrings.inflammation, progress: vm.hasStatistics ? Double(vm.avgInflammation) : nil)
                             }
                         }
                         .padding(.horizontal, 20)
 
                         // score trend
-                        if vm.scoreTrend.count >= 2 {
-                            VStack(alignment: .leading, spacing: 16) {
-                                Text(NSLocalizedString("score_trend", comment: ""))
-                                    .font(.scaled(size: 18, weight: .bold))
-                                    .foregroundColor(.brandText)
-
-                                Chart(vm.scoreTrend) { point in
-                                    LineMark(
-                                        x: .value("Date", point.date),
-                                        y: .value("Score", point.score)
-                                    )
-                                    .foregroundStyle(Color.brandPrimary)
-                                    .interpolationMethod(.catmullRom)
-                                    .lineStyle(StrokeStyle(lineWidth: 2.5, lineCap: .round))
-
-                                    PointMark(
-                                        x: .value("Date", point.date),
-                                        y: .value("Score", point.score)
-                                    )
-                                    .foregroundStyle(Color.brandPrimary)
-                                    .symbolSize(36)
-                                }
-                                .chartYScale(domain: 0...100)
-                                .chartXAxis {
-                                    AxisMarks(values: .automatic(desiredCount: 4)) { _ in
-                                        AxisValueLabel(format: .dateTime.day().month(), centered: false)
-                                            .font(.scaled(size: 11))
-                                            .foregroundStyle(Color.gray)
-                                    }
-                                }
-                                .chartYAxis {
-                                    AxisMarks(position: .leading, values: [0, 50, 100]) { value in
-                                        AxisGridLine()
-                                            .foregroundStyle(Color.brandBlush)
-                                        AxisValueLabel()
-                                            .font(.scaled(size: 11))
-                                            .foregroundStyle(Color.gray)
-                                    }
-                                }
-                                .frame(height: 160)
-                                .padding(16)
-                                .background(Color.white)
-                                .cornerRadius(Radius.card)
-                                .cardShadow()
-                            }
+                        ScoreTrendSection(points: vm.scoreTrend) { selectedTab = 2 }
                             .padding(.horizontal, 20)
-                        }
                         
                         // routine card
                         VStack(alignment: .leading, spacing: 16) {
@@ -318,12 +275,98 @@ struct HomeView: View {
         // An app left open across the 18:00 boundary would otherwise keep
         // showing the morning routine with stale completion state.
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
+            vm.fetchStatistics()
             vm.fetchRoutineSummary()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .NSManagedObjectContextDidSave, object: context)) { _ in
+            vm.fetchStatistics()
+        }
+    }
+
+}
+
+// MARK: - Subviews
+struct ScoreTrendSection: View {
+    let points: [ScoreTrendPoint]
+    let onScan: () -> Void
+
+    private var dateRange: ClosedRange<Date> {
+        let first = points.first?.date ?? Date()
+        let last = points.last?.date ?? first
+        return first == last ? first.addingTimeInterval(-43200)...last.addingTimeInterval(43200) : first...last
+    }
+
+    private var axisDates: [Date] {
+        points.reduce(into: []) { dates, point in
+            if dates.last.map({ Calendar.current.isDate($0, inSameDayAs: point.date) }) != true {
+                dates.append(point.date)
+            }
+        }
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("score_trend")
+                .font(.scaled(size: 18, weight: .bold))
+                .foregroundColor(.brandText)
+
+            if points.isEmpty {
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("score_trend_empty")
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                    Button(AppStrings.skinAnalysis, action: onScan)
+                        .foregroundStyle(Color.brandPrimary)
+                        .frame(minHeight: 44)
+                }
+                .padding(16)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Color.white, in: RoundedRectangle(cornerRadius: Radius.card))
+            } else {
+                Chart(points) { point in
+                    if points.count > 1 {
+                        LineMark(x: .value("Date", point.date), y: .value("Score", point.score))
+                            .foregroundStyle(Color.brandPrimary)
+                            .interpolationMethod(.linear)
+                            .lineStyle(StrokeStyle(lineWidth: 2.5, lineCap: .round))
+                    }
+                    PointMark(x: .value("Date", point.date), y: .value("Score", point.score))
+                        .foregroundStyle(Color.brandPrimary)
+                        .symbolSize(36)
+                        .accessibilityLabel(Text(point.date, style: .date))
+                        .accessibilityValue(Text("\(Int(point.score))/100"))
+                }
+                .chartYScale(domain: 0...100)
+                .chartXScale(domain: dateRange)
+                .chartXAxis {
+                    AxisMarks(values: axisDates) { _ in
+                        AxisValueLabel(format: .dateTime.day().month())
+                            .font(.scaled(size: 11))
+                            .foregroundStyle(Color.gray)
+                    }
+                }
+                .chartYAxis {
+                    AxisMarks(position: .leading, values: [0, 50, 100]) { _ in
+                        AxisGridLine().foregroundStyle(Color.brandBlush)
+                        AxisValueLabel()
+                            .font(.scaled(size: 11))
+                            .foregroundStyle(Color.gray)
+                    }
+                }
+                .frame(height: 160)
+                .padding(16)
+                .background(Color.white, in: RoundedRectangle(cornerRadius: Radius.card))
+                .cardShadow()
+                if points.count == 1 {
+                    Text("score_trend_single")
+                        .font(.scaled(size: 13))
+                        .foregroundStyle(.secondary)
+                }
+            }
         }
     }
 }
 
-// MARK: - Subviews
 struct MetricCard: View {
     let value: String
     let label: String

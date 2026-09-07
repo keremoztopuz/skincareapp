@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import TipKit
 // Only the #Preview touches Core Data directly (to seed its own context).
 internal import CoreData
 
@@ -23,6 +24,14 @@ struct ResultView: View {
     @State private var showUpgrade = false
     @State private var showRoutine = false
     @State private var routineCreated = false
+    @State private var routineSaveFailed = false
+    @State private var showMissingZones = false
+    @State private var tipsReady = true
+
+    private var conditionTip: ConditionInteractionTip { ConditionInteractionTip(isPro: isPremium) }
+    private var tipAnchorKey: String? {
+        visibleReadings.first { $0.isPro == isPremium }?.key
+    }
 
     // Observed so the locked bars unlock the moment the user buys Pro in
     // the upgrade sheet this very screen presents.
@@ -98,8 +107,7 @@ struct ResultView: View {
 
     /// Decoded once: the body used to re-decode the JPEG on every render.
     private let photo: UIImage?
-    /// Where each condition sits on the photo; nil for records from before
-    /// the model returned regions — the rows simply stop being selectable.
+    /// Nil for older records; their rows explain why no overlay is available.
     private let zones: StoredZones?
 
     private let scannedImageID = "scanned-image"
@@ -124,6 +132,14 @@ struct ResultView: View {
     }
 
     private func toggleCondition(_ key: String, proxy: ScrollViewProxy) {
+        guard visibleReadings.contains(where: { $0.key == key }) else { return }
+        ConditionInteractionTip(isPro: key != "acne" && key != "redness")
+            .invalidate(reason: .actionPerformed)
+        guard selectableKeys.contains(key) else {
+            selectedConditionKey = nil
+            showMissingZones = true
+            return
+        }
         let selecting = selectedConditionKey != key
         withAnimation(.spring(response: 0.2)) {
             selectedConditionKey = selecting ? key : nil
@@ -227,23 +243,18 @@ struct ResultView: View {
                         VStack(spacing: 0) {
                             let allTitles = visibleReadings.map(\.title)
                             ForEach(visibleReadings) { reading in
-                                if selectableKeys.contains(reading.key) {
-                                    Button {
-                                        toggleCondition(reading.key, proxy: scrollProxy)
-                                    } label: {
-                                        ConditionRow(
-                                            reading: reading,
-                                            allTitles: allTitles,
-                                            isSelected: selectedConditionKey == reading.key
-                                        )
-                                    }
-                                    .buttonStyle(.plain)
-                                    .accessibilityHint(Text(AppStrings.showZoneHint))
-                                } else {
-                                    // No regions stored (an older record, or the
-                                    // model found nothing) — the row is data only.
-                                    ConditionRow(reading: reading, allTitles: allTitles, isSelected: false)
+                                Button {
+                                    toggleCondition(reading.key, proxy: scrollProxy)
+                                } label: {
+                                    ConditionRow(
+                                        reading: reading,
+                                        allTitles: allTitles,
+                                        isSelected: selectedConditionKey == reading.key
+                                    )
                                 }
+                                .buttonStyle(.plain)
+                                .accessibilityHint(Text("condition_interaction_hint"))
+                                .popoverTip(reading.key == tipAnchorKey && tipsReady && !showUpgrade && !showMissingZones && selectedProduct == nil && !showRoutine ? conditionTip : nil)
                             }
 
                             if !lockedReadings.isEmpty {
@@ -380,7 +391,24 @@ struct ResultView: View {
         // No-op when this screen is a cover; restores the edge pop when
         // Recents pushes it onto a NavigationStack.
         .interactiveSwipeBack()
-        .sheet(isPresented: $showUpgrade) { UpgradeSheetView() }
+        .sheet(isPresented: $showUpgrade, onDismiss: { tipsReady = true }) { UpgradeSheetView() }
+        .onChange(of: showUpgrade) { _, showing in
+            if showing { tipsReady = false }
+        }
+        .onChange(of: isPremium) { _, premium in
+            if !premium, let key = selectedConditionKey,
+               proReadings.contains(where: { $0.key == key }) {
+                selectedConditionKey = nil
+            }
+        }
+        .alert("local_change_failed", isPresented: $routineSaveFailed) {
+            Button(AppStrings.ok, role: .cancel) {}
+        }
+        .alert("condition_regions_unavailable", isPresented: $showMissingZones) {
+            Button(NSLocalizedString("ok", comment: ""), role: .cancel) {}
+        } message: {
+            Text(LocalizedStringKey(photo == nil ? "condition_photo_missing" : zones == nil ? "condition_regions_legacy" : "condition_regions_empty"))
+        }
         // item-based so the sheet body always carries the tapped product;
         // the isPresented+if-let form intermittently presents blank.
         .sheet(item: $selectedProduct) { product in
@@ -470,19 +498,15 @@ struct ResultView: View {
             "sunscreen":  (4, ["morning"])
         ]
 
+        var filledSlots = Set<String>()
         for product in products {
             guard let type = product.productType,
                   let mapping = stepMap[type] else { continue }
 
             for time in mapping.times {
-                // Same dedupe rule as acceptSuggestion: one product per
-                // step slot, or the extra row becomes an invisible orphan
-                // the routine screen can never show or delete.
-                if let duplicate = manager.fetchRoutineItems(for: time)
-                    .first(where: { $0.stepOrder == mapping.order }) {
-                    manager.deleteRoutineItem(duplicate)
-                }
-                manager.saveRoutineItem(
+                // Products are best-first. Keep the first match, not the last.
+                guard filledSlots.insert("\(time).\(mapping.order)").inserted else { continue }
+                guard manager.saveRoutineItem(
                     productId: product.id,
                     productName: product.name,
                     productBrand: product.brand,
@@ -491,7 +515,10 @@ struct ResultView: View {
                     routineTime: time,
                     stepOrder: mapping.order,
                     isManuallyAdded: false
-                )
+                ) else {
+                    routineSaveFailed = true
+                    return
+                }
             }
         }
 
@@ -517,6 +544,16 @@ struct ConditionReading: Identifiable {
     let score: Double
 
     var id: String { key }
+    var isPro: Bool { key != "acne" && key != "redness" }
+}
+
+struct ConditionInteractionTip: Tip {
+    let isPro: Bool
+    var id: String { isPro ? "condition-interaction-pro" : "condition-interaction-free" }
+    var title: Text { Text(LocalizedStringKey(isPro ? "condition_tip_pro_title" : "condition_tip_title")) }
+    var message: Text? { Text("condition_interaction_hint") }
+    var image: Image? { Image(systemName: "hand.tap") }
+    var options: [any TipOption] { MaxDisplayCount(1) }
 }
 
 /// One reading on the shared axis. Invisible copies of every visible title
@@ -557,7 +594,12 @@ struct ConditionRow: View {
                     .foregroundColor(.brandText)
                     .monospacedDigit()
             }
+            Image(systemName: "chevron.right")
+                .font(.scaled(size: 12, weight: .semibold))
+                .foregroundStyle(Color.brandPrimary)
+                .accessibilityHidden(true)
         }
+        .frame(minHeight: 44)
         .padding(.vertical, 7)
         .padding(.horizontal, 8)
         .contentShape(Rectangle())

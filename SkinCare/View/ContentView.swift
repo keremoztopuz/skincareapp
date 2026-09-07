@@ -11,10 +11,6 @@ struct ContentView: View {
             ProfileSetupView()
         case .mainApp:
             MainTabView()
-        case .splash:
-            SplashView()
-        case .loading:
-            SplashView(loadingMessage: NSLocalizedString("preparing_profile", comment: ""))
         case .subscription:
             // The same paywall the rest of the app shows, as a flow step: it
             // advances the state machine instead of dismissing, because

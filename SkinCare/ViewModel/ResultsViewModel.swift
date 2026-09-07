@@ -10,6 +10,8 @@ import SwiftUI
 internal import Combine
 
 class ResultsViewModel: ObservableObject {
+    // MARK: - Properties
+    private var productsByCondition: [String: [Product]] = [:]
     @Published var record: AnalysisRecord?
     @Published var recommendation: [String] = []
     @Published var recommendProduct: [Product] = []
@@ -27,6 +29,7 @@ class ResultsViewModel: ObservableObject {
     /// Home.
     private let isHistorical: Bool
 
+    // MARK: - Initialization
     init(record: AnalysisRecord?, isHistorical: Bool = false) {
         self.record = record
         self.isHistorical = isHistorical
@@ -55,7 +58,9 @@ class ResultsViewModel: ObservableObject {
 
         if !isHistorical {
             let skinType = LocalPersistenceManager.shared.fetchUserProfile()?.skinType ?? SkinType.normal.rawValue
-            let suggestions = await RoutineEngine.shared.generateRoutine(from: record, skinType: skinType)
+            let suggestions = RoutineEngine.shared.generateRoutine(
+                from: record, skinType: skinType, productsByCondition: productsByCondition
+            )
             if !suggestions.isEmpty {
                 LocalPersistenceManager.shared.saveSuggestions(suggestions)
             }
@@ -69,6 +74,8 @@ class ResultsViewModel: ObservableObject {
     @MainActor
     func fetchRecommendedProducts() async {
         guard let record = self.record else { return }
+        isLoading = true
+        defer { isLoading = false }
         errorMessage = nil
 
         let conditions = ConditionDetector.activeConditions(from: record)
@@ -97,24 +104,25 @@ class ResultsViewModel: ObservableObject {
     /// which matters because the free tier only shows the first two.
     private func fetchProducts(for conditions: [(key: String, weight: Double)]) async -> FetchOutcome {
         let results = await withTaskGroup(
-            of: (weight: Double, products: [Product], error: Error?).self
-        ) { group -> [(weight: Double, products: [Product], error: Error?)] in
-            for condition in conditions {
+            of: (index: Int, key: String, weight: Double, products: [Product], error: Error?).self
+        ) { group -> [(index: Int, key: String, weight: Double, products: [Product], error: Error?)] in
+            for (index, condition) in conditions.enumerated() {
                 group.addTask {
                     do {
                         let products = try await CatalogueService.shared
                             .fetchRecommendedProducts(for: condition.key)
-                        return (condition.weight, products, nil)
+                        return (index, condition.key, condition.weight, products, nil)
                     } catch {
                         AppLog.error("Condition product fetch failed", error)
-                        return (condition.weight, [], error)
+                        return (index, condition.key, condition.weight, [], error)
                     }
                 }
             }
-            var collected: [(weight: Double, products: [Product], error: Error?)] = []
+            var collected: [(index: Int, key: String, weight: Double, products: [Product], error: Error?)] = []
             for await result in group { collected.append(result) }
-            return collected
+            return collected.sorted { $0.index < $1.index }
         }
+        productsByCondition = Dictionary(uniqueKeysWithValues: results.map { ($0.key, $0.products) })
 
         var order: [UUID] = []
         var byID: [UUID: Product] = [:]

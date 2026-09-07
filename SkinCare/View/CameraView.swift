@@ -10,6 +10,7 @@ struct CameraView: View {
     @State private var showGuide = false
     @State private var showResult = false
     @State private var showUpgrade = false
+    @State private var showAIConsent = false
     /// TabView keeps this view alive across tab switches, so notification
     /// observers fire even while another tab is showing. Only react when visible.
     @State private var isCameraVisible = false
@@ -175,6 +176,10 @@ struct CameraView: View {
                             return
                         }
 
+                        guard AIAnalysisConsent.isGranted else {
+                            showAIConsent = true
+                            return
+                        }
                         vm.capturePhoto()
                     }) {
                         HStack(spacing: 12) {
@@ -184,8 +189,8 @@ struct CameraView: View {
                             Text(vm.isAnalyzing ? AppStrings.analyzing : AppStrings.startAnalysis)
                         }
                     }
-                    .buttonStyle(PrimaryButtonStyle(isEnabled: !vm.isAnalyzing && vm.isPermissionGranted))
-                    .disabled(vm.isAnalyzing || !vm.isPermissionGranted)
+                    .buttonStyle(PrimaryButtonStyle(isEnabled: !vm.isAnalyzing && vm.isSessionReady))
+                    .disabled(vm.isAnalyzing || !vm.isSessionReady)
                     .padding(.bottom, 12)
 
                 }
@@ -201,6 +206,13 @@ struct CameraView: View {
             Text(vm.errorMessage ?? "")
         }
         .sheet(isPresented: $showUpgrade) { UpgradeSheetView(context: .scanLimit) }
+        .sheet(isPresented: $showAIConsent) {
+            AIConsentView {
+                if isCameraVisible && subscriptionManager.canScan && !vm.isAnalyzing {
+                    vm.capturePhoto()
+                }
+            }
+        }
         .onAppear {
             isCameraVisible = true
             if !hasSeenCameraGuide {
@@ -230,7 +242,7 @@ struct CameraView: View {
                 .edgeSwipeToDismiss { showGuide = false }
         }
         .onChange(of: vm.analysisRecord) { oldValue, newValue in
-            if vm.capturedImage != nil && newValue != nil {
+            if isCameraVisible && vm.capturedImage != nil && newValue != nil {
                 showResult = true
             }
         }

@@ -1,17 +1,46 @@
 import UIKit
 
+enum AIAnalysisConsent {
+    static let key = "aiAnalysisConsent.v1"
+    static var isGranted: Bool { UserDefaults.standard.bool(forKey: key) }
+}
+
 /// The six scores the analysis backend returns. All 0-100; higher is worse
 /// for everything except `hydration`, where higher means better hydrated.
 struct AnalysisScores: Decodable {
+    // MARK: - Properties
     let acne: Double
     let redness: Double
     let wrinkles: Double
     let eyebags: Double
     let pigmentation: Double
     let hydration: Double
+
+    // MARK: - Initialization
+    private enum CodingKeys: String, CodingKey {
+        case acne, redness, wrinkles, eyebags, pigmentation, hydration
+    }
+
+    init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        func score(_ key: CodingKeys) throws -> Double {
+            let value = try values.decode(Double.self, forKey: key)
+            guard value.isFinite, (0...100).contains(value) else {
+                throw DecodingError.dataCorruptedError(forKey: key, in: values, debugDescription: "Score outside 0...100")
+            }
+            return value
+        }
+        acne = try score(.acne)
+        redness = try score(.redness)
+        wrinkles = try score(.wrinkles)
+        eyebags = try score(.eyebags)
+        pigmentation = try score(.pigmentation)
+        hydration = try score(.hydration)
+    }
 }
 
 enum AnalysisError: Error {
+    case consentRequired
     case encodingFailed
     case network
     case server(code: String)
@@ -84,6 +113,7 @@ final class AnalysisService {
     func analyze(
         image: UIImage, skinType: String?, age: Int?
     ) async throws -> (scores: AnalysisScores, regions: [String: [StoredZones.Rect]]) {
+        guard AIAnalysisConsent.isGranted else { throw AnalysisError.consentRequired }
         guard let jpeg = uploadJPEG(from: image), jpeg.count < 4 * 1024 * 1024 else {
             throw AnalysisError.encodingFailed
         }
@@ -106,6 +136,8 @@ final class AnalysisService {
         body.append("--\(boundary)--\r\n".data(using: .utf8)!)
         request.httpBody = body
 
+        // Consent may have been withdrawn while preparing the upload.
+        guard AIAnalysisConsent.isGranted else { throw AnalysisError.consentRequired }
         let data: Data
         let response: URLResponse
         do {

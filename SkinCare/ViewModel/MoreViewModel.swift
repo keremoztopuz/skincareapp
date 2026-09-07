@@ -41,10 +41,7 @@ class MoreViewModel: ObservableObject {
     private func loadStats(profile: UserProfile?) {
         let records = LocalPersistenceManager.shared.fetchAnalysisRecords()
         totalAnalyses = records.count
-        latestScore = records
-            .sorted { ($0.date ?? .distantPast) < ($1.date ?? .distantPast) }
-            .last
-            .map { Int($0.overallScore) }
+        latestScore = records.first.map { Int($0.overallScore) }
 
         if let created = profile?.createdAt {
             let formatter = DateFormatter()

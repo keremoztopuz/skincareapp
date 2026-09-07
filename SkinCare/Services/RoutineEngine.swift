@@ -9,6 +9,7 @@ struct RoutineRecommendation {
 }
 
 class RoutineEngine {
+    // MARK: - Properties
     static let shared = RoutineEngine()
     private init() {}
 
@@ -27,7 +28,8 @@ class RoutineEngine {
         RoutineStep(order: 4, label: "Sunscreen", morningTypes: ["sunscreen"], eveningTypes: [])
     ]
 
-    func generateRoutine(from record: AnalysisRecord, skinType: String) async -> [RoutineRecommendation] {
+    // MARK: - Methods
+    func generateRoutine(from record: AnalysisRecord, skinType: String, productsByCondition: [String: [Product]]) -> [RoutineRecommendation] {
         let activeConditions = ConditionDetector.activeConditions(from: record)
 
         guard !activeConditions.isEmpty else { return [] }
@@ -35,8 +37,7 @@ class RoutineEngine {
         var allProducts: [(product: Product, conditionScores: [String: Double])] = []
 
         for (conditionKey, score) in activeConditions {
-            do {
-                let products = try await CatalogueService.shared.fetchRecommendedProducts(for: conditionKey)
+                let products = productsByCondition[conditionKey] ?? []
                 for product in products {
                     if let existing = allProducts.firstIndex(where: { $0.product.id == product.id }) {
                         allProducts[existing].conditionScores[conditionKey] = score
@@ -44,9 +45,6 @@ class RoutineEngine {
                         allProducts.append((product: product, conditionScores: [conditionKey: score]))
                     }
                 }
-            } catch {
-                AppLog.error("Condition product fetch failed", error)
-            }
         }
 
         var recommendations: [RoutineRecommendation] = []

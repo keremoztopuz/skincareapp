@@ -2,6 +2,8 @@ import SwiftUI
 internal import CoreData
 
 struct CompareView: View {
+    // MARK: - Properties
+    @StateObject private var subscriptionManager = SubscriptionManager.shared
     @Environment(\.dismiss) var dismiss
     let record1: AnalysisRecord
     let record2: AnalysisRecord
@@ -34,9 +36,9 @@ struct CompareView: View {
         } else if acneDiff > Self.deadband {
             parts.append(NSLocalizedString("compare_insight_acne_increased", comment: ""))
         }
-        if wrinkleDiff < -Self.deadband {
+        if subscriptionManager.isPremium && wrinkleDiff < -Self.deadband {
             parts.append(NSLocalizedString("compare_insight_wrinkles_decreased", comment: ""))
-        } else if wrinkleDiff > Self.deadband {
+        } else if subscriptionManager.isPremium && wrinkleDiff > Self.deadband {
             parts.append(NSLocalizedString("compare_insight_wrinkles_increased", comment: ""))
         }
         return parts.isEmpty
@@ -109,9 +111,11 @@ struct CompareView: View {
                     VStack(spacing: 10) {
                         detailRow(label: AppStrings.acne,         val1: older.acneScore,         val2: newer.acneScore,         higherIsBetter: false)
                         detailRow(label: AppStrings.redness,      val1: older.eczemaScore,       val2: newer.eczemaScore,       higherIsBetter: false)
+                        if subscriptionManager.isPremium {
                         detailRow(label: AppStrings.pigmentation, val1: older.pigmentationScore, val2: newer.pigmentationScore, higherIsBetter: false)
                         detailRow(label: AppStrings.wrinkles,     val1: older.wrinkleScore,      val2: newer.wrinkleScore,      higherIsBetter: false)
                         detailRow(label: AppStrings.eyeBags,      val1: older.eyebagScore,       val2: newer.eyebagScore,       higherIsBetter: false)
+                        }
                         detailRow(label: AppStrings.hydration,    val1: older.hydrationScore,    val2: newer.hydrationScore,    higherIsBetter: true)
                         detailRow(label: AppStrings.inflammation, val1: older.inflammationScore, val2: newer.inflammationScore, higherIsBetter: false)
                         detailRow(label: AppStrings.oiliness,     val1: older.oilinessScore,     val2: newer.oilinessScore,     higherIsBetter: false)
@@ -139,11 +143,21 @@ struct CompareView: View {
                     .cornerRadius(Radius.card)
                     .padding(.horizontal, 20)
                     .padding(.bottom, 32)
+                    Text("results_not_medical_advice")
+                        .font(.scaled(size: 12))
+                        .foregroundStyle(.secondary)
+                        .padding(.horizontal, 20)
+                        .padding(.bottom, 20)
                 }
             }
         }
         .navigationBarBackButtonHidden(true)
         .interactiveSwipeBack()
+    }
+
+    // MARK: - Methods
+    static func scoreChange(older: Double, newer: Double) -> Double {
+        newer - older
     }
 
     // MARK: - Date Label
@@ -188,7 +202,7 @@ struct CompareView: View {
     // MARK: - Overall Metric Row (no bars)
     @ViewBuilder
     private func metricRow(label: String, val1: Double, val2: Double, unit: String, higherIsBetter: Bool) -> some View {
-        let diff = val1 - val2
+        let diff = Self.scoreChange(older: val1, newer: val2)
         let improved = higherIsBetter ? diff > 0 : diff < 0
         let diffColor: Color = diff == 0 ? .gray : (improved ? .brandPositive : .brandNegative)
 
@@ -232,7 +246,7 @@ struct CompareView: View {
     // MARK: - Detail Row with dual progress bars
     @ViewBuilder
     private func detailRow(label: String, val1: Double, val2: Double, higherIsBetter: Bool) -> some View {
-        let diff = val1 - val2
+        let diff = Self.scoreChange(older: val1, newer: val2)
         let improved = higherIsBetter ? diff > 0 : diff < 0
         let diffColor: Color = diff == 0 ? .gray : (improved ? .brandPositive : .brandNegative)
 

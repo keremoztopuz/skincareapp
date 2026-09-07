@@ -2,6 +2,21 @@
 
 Bu dosya App Store'a cikis icin teknik, hesap, gizlilik ve icerik hazirliklarini takip etmek icindir.
 
+## 7 Eylül 2026 — Yerel düzeltmeler ve kalan yayın kapıları
+
+- AI paylaşımı ilk analiz öncesinde açık izin ister; servis de izni kontrol eder. Ayarlar'dan geri çekilebilir.
+- Tek yüz bulunup kırpılamazsa fotoğraf gönderilmez; kayıt ve kota tüketimi yapılmaz.
+- Paywall yalnızca StoreKit fiyatlarını gösterir ve gösterdiği paketi satın alır. Ürün yoksa satın alma kapalıdır; deneme yalnızca uygun kullanıcıya gösterilir.
+- Depo açma hatasında geçmiş otomatik silinmez. Tüm verileri silme başarısızsa işlem geri alınır ve hata gösterilir.
+- Yerel gizlilik kaynağı ve EN/TR kamera/açılış metinleri, fotoğraf + yaş + cilt tipi paylaşımı ve cihazdaki saklamayla eşleştirildi.
+- [x] iPhone 17 / iOS 26.2 simülatöründe 40 test geçti: onaysız gönderimin engellenmesi, yüzsüz görüntü kırpımı, deneme uygunluğu, bozuk deponun korunması ve silme hatasının geri alınması dahil.
+- [ ] Güncellenmiş `legal/` içeriğini canlı hukuk sitesine yayımla ve bağlantıları doğrula.
+- [ ] Son archive'ın privacy raporu, Google saklama ayarları, RevenueCat veri bağları ve App Store Connect App Privacy cevaplarını uzlaştır.
+- [ ] TestFlight'ta gerçek kamera, izin reddi/geri çekme, yüz bulunamaması, satın alma/iptal/restore ve denemeyi önceden kullanmış hesapla test et.
+- [ ] Hydration/Inflammation dahil skorların yöntem ve doğruluk iddialarını doğrula; açıklama eklenmesi klinik doğrulama yerine geçmez.
+
+Aşağıdaki tarihsel işaretler canlı hesabın bugün tekrar doğrulandığı anlamına gelmez.
+
 ## Kritik Bloklar
 
 - [x] Apple Developer Program uyeligi aktif.
@@ -14,7 +29,7 @@ Bu dosya App Store'a cikis icin teknik, hesap, gizlilik ve icerik hazirliklarini
 - [x] App Store Connect subscription urunu hazir. `com.keremoztopuz.skincare.pro.weekly` (ONE_WEEK, 175 bolgede fiyatli, TR ₺99,99, 3 gunluk deneme) ve `...pro.lifetime` `READY_TO_SUBMIT`. Ikisi de `skanner_pro` entitlement'ina bagli — dogrulandi. `...pro.monthly` emekli: hicbir pakete bagli degil ve StoreKit test dosyasindan da cikarildi. Ilk build ile birlikte incelemeye gidecekler.
 - [x] RevenueCat entitlement adi **`skanner_pro`** olarak App Store urunune baglandi. (`SubscriptionManager.swift` bu id'yi okur; `pro` yazilirsa hicbir satin alma kilidi acmaz.) `default` offering current ve `$rc_weekly` / `$rc_lifetime` paketleri iki App Store urunune bagli.
 - [x] **Paid Applications Agreement — Active (28 Agu 2026).** Gecmis kayit: App Store Connect > Business icinde "Paid Apps" satiri **New** durumunda; yalnizca "Free Apps" Active. Bu sozlesme Active olmadan StoreKit hicbir urun dondurmez: RevenueCat `OfferingsManager.Error 1` verir, paywall bos kalir, sandbox dahil hicbir odeme alinamaz. Sirasiyla: sozlesmeyi kabul et (yalnizca Account Holder yapabilir), Contact Info (Financial / Senior Management / Technical), Bank Account (tuzel kisiyle eslesen IBAN), Tax Forms (ABD icin W-8BEN veya W-8BEN-E, arti yerel vergi bilgisi). Durum New > Pending User Info > Active seklinde ilerler; banka dogrulamasi birkac gun surebilir.
-- [x] Uygulama icindeki fiyat/deneme metinleri App Store Connect ile birebir ayni. `FallbackPrice.lifetime` canli tier'lere gore duzeltildi ($17.99/€19,99 yerine $12.99/€14,99); abonelik 26 Agustos'ta haftaliga cevrildi, `FallbackPrice.weekly` TR ₺99,99 / $3.99 / €3,99 ile uyuyor. Hicbir yerde deneme suresi vaadi yok — App Store Connect'te tanimli bir `trial_offer` da yok.
+- [x] Sabit fallback fiyatlar kaldırıldı. Fiyat ve deneme süresi StoreKit'ten, deneme uygunluğu RevenueCat'ten alınır; belirsiz uygunlukta deneme vaadi gösterilmez.
 - [ ] TestFlight build yuklendi ve gercek cihazda test edildi.
 
 ## Teknik Kontroller

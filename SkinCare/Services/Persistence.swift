@@ -6,8 +6,9 @@
 //
 
 internal import CoreData
+internal import Combine
 
-struct PersistenceController {
+final class PersistenceController: ObservableObject {
     static let shared = PersistenceController()
 
     @MainActor
@@ -27,6 +28,8 @@ struct PersistenceController {
     }()
 
     let container: NSPersistentContainer
+    @Published private(set) var isReady = false
+    @Published private(set) var loadFailed = false
 
     /// NSPersistentContainer(name:) loads a *fresh* NSManagedObjectModel each
     /// time, so a second controller (a preview, or a test running alongside
@@ -42,8 +45,9 @@ struct PersistenceController {
         return model
     }()
 
-    init(inMemory: Bool = false) {
+    init(inMemory: Bool = false, storeURL: URL? = nil) {
         container = NSPersistentContainer(name: "SkinCare", managedObjectModel: Self.managedObjectModel)
+        if let storeURL { container.persistentStoreDescriptions.first?.url = storeURL }
         if inMemory {
             // A true in-memory store, not SQLite-at-/dev/null: the /dev/null
             // form is shared between concurrently running tests, which makes
@@ -52,30 +56,21 @@ struct PersistenceController {
             description.url = URL(fileURLWithPath: "/dev/null")
             description.type = NSInMemoryStoreType
         }
-        let container = self.container
-        container.loadPersistentStores(completionHandler: { (storeDescription, error) in
-            if let error = error as NSError? {
-                // A store that cannot load (usually a failed migration or a
-                // corrupt file) would otherwise brick the install with a
-                // crash on every launch. Losing local history is bad;
-                // permanently losing the whole app is worse — recreate the
-                // store and carry on.
-                AppLog.error("Persistent store failed to load, recreating", error)
-                if let url = storeDescription.url {
-                    try? container.persistentStoreCoordinator.destroyPersistentStore(
-                        at: url, ofType: NSSQLiteStoreType, options: nil
-                    )
-                    container.loadPersistentStores { _, retryError in
-                        if let retryError {
-                            // Disk-level failure (out of space, protection);
-                            // nothing sensible left to do but crash with the
-                            // real reason in the log.
-                            fatalError("Persistent store unrecoverable: \(retryError)")
-                        }
-                    }
-                }
-            }
-        })
+        container.persistentStoreDescriptions.first?.shouldAddStoreAsynchronously = false
+        loadStore()
         container.viewContext.automaticallyMergesChangesFromParent = true
+    }
+
+    func loadStore() {
+        guard !isReady else { return }
+        loadFailed = false
+        // Never destroy a user's store to recover from a load error.
+        container.loadPersistentStores { _, error in
+            if let error {
+                AppLog.error("Persistent store could not be opened", error)
+            }
+            self.loadFailed = error != nil
+            self.isReady = error == nil
+        }
     }
 }

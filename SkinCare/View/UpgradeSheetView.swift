@@ -26,8 +26,13 @@ struct UpgradeSheetView: View {
     @State private var isPurchasing = false
     @State private var showSuccess = false
     @State private var purchaseError: String?
-    @State private var priceText: String = SubscriptionManager.FallbackPrice.weekly
-    @State private var lifetimePriceText: String = SubscriptionManager.FallbackPrice.lifetime
+    @State private var weeklyPackage: Package?
+    @State private var lifetimePackage: Package?
+    @State private var isLoadingPrices = false
+    @State private var priceLoadFailed = false
+    private var priceText: String { weeklyPackage?.storeProduct.localizedPriceString ?? "—" }
+    private var lifetimePriceText: String { lifetimePackage?.storeProduct.localizedPriceString ?? "—" }
+    private var selectedPackage: Package? { selectedPlan == .weekly ? weeklyPackage : lifetimePackage }
     @State private var trial: SubscriptionManager.TrialPeriod?
     @State private var selectedPlan: Plan = .weekly
 
@@ -126,6 +131,12 @@ struct UpgradeSheetView: View {
                     .padding(.bottom, 12)
 
                 // MARK: Buy button
+                if isLoadingPrices {
+                    ProgressView()
+                } else if priceLoadFailed || selectedPackage == nil {
+                    Button(AppStrings.tryAgain, action: loadPrices)
+                        .padding(.bottom, 12)
+                }
                 Button {
                     purchase(plan: selectedPlan)
                 } label: {
@@ -142,7 +153,7 @@ struct UpgradeSheetView: View {
                     }
                 }
                 .buttonStyle(PrimaryButtonStyle())
-                .disabled(isPurchasing)
+                .disabled(isPurchasing || isLoadingPrices || selectedPackage == nil)
                 .padding(.horizontal, 20)
 
                 // MARK: Restore + continue free
@@ -239,6 +250,7 @@ struct UpgradeSheetView: View {
     }
 
     private var disclosureText: String {
+        guard selectedPackage != nil else { return NSLocalizedString("purchase_prices_unavailable", comment: "") }
         switch selectedPlan {
         case .lifetime:
             return String(format: NSLocalizedString("one_time_price_%@", comment: ""), lifetimePriceText)
@@ -351,80 +363,62 @@ struct UpgradeSheetView: View {
     }
 
     // MARK: - Localized prices
-    /// Prices come from StoreKit, so each storefront shows its own App Store
-    /// Connect price and currency; the fallbacks only fill the gap until then.
+    /// The displayed package is also the package purchased.
     private func loadPrices() {
-        guard Purchases.isConfigured else { return }
-        Purchases.shared.getOfferings { offerings, _ in
-            guard let current = offerings?.current else { return }
-            // Only the true $rc_weekly package may feed the weekly row —
-            // falling back to an arbitrary package could show the lifetime
-            // price as if it were weekly.
-            let weekly = current.weekly
-            let lifetime = current.lifetime
-            DispatchQueue.main.async {
-                if let live = weekly?.storeProduct.localizedPriceString {
-                    priceText = live
+        guard !isLoadingPrices else { return }
+        guard Purchases.isConfigured else { priceLoadFailed = true; return }
+        isLoadingPrices = true
+        priceLoadFailed = false
+        trial = nil
+        weeklyPackage = nil
+        lifetimePackage = nil
+        Task { @MainActor in
+            defer { isLoadingPrices = false }
+            do {
+                let offering = try await Purchases.shared.offerings().current
+                let weekly = offering?.weekly
+                let lifetime = offering?.lifetime
+                if let weekly {
+                    let eligibility = await Purchases.shared.checkTrialOrIntroDiscountEligibility(product: weekly.storeProduct)
+                    trial = SubscriptionManager.trialPeriod(in: weekly.storeProduct, eligibility: eligibility)
                 }
-                if let live = lifetime?.storeProduct.localizedPriceString {
-                    lifetimePriceText = live
-                }
-                trial = weekly.flatMap { SubscriptionManager.trialPeriod(in: $0.storeProduct) }
+                weeklyPackage = weekly
+                lifetimePackage = lifetime
+                priceLoadFailed = weekly == nil || lifetime == nil
+            } catch {
+                priceLoadFailed = true
+                AppLog.error("Paywall products failed to load", error)
             }
         }
     }
 
     // MARK: - Purchase logic
     private func purchase(plan: Plan) {
+        guard !isPurchasing, !isLoadingPrices,
+              let package = plan == .weekly ? weeklyPackage : lifetimePackage else { return }
         isPurchasing = true
         purchaseError = nil
-
-        Purchases.shared.getOfferings { offerings, error in
-            if let error = error {
-                DispatchQueue.main.async {
-                    isPurchasing = false
-                    purchaseError = String(format: NSLocalizedString("purchase_error_products_not_loaded_%@", comment: ""), error.localizedDescription)
+        Purchases.shared.purchase(package: package) { transaction, info, error, userCancelled in
+            DispatchQueue.main.async {
+                isPurchasing = false
+                if userCancelled { return }
+                if let error = error {
+                    purchaseError = String(format: NSLocalizedString("purchase_error_failed_%@", comment: ""), error.localizedDescription)
+                    return
                 }
-                return
-            }
 
-            let current = offerings?.current
-            // Never substitute another package for weekly: an offering
-            // without a weekly package must fail loudly, not charge lifetime.
-            let selected: Package? = plan == .lifetime
-                ? current?.lifetime
-                : current?.weekly
-
-            guard let package = selected else {
-                DispatchQueue.main.async {
-                    isPurchasing = false
-                    purchaseError = NSLocalizedString("purchase_error_package_not_found", comment: "")
-                }
-                return
-            }
-
-            Purchases.shared.purchase(package: package) { transaction, info, error, userCancelled in
-                DispatchQueue.main.async {
-                    isPurchasing = false
-                    if userCancelled { return }
-                    if let error = error {
-                        purchaseError = String(format: NSLocalizedString("purchase_error_failed_%@", comment: ""), error.localizedDescription)
-                        return
+                // Only the entitlement unlocks Pro. A non-nil transaction
+                // alone can be deferred (Ask to Buy) or not yet synced,
+                // and would be revoked on the next status check anyway.
+                let entitled = info?.entitlements[SubscriptionManager.proEntitlementID]?.isActive == true
+                if entitled {
+                    SubscriptionManager.shared.isPremium = true
+                    withAnimation(.spring(response: 0.4, dampingFraction: 0.6)) { showSuccess = true }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.8) {
+                        finish(isPremium: true)
                     }
-
-                    // Only the entitlement unlocks Pro. A non-nil transaction
-                    // alone can be deferred (Ask to Buy) or not yet synced,
-                    // and would be revoked on the next status check anyway.
-                    let entitled = info?.entitlements[SubscriptionManager.proEntitlementID]?.isActive == true
-                    if entitled {
-                        SubscriptionManager.shared.isPremium = true
-                        withAnimation(.spring(response: 0.4, dampingFraction: 0.6)) { showSuccess = true }
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.8) {
-                            finish(isPremium: true)
-                        }
-                    } else if transaction != nil {
-                        purchaseError = NSLocalizedString("purchase_pending_message", comment: "")
-                    }
+                } else if transaction != nil {
+                    purchaseError = NSLocalizedString("purchase_pending_message", comment: "")
                 }
             }
         }
