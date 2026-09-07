@@ -19,7 +19,15 @@ struct SkinCareApp: App {
         WindowGroup {
             Group {
                 if persistenceController.isReady {
+                    #if DEBUG
+                    if let screen = ScreenshotScreen.current {
+                        ScreenshotRoot(screen: screen)
+                    } else {
+                        ContentView()
+                    }
+                    #else
                     ContentView()
+                    #endif
                 } else {
                     ContentUnavailableView {
                         Label("storage_unavailable_title", systemImage: "externaldrive.badge.exclamationmark")

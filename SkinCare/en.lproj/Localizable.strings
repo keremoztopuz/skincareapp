@@ -25,7 +25,7 @@
 "good_evening" = "Good Evening";
 "lets_take_care" = "Let's take care of your skin today";
 "skin_analysis" = "Skin analysis";
-"your_skin_health_avg" = "Your Skin Health (Avg.)";
+"your_skin_health_avg" = "Your Skin Overview (Avg.)";
 "your_routine" = "Your Routine";
 "steps_configured_%lld" = "%lld steps configured";
 "tap_to_setup_routine" = "Tap to set up your personalized skincare routine";
@@ -238,17 +238,17 @@
 "condition_wrinkles" = "Wrinkles";
 "condition_eyebags" = "Eye Bags";
 "condition_eye_bags" = "Eye Bags";
-"condition_healthy" = "Healthy";
+"condition_healthy" = "Balanced";
 
-"metric_hydration" = "Hydration";
-"metric_inflammation" = "Inflammation";
+"metric_hydration" = "Hydration Appearance";
+"metric_inflammation" = "Irritation Appearance";
 "metric_oiliness" = "Oiliness";
 "condition_recommendation_acne" = "Use cleansers containing salicylic acid. Prefer non-comedogenic moisturizers.";
 "condition_recommendation_redness" = "Use soothing products containing Centella or Niacinamide. Avoid harsh scrubs and extreme temperatures.";
 "condition_recommendation_pigmentation" = "Use products containing Vitamin C, Niacinamide, or Alpha Arbutin. Always apply SPF 50+ sunscreen.";
 "condition_recommendation_wrinkles" = "Use products containing retinol and peptides. Protect your skin from the sun and drink plenty of water.";
 "condition_recommendation_eyebags" = "Apply cold compresses and prefer under-eye creams containing caffeine. Pay attention to your sleep pattern.";
-"condition_recommendation_hydration" = "Use hyaluronic acid serums and ceramide-rich moisturizers. Drink plenty of water throughout the day.";
+"condition_recommendation_hydration" = "Use hyaluronic acid serums and ceramide-rich moisturizers.";
 
 /* Skin Profile */
 "gender_male" = "Male";
@@ -339,8 +339,8 @@
 "score_trend" = "Score Trend";
 "overall_band_excellent" = "Excellent";
 "overall_band_good" = "Good";
-"overall_band_fair" = "Needs care";
-"overall_band_poor" = "Needs attention";
+"overall_band_fair" = "Improvement possible";
+"overall_band_poor" = "Room to improve";
 "severity_low" = "Low";
 "severity_moderate" = "Moderate";
 "severity_high" = "High";

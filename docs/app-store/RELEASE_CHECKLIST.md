@@ -9,9 +9,9 @@ Bu dosya App Store'a cikis icin teknik, hesap, gizlilik ve icerik hazirliklarini
 - Paywall yalnızca StoreKit fiyatlarını gösterir ve gösterdiği paketi satın alır. Ürün yoksa satın alma kapalıdır; deneme yalnızca uygun kullanıcıya gösterilir.
 - Depo açma hatasında geçmiş otomatik silinmez. Tüm verileri silme başarısızsa işlem geri alınır ve hata gösterilir.
 - Yerel gizlilik kaynağı ve EN/TR kamera/açılış metinleri, fotoğraf + yaş + cilt tipi paylaşımı ve cihazdaki saklamayla eşleştirildi.
-- [x] iPhone 17 / iOS 26.2 simülatöründe 40 test geçti: onaysız gönderimin engellenmesi, yüzsüz görüntü kırpımı, deneme uygunluğu, bozuk deponun korunması ve silme hatasının geri alınması dahil.
-- [ ] Güncellenmiş `legal/` içeriğini canlı hukuk sitesine yayımla ve bağlantıları doğrula.
-- [ ] Son archive'ın privacy raporu, Google saklama ayarları, RevenueCat veri bağları ve App Store Connect App Privacy cevaplarını uzlaştır.
+- [x] iPhone 17 / iOS 26.2 simülatöründe 43 test geçti: onaysız gönderimin engellenmesi, yüzsüz görüntü kırpımı, deneme uygunluğu, bozuk deponun korunması ve silme hatasının geri alınması dahil.
+- [x] Güncellenmiş `legal/` içeriğini canlı hukuk sitesine yayımla ve bağlantıları doğrula.
+- [x] Son archive'ın privacy manifestleri ve RevenueCat açıklamaları uzlaştırıldı; App Store Connect'e girilecek cevaplar metadata taslağında hazır.
 - [ ] TestFlight'ta gerçek kamera, izin reddi/geri çekme, yüz bulunamaması, satın alma/iptal/restore ve denemeyi önceden kullanmış hesapla test et.
 - [ ] Hydration/Inflammation dahil skorların yöntem ve doğruluk iddialarını doğrula; açıklama eklenmesi klinik doğrulama yerine geçmez.
 
@@ -35,7 +35,7 @@ Aşağıdaki tarihsel işaretler canlı hesabın bugün tekrar doğrulandığı 
 ## Teknik Kontroller
 
 - [x] `IPHONEOS_DEPLOYMENT_TARGET` 18.0.
-- [x] Release archive Xcode'da basarili (`CODE_SIGNING_ALLOWED=NO` ile dogrulandi, sifir hata).
+- [x] Release 1.1 (2) archive ve App Store Connect dağıtım imzalı IPA export'u başarılı.
 - [x] Uygulama yalnizca iPhone: `TARGETED_DEVICE_FAMILY = 1`, iPad yonlendirme anahtari kaldirildi. App Store Connect'te de iPad screenshot seti istenmeyecek.
 - [x] Kamera izni aciklamasi net.
 - [x] Kamera reddedilince kullaniciya anlasilir ekran gosteriliyor.
@@ -52,7 +52,7 @@ Aşağıdaki tarihsel işaretler canlı hesabın bugün tekrar doğrulandığı 
 
 ## App Store Connect Bilgileri
 
-- [ ] Primary category: Health & Fitness veya Lifestyle.
+- [ ] Primary category: Lifestyle; secondary category boş.
 - [ ] Age rating sorulari cevaplandi.
 - [ ] App Privacy cevaplari girildi.
 - [ ] Export compliance cevaplandi.
@@ -64,10 +64,10 @@ Aşağıdaki tarihsel işaretler canlı hesabın bugün tekrar doğrulandığı 
 ## Gorsel Hazirlik
 
 - [x] App icon 1024x1024 hazir.
-- [ ] iPhone 6.9 inch screenshot seti hazir.
-- [ ] iPhone 6.5 inch screenshot seti hazir.
-- [ ] Ekran goruntulerinde tibbi teshis iddiasi yok.
-- [ ] Ekran goruntulerinde gercek kullanici yuzu yok veya izinli/temsili gorsel kullanildi.
+- [x] İngilizce ve Türkçe iPhone 6.9 inç screenshot setleri hazır (1320 × 2868, JPEG, alpha yok).
+- [x] Apple 6.9 inç setten diğer iPhone boyutlarına ölçekleyebildiği için ayrı 6.5 inç set gerekmiyor.
+- [x] Ekran goruntulerinde tibbi teshis iddiasi yok.
+- [x] Ekran goruntulerinde lisanslı/temsili gorsel kullanildi.
 
 ## Yasal ve Metin Kontrolleri
 

@@ -22,7 +22,7 @@ Skin analysis runs in the cloud. There is no analysis model on your device.
 
 1. Before analysis, the app requests explicit permission to share your face crop, age and skin type with our backend and Google Gemini on Vertex AI. Declining leaves local history and routines available.
 2. Your device detects and crops one face using Apple's Vision framework. If this fails or multiple faces are found, no photo is sent. With permission, the crop, age and skin type are sent over HTTPS to our service and then Vertex AI. Name and gender are not transmitted.
-3. The service returns numeric readings for five visible features — breakouts, redness, wrinkles, eye bags, and pigmentation — plus a hydration reading. The app then presents three summary metrics (hydration, oiliness and inflammation) and one overall score. All of it is shown to you and saved on your device.
+3. The service returns photo-based estimates for five visible features — breakouts, redness, wrinkles, eye bags, and pigmentation — plus a hydration-appearance estimate. The app then presents three cosmetic summary metrics (hydration appearance, oiliness and irritation appearance) and one overall score. All of it is shown to you and saved on your device.
 
 An internet connection is required to run an analysis. Your history, profile, and routine remain available offline.
 

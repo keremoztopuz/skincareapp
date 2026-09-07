@@ -20,7 +20,7 @@
 "good_evening" = "İyi Akşamlar";
 "lets_take_care" = "Bugün cildinize iyi bakalım";
 "skin_analysis" = "Cilt analizi";
-"your_skin_health_avg" = "Cilt Sağlığınız (Ort.)";
+"your_skin_health_avg" = "Cilt Görünümünüz (Ort.)";
 "your_routine" = "Rutininiz";
 "steps_configured_%lld" = "%lld adım yapılandırıldı";
 "tap_to_setup_routine" = "Kişisel cilt bakım rutininizi oluşturmak için dokunun";
@@ -196,16 +196,16 @@
 "condition_wrinkles" = "Kırışıklık";
 "condition_eyebags" = "Göz Altı Torbaları";
 "condition_eye_bags" = "Göz Altı Torbaları";
-"condition_healthy" = "Sağlıklı";
-"metric_hydration" = "Nem";
-"metric_inflammation" = "İltihaplanma";
+"condition_healthy" = "Dengeli";
+"metric_hydration" = "Nem Görünümü";
+"metric_inflammation" = "Tahriş Görünümü";
 "metric_oiliness" = "Yağlılık";
 "condition_recommendation_acne" = "Salisilik asit içeren temizleyiciler kullanın. Komedojenik olmayan nemlendiricileri tercih edin.";
 "condition_recommendation_redness" = "Centella veya niasinamid içeren yatıştırıcı ürünler kullanın. Sert peelinglerden ve aşırı sıcaklıklardan kaçının.";
 "condition_recommendation_pigmentation" = "C vitamini, niasinamid veya alfa arbutin içeren ürünler kullanın. Her zaman SPF 50+ güneş kremi uygulayın.";
 "condition_recommendation_wrinkles" = "Retinol ve peptit içeren ürünler kullanın. Cildinizi güneşten koruyun ve bol su için.";
 "condition_recommendation_eyebags" = "Soğuk kompres uygulayın ve kafein içeren göz çevresi kremlerini tercih edin. Uyku düzeninize dikkat edin.";
-"condition_recommendation_hydration" = "Hyaluronik asit serumları ve seramid açısından zengin nemlendiriciler kullanın. Gün içinde bol su için.";
+"condition_recommendation_hydration" = "Hyaluronik asit serumları ve seramid açısından zengin nemlendiriciler kullanın.";
 
 "gender_male" = "Erkek";
 "gender_female" = "Kadın";
@@ -290,8 +290,8 @@
 "score_trend" = "Skor Trendi";
 "overall_band_excellent" = "Çok iyi";
 "overall_band_good" = "İyi";
-"overall_band_fair" = "Bakım gerekli";
-"overall_band_poor" = "İlgi gerekli";
+"overall_band_fair" = "Geliştirilebilir";
+"overall_band_poor" = "İyileştirme alanı";
 "severity_low" = "Düşük";
 "severity_moderate" = "Orta";
 "severity_high" = "Yüksek";

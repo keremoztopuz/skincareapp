@@ -4,7 +4,7 @@ Bu taslak App Store Connect'e kopyalanmadan once son urun kararlarina gore kontr
 
 Iki kural bu dosyanin tamamini yonetiyor:
 
-1. **Tibbi iddia yok.** Uygulama teshis koymaz. Metinlerde "akne", "egzama", "sedef", "tedavi", "iyilestirir" gibi klinik terimler kullanilmaz; gorunur cilt ozellikleri gundelik dille anlatilir (Breakouts, Redness, Wrinkles, Eye Bags, Pigmentation, Hydration). Uygulama arayuzu de ayni terimleri kullanir.
+1. **Tibbi iddia yok.** Uygulama teshis koymaz. Metinlerde "akne", "egzama", "sedef", "tedavi", "iyilestirir" gibi klinik terimler kullanilmaz; gorunur cilt ozellikleri gundelik dille anlatilir (Breakouts, Redness, Wrinkles, Eye Bags, Pigmentation, Hydration Appearance). Uygulama arayuzu de ayni terimleri kullanir.
 2. **Analiz tamamen bulutta calisir.** Cihaz uzerinde model yoktur, "hibrit" bir mimari yoktur. Yuz tespiti (Vision) disinda tum skorlar bulut servisinden gelir. Onceki taslaktaki "on-device CoreML" ifadesi gercek mimariyi yansitmiyordu ve kaldirildi.
 
 ---
@@ -25,7 +25,7 @@ Track visible skin changes over time and build a simple daily routine from your 
 
 Skinner helps you look at your skin's visible features, follow how they change over time, and organize a personal skincare routine.
 
-Take a photo with your iPhone camera and Skinner reviews five visible features: breakouts, redness, wrinkles, eye bags, and pigmentation. It then summarises them as three easy-to-follow metrics — hydration, oiliness and inflammation — plus one overall score. Each scan is saved on your device, so you can compare two scans side by side and see what changed.
+Take a photo with your iPhone camera and Skinner reviews five visible features: breakouts, redness, wrinkles, eye bags, and pigmentation. It then summarises them as three easy-to-follow cosmetic metrics — hydration appearance, oiliness and irritation appearance — plus one overall score. Each scan is saved on your device, so you can compare two scans side by side and see what changed.
 
 Key features:
 - Five visible-feature readings and three summary metrics from a single photo
@@ -41,23 +41,25 @@ Important: Skinner is a cosmetic tracking tool. It does not diagnose, treat, or 
 
 ## Keywords
 
-skin analysis, face scan, skin tracker, skincare routine, complexion, blemish, redness, wrinkles, hydration, beauty
+skin analysis, face scan, skin tracker, skincare routine, complexion, blemish, redness, wrinkles, beauty
 
 Note: high-traffic clinical terms (e.g. "acne") are deliberately left out to keep the listing consistent with the non-medical positioning. If discoverability matters more than that consistency, adding them to the keyword field only — never to the description — is the lower-risk compromise.
 
 ## Category
 
-Primary: Health & Fitness
+Primary: Lifestyle
 
-Alternative: Lifestyle
+Secondary: None. Selecting Health & Fitness would trigger Apple's regulated
+medical-device declaration even though Skinner is positioned as a cosmetic
+tracking tool.
 
 ## Age Rating
 
-**12+**. No user-generated content, no social features, no medical claims; the 12+ band covers the "infrequent/mild medical or treatment information" answer that a cosmetic skin-tracking app has to give.
+**13+ hedeflenmeli.** App Store Connect'in güncel yaş derecelendirme soruları gerçeğe uygun cevaplanmalı; uygulama 13 yaş altına yönelik değildir ve kozmetik analiz bilgisi sunar. Nihai dereceyi App Store Connect hesaplar.
 
 ## Support URL
 
-https://keremoztopuz.github.io/skincare-legal/ — sayfa `legal/` altinda hazir, yayinlanmayi bekliyor (`legal/README.md`).
+https://keremoztopuz.github.io/skincare-legal/ — yayında.
 
 ## Marketing URL
 
@@ -65,7 +67,7 @@ TODO: Optional. Leave blank if there is no landing page.
 
 ## Privacy Policy URL
 
-https://keremoztopuz.github.io/skincare-legal/privacy — matches `LegalLinks.swift`. The page is written (`legal/privacy/index.html`); publishing the GitHub Pages site is the remaining step.
+https://keremoztopuz.github.io/skincare-legal/privacy — `LegalLinks.swift` ile aynı ve yayında.
 
 ## Terms of Use URL
 
@@ -80,7 +82,7 @@ Processing flow:
 1. The user takes a photo with the front camera.
 2. The photo is cropped to the detected face on-device using Apple's Vision framework.
 3. The crop is sent over HTTPS to our own backend service, which strips image metadata, downscales the image, and forwards it to Google's Gemini API (Vertex AI) for processing.
-4. Five visible-feature estimates plus a hydration estimate are returned; oiliness, inflammation and the overall score are derived by the app. These are not validated medical measurements. The crop is not stored permanently by our service. Google may retain request data for abuse monitoring and temporary caching under Vertex AI policies.
+4. Five visible-feature estimates plus a hydration-appearance estimate are returned; oiliness, irritation appearance and the overall score are derived by the app. These are cosmetic estimates, not validated medical measurements. The crop is not stored permanently by our service. Google may retain request data for abuse monitoring and temporary caching under Vertex AI policies.
 
 No account or sign-in is required. Profile details and scan history are stored only on the device using Core Data and are never uploaded. Product and article content is read from our backend; no user data is sent with those requests.
 
@@ -90,16 +92,15 @@ Free tier: 5 scans per month, breakouts and redness readings only, last 5 analys
 
 ## App Privacy Draft
 
-Confirm these answers against the final implementation before submitting.
+Answers reconciled with the final archive and RevenueCat's disclosure guidance:
 
 Data collected:
-- **Photos** — the face crop is transmitted for processing on each scan. Not linked to an identity, not used for tracking, not stored permanently by us.
-- **Profile information** — name and gender remain on device. Age and skin type are transmitted with the face crop after explicit AI sharing permission. Confirm the applicable App Privacy categories against provider retention before submitting.
-- **Purchases** — subscription status handled by Apple and RevenueCat.
-- **Identifiers** — RevenueCat assigns an anonymous app user ID for entitlement lookup.
+- **Photos or Videos** — App Functionality and Product Personalization; not linked to identity; not used for tracking. The face crop is transmitted only after consent and is not retained permanently by us.
+- **Health** — App Functionality and Product Personalization; not linked to identity; not used for tracking. Age, skin type and visible-feature estimates are included here conservatively.
+- **Purchase History** — App Functionality and Analytics; not linked to identity; not used for tracking. RevenueCat uses only its random anonymous App User ID; Skinner has no account or custom user ID.
 
 Data linked to the user:
-- Purchase and entitlement data via Apple / RevenueCat.
+- None under Apple's App Privacy definition. No collected data is tied to an account, contact information, advertising identifier, or other real-world identity.
 
 Data not collected:
 - No contacts, no location, no browsing history, no advertising identifiers.
@@ -107,8 +108,10 @@ Data not collected:
 Tracking:
 - None. No third-party advertising SDKs.
 
-Sensitive data:
-- Face images, age, skin type and skin estimates must be assessed against Apple's data categories and provider retention. The app manifest currently declares Photos and Health for App Functionality; do not omit a category solely because the app has a cosmetic disclaimer. Reconcile the final archive's SDK privacy report, RevenueCat identifier/purchase linkage, and App Store Connect answers before submission.
+Final archive privacy manifests:
+- App: Photos or Videos and Health for App Functionality + Product Personalization; Purchase History for App Functionality + Analytics.
+- RevenueCat: Purchase History, not linked, not tracked.
+- Lottie: no collected data; file timestamp required-reason API only.
 
 ## Subscription Metadata
 
@@ -161,7 +164,7 @@ Both products must unlock the RevenueCat entitlement `skanner_pro`. The app trea
 
 ### Pricing
 
-The app's placeholder prices — shown only until StoreKit returns the real storefront price — are:
+Reference storefront prices are:
 
 | Storefront | Weekly | Lifetime |
 | --- | --- | --- |
@@ -182,7 +185,8 @@ Store Connect. The table above is the live App Store Connect state as read back
 on 26 August 2026; the app now displays StoreKit prices only. TR ₺699,99
 is still roughly 7x the weekly while US $12.99 is roughly 3.3x, so the two
 storefronts are not a strict multiple of each other. Change a tier in App Store
-Connect and this table and the fallback both have to move with it.
+Connect and this table must be updated together. The app never displays a
+fallback price; it shows the StoreKit price or disables that purchase option.
 
 ### Introductory offer
 
@@ -212,7 +216,7 @@ App Store Connect'te tr yerel ayari icin kullanilacak metinler. Uygulama Turkce 
 
 Skinner cildinizin gorunur ozelliklerine bakmaniza, bunlarin zaman icinde nasil degistigini izlemenize ve kisisel bir cilt bakim rutini olusturmaniza yardimci olur.
 
-iPhone kameranizla bir fotograf cekin; Skinner bes gorunur ozelligi degerlendirir: sivilce, kizariklik, kirisiklik, goz alti torbalari ve leke. Ardindan bunlari uc anlasilir metrige (nem, yaglilik, iltihaplanma) ve tek bir genel skora ozetler. Her tarama cihazinizda saklanir, boylece iki taramayi yan yana karsilastirip neyin degistigini gorebilirsiniz.
+iPhone kameranizla bir fotograf cekin; Skinner bes gorunur ozelligi degerlendirir: sivilce, kizariklik, kirisiklik, goz alti torbalari ve leke. Ardindan bunlari uc anlasilir kozmetik metrige (nem gorunumu, yaglilik ve tahris gorunumu) ve tek bir genel skora ozetler. Her tarama cihazinizda saklanir, boylece iki taramayi yan yana karsilastirip neyin degistigini gorebilirsiniz.
 
 Ozellikler:
 - Tek fotograftan bes gorunur ozellik olcumu ve uc ozet metrik

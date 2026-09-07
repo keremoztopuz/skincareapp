@@ -18,6 +18,7 @@ struct ResultView: View {
 
     let record: AnalysisRecord?
     let isFromRecents: Bool
+    private let showsInteractionTip: Bool
     @State private var selectedProduct: Product? = nil
     /// The condition whose regions are drawn on the photo; nil = no overlay.
     @State private var selectedConditionKey: String? = nil
@@ -112,12 +113,21 @@ struct ResultView: View {
 
     private let scannedImageID = "scanned-image"
 
-    init(record: AnalysisRecord?, isFromRecents: Bool, onDismiss: (() -> Void)? = nil) {
+    init(
+        record: AnalysisRecord?,
+        isFromRecents: Bool,
+        initialConditionKey: String? = nil,
+        showsInteractionTip: Bool = true,
+        onDismiss: (() -> Void)? = nil
+    ) {
         self.record = record
         self.isFromRecents = isFromRecents
+        self.showsInteractionTip = showsInteractionTip
         self.onDismiss = onDismiss
         self.photo = record?.imageData.flatMap(UIImage.init(data:))
         self.zones = StoredZones.decode(record?.zonesData)
+        self._selectedConditionKey = State(initialValue: initialConditionKey)
+        self._tipsReady = State(initialValue: showsInteractionTip)
         self._vm = StateObject(wrappedValue: ResultsViewModel(record: record, isHistorical: isFromRecents))
     }
 
@@ -243,7 +253,7 @@ struct ResultView: View {
                         VStack(spacing: 0) {
                             let allTitles = visibleReadings.map(\.title)
                             ForEach(visibleReadings) { reading in
-                                Button {
+                                let row = Button {
                                     toggleCondition(reading.key, proxy: scrollProxy)
                                 } label: {
                                     ConditionRow(
@@ -254,7 +264,12 @@ struct ResultView: View {
                                 }
                                 .buttonStyle(.plain)
                                 .accessibilityHint(Text("condition_interaction_hint"))
-                                .popoverTip(reading.key == tipAnchorKey && tipsReady && !showUpgrade && !showMissingZones && selectedProduct == nil && !showRoutine ? conditionTip : nil)
+
+                                if showsInteractionTip {
+                                    row.popoverTip(reading.key == tipAnchorKey && tipsReady && !showUpgrade && !showMissingZones && selectedProduct == nil && !showRoutine ? conditionTip : nil)
+                                } else {
+                                    row
+                                }
                             }
 
                             if !lockedReadings.isEmpty {

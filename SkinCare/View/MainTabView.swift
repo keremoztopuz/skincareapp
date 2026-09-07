@@ -10,6 +10,11 @@ import SwiftUI
 
 struct MainTabView: View {
     @State private var selectedTab: Int = 0
+
+    init(initialTab: Int = 0) {
+        _selectedTab = State(initialValue: initialTab)
+    }
+
     var body: some View {
         TabView(selection: $selectedTab){
             HomeView(selectedTab: $selectedTab)

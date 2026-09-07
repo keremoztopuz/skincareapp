@@ -51,8 +51,8 @@ enum MockScanSeeder {
             skinType: skinType,
             // The camera guide's own bundled portrait plus hand-placed
             // regions, so the zone overlay can be exercised with no camera
-            // and no live proxy. The newer record stays photo-less on
-            // purpose — the unselectable path has to stay visible too.
+            // and no live proxy. Both records use the same subject so the
+            // comparison does not imply that two different people are one.
             imageData: UIImage(named: "guidegood1")?.jpegData(compressionQuality: 0.5),
             zonesData: mockZones.encoded(),
             into: manager
@@ -64,6 +64,7 @@ enum MockScanSeeder {
             wrinkles: 14, eyebags: 18, hydration: 74,
             daysAgo: 0,
             skinType: skinType,
+            imageData: UIImage(named: "guidegood1")?.jpegData(compressionQuality: 0.5),
             into: manager
         )
     }
